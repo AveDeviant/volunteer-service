@@ -6,6 +6,8 @@ import java.util.List;
 
 public interface MedicamentService {
 
+    Medicament getById(long id, boolean status);
+
     Medicament getById(long id);
 
     List<Medicament> getAll();
@@ -13,5 +15,7 @@ public interface MedicamentService {
     List<Medicament> getAllActual();
 
     List<Medicament> getAllActual(int page, int size);
+
+    Medicament addNew(Medicament medicament);
 
 }

@@ -16,6 +16,17 @@ public class MedicamentServiceImpl implements MedicamentService {
     private MedicamentDAO medicamentDAO;
 
     @Override
+    public Medicament getById(long id, boolean status) {
+        Medicament medicament = medicamentDAO.getById(id);
+        if (medicament != null) {
+            if (medicament.isStatus() != status) {
+                return null;
+            }
+        }
+        return medicament;
+    }
+
+    @Override
     public Medicament getById(long id) {
         return medicamentDAO.getById(id);
     }
@@ -32,6 +43,11 @@ public class MedicamentServiceImpl implements MedicamentService {
 
     @Override
     public List<Medicament> getAllActual(int page, int size) {
-        return medicamentDAO.getFormatted(page,size).stream().collect(Collectors.toList());
+        return medicamentDAO.getFormatted(page, size);
+    }
+
+    @Override
+    public Medicament addNew(Medicament medicament) {
+        return medicamentDAO.addNew(medicament);
     }
 }

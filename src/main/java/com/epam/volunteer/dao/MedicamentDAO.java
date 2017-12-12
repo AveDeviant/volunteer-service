@@ -13,5 +13,7 @@ public interface MedicamentDAO {
 
     Medicament getById(long id);
 
-    List<Medicament> getFormatted(int startedFrom, int size);
+    List<Medicament> getFormatted(int page, int size);
+
+    Medicament addNew(Medicament medicament);
 }
