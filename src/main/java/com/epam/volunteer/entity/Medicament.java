@@ -1,12 +1,26 @@
 package com.epam.volunteer.entity;
 
-public class Medicament {
-    private long id;
-    private String medicament;
-    private int requirement;
-    private int currentCount;
-    private boolean relevance;
+import javax.persistence.*;
+import java.io.Serializable;
 
+@Entity
+@Table(name = "medicament")
+public class Medicament implements Serializable {
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @Column(name = "id_medicament")
+    private long id;
+    @Column(name = "medicament")
+    private String medicament;
+    @ManyToOne
+    @JoinColumn(name = "id_volunteer")
+    private Volunteer volunteer;
+    @Column(name = "requirement")
+    private int requirement;
+    @Column(name = "current_count")
+    private int currentCount;
+    @Column(name = "status")
+    private boolean status;
 
     public Medicament() {
     }
@@ -28,6 +42,14 @@ public class Medicament {
         this.medicament = medicament;
     }
 
+    public Volunteer getVolunteer() {
+        return volunteer;
+    }
+
+    public void setVolunteer(Volunteer volunteer) {
+        this.volunteer = volunteer;
+    }
+
     public int getRequirement() {
         return requirement;
     }
@@ -44,11 +66,11 @@ public class Medicament {
         this.currentCount = currentCount;
     }
 
-    public boolean isRelevance() {
-        return relevance;
+    public boolean isStatus() {
+        return status;
     }
 
-    public void setRelevance(boolean relevance) {
-        this.relevance = relevance;
+    public void setStatus(boolean status) {
+        this.status = status;
     }
 }

@@ -3,24 +3,31 @@ package com.epam.volunteer.resources;
 
 import com.epam.volunteer.entity.Medicament;
 import com.epam.volunteer.service.MedicamentService;
-import com.epam.volunteer.service.impl.MedicamentServiceImpl;
+import com.google.inject.Inject;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+import java.util.List;
 
 @Path("/medicament")
-public class MedicamentResource {
-    //IoC
-        private static final MedicamentService medicamentService = new MedicamentServiceImpl();
+public class MedicamentResource extends AbstractResource {
+    @Inject
+    private MedicamentService medicamentService;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getMedicament() {
-        return Response.ok().build();
+    public Response getMedicament(@QueryParam("page") @DefaultValue("1") int page,
+                                  @QueryParam("size") @DefaultValue("2") int size,
+                                  @Context UriInfo uriInfo) {
+        if (page <= 0 || size <= 0) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        List<Medicament> medicament = medicamentService.getAllActual(page, size);
+        return Response.ok(medicament).build();
     }
 
     @GET
