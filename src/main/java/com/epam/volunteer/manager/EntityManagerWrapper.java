@@ -1,6 +1,8 @@
 package com.epam.volunteer.manager;
 
-import com.google.inject.Inject;
+
+import org.jvnet.hk2.annotations.Service;
+
 
 import javax.persistence.*;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -15,6 +17,7 @@ import java.util.ResourceBundle;
 /**
  * @author Mikita Buslauski
  */
+@Service
 public class EntityManagerWrapper implements EntityManager {
     private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("persistenceConfig");
     private static EntityManager entityManager;
