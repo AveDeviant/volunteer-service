@@ -7,6 +7,8 @@
         <class>com.epam.volunteer.entity.Medicament</class>
         <class>com.epam.volunteer.entity.Volunteer</class>
         <class>com.epam.volunteer.entity.Employee</class>
+        <class>com.epam.volunteer.entity.Donation</class>
+        <class>com.epam.volunteer.util.LocalDateTimeConverter</class>
         <properties>
             <property name="eclipselink.logging.level" value="FINE"/>
             <property name="eclipselink.jdbc.driver" value="com.mysql.jdbc.Driver"/>

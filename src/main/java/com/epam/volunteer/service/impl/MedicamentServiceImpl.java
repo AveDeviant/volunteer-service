@@ -49,8 +49,10 @@ public class MedicamentServiceImpl extends AbstractService implements Medicament
 
     @Override
     public List<Medicament> getAll() throws ServiceException {
+        List<Medicament> medicament = new ArrayList<>();
         try {
-            return medicamentDAO.getAll();
+            medicament.addAll(medicamentDAO.getAll());
+            return medicament;
         } catch (DAOException e) {
             getLogger().log(Level.ERROR, e.getMessage());
             throw new ServiceException(e);
@@ -60,7 +62,7 @@ public class MedicamentServiceImpl extends AbstractService implements Medicament
     @Override
     public List<Medicament> getAllActual() throws ServiceException {
         try {
-            return getAll().stream().filter(m -> m.isStatus()).collect(Collectors.toList());
+            return getAll().stream().filter(m -> m != null && m.isStatus()).collect(Collectors.toList());
         } catch (ServiceException e) {
             getLogger().log(Level.ERROR, e.getMessage());
             throw new ServiceException(e);

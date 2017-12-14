@@ -6,6 +6,8 @@ public class MedicamentDTO extends AbstractDTO {
     private int requirement;
     private int currentCount;
     private VolunteerDTO volunteer;
+    private boolean status;
+
     public MedicamentDTO() {
     }
 
@@ -40,6 +42,14 @@ public class MedicamentDTO extends AbstractDTO {
 
     public void setVolunteer(VolunteerDTO volunteer) {
         this.volunteer = volunteer;
+    }
+
+    public boolean isStatus() {
+        return status;
+    }
+
+    public void setStatus(boolean status) {
+        this.status = status;
     }
 
     @Override

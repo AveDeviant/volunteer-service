@@ -2,11 +2,12 @@ package com.epam.volunteer.entity;
 
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "donation")
-public class Donation {
+public class Donation extends AbstractEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long id;
@@ -18,10 +19,12 @@ public class Donation {
     @ManyToOne
     @JoinColumn(name = "id_medicament")
     private Medicament medicament;
-    @Column(name = "count")
+
+    @Column(name = "donation_count")
     private int count;
 
     @Column(name = "time")
+    @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime time;
 
     public Donation() {

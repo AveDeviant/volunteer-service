@@ -1,9 +1,14 @@
 package com.epam.volunteer.dto;
 
 
+
+import java.util.List;
+
 public class VolunteerDTO extends AbstractDTO {
     private String name;
     private String email;
+
+    private List<AbstractDTO> medicament;
 
 
     public VolunteerDTO() {
@@ -23,6 +28,14 @@ public class VolunteerDTO extends AbstractDTO {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public List<AbstractDTO> getMedicament() {
+        return medicament;
+    }
+
+    public void setMedicament(List<AbstractDTO> medicament) {
+        this.medicament = medicament;
     }
 
     @Override

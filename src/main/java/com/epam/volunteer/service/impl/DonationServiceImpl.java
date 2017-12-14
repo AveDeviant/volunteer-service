@@ -5,10 +5,12 @@ import com.epam.volunteer.dao.exception.DAOException;
 import com.epam.volunteer.entity.Donation;
 import com.epam.volunteer.service.DonationService;
 import com.epam.volunteer.service.exception.ServiceException;
+import com.epam.volunteer.util.LocalDateTimeFormatter;
 import org.apache.logging.log4j.Level;
 import org.jvnet.hk2.annotations.Service;
 
 import javax.inject.Inject;
+import java.time.LocalDateTime;
 
 @Service
 public class DonationServiceImpl extends AbstractService implements DonationService {
@@ -21,6 +23,8 @@ public class DonationServiceImpl extends AbstractService implements DonationServ
             if (donation.getCount() < 1) {
                 return null;
             }
+            LocalDateTime dateTime = LocalDateTime.now();
+            donation.setTime(dateTime);
             return donationDAO.addDonation(donation);
         } catch (DAOException e) {
             getLogger().log(Level.ERROR, e.getMessage());

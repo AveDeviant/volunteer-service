@@ -1,19 +1,23 @@
 package com.epam.volunteer.entity;
 
+
 import javax.persistence.*;
+import java.io.Serializable;
+import java.util.List;
 
 @Entity
 @Table(name = "volunteer")
-public class Volunteer {
+public class Volunteer extends AbstractEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id_person")
     private long id;
-
     @Column(name = "email")
     private String email;
     @Column(name = "person_name")
     private String name;
+    @OneToMany( mappedBy = "volunteer")
+    private List<Medicament> medicament;
 
     public Volunteer() {
     }
@@ -42,12 +46,21 @@ public class Volunteer {
         this.name = name;
     }
 
+    public List<Medicament> getMedicament() {
+        return medicament;
+    }
+
+    public void setMedicament(List<Medicament> medicament) {
+        this.medicament = medicament;
+    }
+
     @Override
     public String toString() {
         return "Volunteer{" +
                 "id=" + id +
                 ", email='" + email + '\'' +
                 ", name='" + name + '\'' +
+                ", medicament=" + medicament +
                 '}';
     }
 

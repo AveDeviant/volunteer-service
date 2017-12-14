@@ -1,12 +1,15 @@
 package com.epam.volunteer.entity;
 
+
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "employee")
-public class Employee {
+public class Employee extends AbstractEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @Column(name = "id_employee")
     private long id;
     @Column(name = "name")
     private String name;

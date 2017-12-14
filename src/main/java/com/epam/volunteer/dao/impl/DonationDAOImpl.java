@@ -24,10 +24,9 @@ public class DonationDAOImpl extends AbstractDAO implements DonationDAO {
         try {
             transaction.begin();
             donation.setTime(LocalDateTime.now());
-            manager.persist(donation);
-            Medicament medicament = donation.getMedicament();
-            medicament.setCurrentCount(donation.getCount());
-            manager.refresh(medicament);
+            manager.persist(donation);   //TODO: doesn't work
+            donation.getMedicament().setCurrentCount(donation.getCount());
+            manager.refresh(donation.getMedicament());
             manager.flush();
             transaction.commit();
             return donation;
