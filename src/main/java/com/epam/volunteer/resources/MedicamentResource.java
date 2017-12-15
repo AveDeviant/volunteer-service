@@ -21,11 +21,18 @@ import java.util.List;
 
 @Path("/medicament")
 public class MedicamentResource extends AbstractResource {
-    @Inject
     private MedicamentService medicamentService;
+    private DonationService donationService;
 
     @Inject
-    private DonationService donationService;
+    public void setMedicamentService(MedicamentService medicamentService) {
+        this.medicamentService = medicamentService;
+    }
+
+    @Inject
+    public void setDonationService(DonationService donationService) {
+        this.donationService = donationService;
+    }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -89,16 +96,20 @@ public class MedicamentResource extends AbstractResource {
             Medicament medicament = medicamentService.getById(id, true);
             if (medicament != null) {
                 Donation donation1 = (Donation) DTOUnmarshaller.unmarshalDTO(donation);
-                donation1.setMedicament(medicament);
-                donation1 = donationService.registerDonation(donation1);
-                if (donation1 == null) {
-                    return Response.status(422).build();
+                if (donation1.getMedicament() != null) {
+                    donation1.setMedicament(medicament);
+                    donation1 = donationService.registerDonation(donation1);
+                    if (donation1 == null) {
+                        return Response.status(422).build();
+                    }
+                    UriBuilder builder = uriInfo.getAbsolutePathBuilder();
+                    AbstractDTO dto = DTOMarshaller.marshalDTO(donation1, true);
+                    return Response.created(builder.path(String.valueOf(dto.getId())).build())
+                            .entity(dto)
+                            .build();
+
                 }
-                UriBuilder builder = uriInfo.getAbsolutePathBuilder();
-                AbstractDTO dto = DTOMarshaller.marshalDTO(donation1, true);
-                return Response.created(builder.path(String.valueOf(dto.getId())).build())
-                        .entity(dto)
-                        .build();
+                return Response.status(422).build();
             }
             return Response.status(Response.Status.NOT_FOUND).build();
         } catch (ServiceException e) {

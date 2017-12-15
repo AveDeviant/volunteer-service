@@ -16,9 +16,12 @@ import javax.ws.rs.core.Response;
 
 @Path("/volunteer")
 public class VolunteerResource extends AbstractResource {
-    @Inject
     private VolunteerService volunteerService;
 
+    @Inject
+    public void setVolunteerService(VolunteerService volunteerService) {
+        this.volunteerService = volunteerService;
+    }
 
     @GET
     @Path("/{id: [0-9]+ }")
@@ -27,7 +30,7 @@ public class VolunteerResource extends AbstractResource {
         try {
             Volunteer volunteer = volunteerService.getById(id);
             if (volunteer != null) {
-                AbstractDTO dto = DTOMarshaller.marshalDTO(volunteer,true);
+                AbstractDTO dto = DTOMarshaller.marshalDTO(volunteer, true);
                 return Response.ok(dto).build();
             }
             return Response.status(Response.Status.NOT_FOUND).build();

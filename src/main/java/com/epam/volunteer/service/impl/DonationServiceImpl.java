@@ -14,8 +14,12 @@ import java.time.LocalDateTime;
 
 @Service
 public class DonationServiceImpl extends AbstractService implements DonationService {
+    private DonationDAO donationDAO;
+
     @Inject
-    DonationDAO donationDAO;
+    public void setDonationDAO(DonationDAO donationDAO) {
+        this.donationDAO = donationDAO;
+    }
 
     @Override
     public Donation registerDonation(Donation donation) throws ServiceException {
@@ -25,7 +29,12 @@ public class DonationServiceImpl extends AbstractService implements DonationServ
             }
             LocalDateTime dateTime = LocalDateTime.now();
             donation.setTime(dateTime);
-            return donationDAO.addDonation(donation);
+            boolean markAsCompleted = false;
+            int count = donation.getMedicament().getCurrentCount() + donation.getCount();
+            if (count >= donation.getMedicament().getRequirement()) {
+                markAsCompleted = true;
+            }
+            return donationDAO.addDonation(donation, markAsCompleted);
         } catch (DAOException e) {
             getLogger().log(Level.ERROR, e.getMessage());
             throw new ServiceException(e);

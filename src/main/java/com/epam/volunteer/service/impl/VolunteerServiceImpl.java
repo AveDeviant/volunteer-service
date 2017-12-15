@@ -10,8 +10,12 @@ import org.apache.logging.log4j.Level;
 import javax.inject.Inject;
 
 public class VolunteerServiceImpl extends AbstractService implements VolunteerService {
+    private VolunteerDAO volunteerDAO;
+
     @Inject
-    VolunteerDAO volunteerDAO;
+    public void setVolunteerDAO(VolunteerDAO volunteerDAO) {
+        this.volunteerDAO = volunteerDAO;
+    }
 
     @Override
     public Volunteer getById(long id) throws ServiceException {

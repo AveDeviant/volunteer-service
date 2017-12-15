@@ -84,6 +84,7 @@ public class DTOMarshaller {
         donationDTO.setCount(donation.getCount());
         donationDTO.setMedicament((MedicamentDTO) marshalMedicamentDTO(donation.getMedicament(), !withInternalObjects));
         donationDTO.setEmployee((EmployeeDTO) marshalEmployeeDTO(donation.getEmployee(), withInternalObjects));
+        donationDTO.setTime(donation.getTime());
         return donationDTO;
     }
 }

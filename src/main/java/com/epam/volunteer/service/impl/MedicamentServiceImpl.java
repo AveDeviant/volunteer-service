@@ -17,8 +17,12 @@ import java.util.stream.Collectors;
 
 @Service
 public class MedicamentServiceImpl extends AbstractService implements MedicamentService {
-    @Inject
     private MedicamentDAO medicamentDAO;
+
+    @Inject
+    public void setMedicamentDAO(MedicamentDAO medicamentDAO) {
+        this.medicamentDAO = medicamentDAO;
+    }
 
     @Override
     public Medicament getById(long id, boolean status) throws ServiceException {

@@ -14,23 +14,24 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import javax.persistence.metamodel.EntityType;
-import javax.persistence.metamodel.Metamodel;
 import java.util.List;
 
 
 @Service
 public class MedicamentDAOImpl extends AbstractDAO implements MedicamentDAO {
     private static final String SELECT_ALL = "SELECT m FROM Medicament m";
+    private EntityManager entityManager;
 
     @Inject
-    private EntityManager manager;
+    public void setEntityManager(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
 
     @Override
     public List<Medicament> getAll() throws DAOException {
         try {
             List<Medicament> medicament;
-            medicament = manager.createQuery(SELECT_ALL).getResultList();
+            medicament = entityManager.createQuery(SELECT_ALL).getResultList();
             return medicament;
         } catch (Exception e) {
             getLogger().log(Level.ERROR, e.getMessage());
@@ -41,7 +42,7 @@ public class MedicamentDAOImpl extends AbstractDAO implements MedicamentDAO {
     @Override
     public Medicament getById(long id) throws DAOException {
         try {
-            return manager.find(Medicament.class, id);
+            return entityManager.find(Medicament.class, id);
         } catch (Exception e) {
             getLogger().log(Level.ERROR, e.getMessage());
             throw new DAOException(e);
@@ -51,11 +52,11 @@ public class MedicamentDAOImpl extends AbstractDAO implements MedicamentDAO {
     @Override
     public List<Medicament> getFormatted(int page, int size) throws DAOException {
         try {
-            CriteriaBuilder criteriaBuilder = manager.getCriteriaBuilder();
+            CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
             CriteriaQuery<Medicament> criteriaQuery = criteriaBuilder.createQuery(Medicament.class);
             Root<Medicament> sm = criteriaQuery.from(Medicament.class);
             criteriaQuery.where(criteriaBuilder.equal(sm.get("status"), true));
-            TypedQuery<Medicament> typedQuery = manager.createQuery(criteriaQuery);
+            TypedQuery<Medicament> typedQuery = entityManager.createQuery(criteriaQuery);
             typedQuery.setFirstResult((page - 1) * size);
             typedQuery.setMaxResults(size);
             return typedQuery.getResultList();
@@ -67,15 +68,18 @@ public class MedicamentDAOImpl extends AbstractDAO implements MedicamentDAO {
 
     @Override
     public Medicament addNew(Medicament medicament) throws DAOException {
-        EntityTransaction transaction = manager.getTransaction();
-        transaction.begin();
+        EntityTransaction transaction = null;
         try {
-            manager.persist(medicament);
-            manager.flush();
+            transaction = entityManager.getTransaction();
+            transaction.begin();
+            entityManager.persist(medicament);
+            entityManager.flush();
             transaction.commit();
             return medicament;
         } catch (Exception e) {
-            transaction.rollback();
+            if (transaction != null) {
+                transaction.rollback();
+            }
             getLogger().log(Level.ERROR, e.getMessage());
             throw new DAOException(e);
         }

@@ -7,5 +7,5 @@ import org.jvnet.hk2.annotations.Contract;
 @Contract
 public interface DonationDAO {
 
-    Donation addDonation(Donation donation) throws DAOException;
+    Donation addDonation(Donation donation, boolean markAsCompleted) throws DAOException;
 }

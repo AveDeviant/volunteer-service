@@ -1,7 +1,6 @@
 package com.epam.volunteer.util;
 
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class LocalDateTimeFormatter {
@@ -10,11 +9,9 @@ public class LocalDateTimeFormatter {
 
     public static LocalDateTime formatDateForMySQL(LocalDateTime dateTime) {
         if (dateTime != null) {
-            String time = dateTime.toString();
-            ZonedDateTime d = ZonedDateTime.parse(time);
-//            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT);
-//            dateTime = LocalDateTime.parse(time, formatter);
-            return d.toLocalDateTime();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT);
+            dateTime.format(formatter);
+            return dateTime;
         }
         return null;
     }
