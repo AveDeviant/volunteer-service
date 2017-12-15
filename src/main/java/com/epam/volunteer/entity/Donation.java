@@ -4,6 +4,7 @@ package com.epam.volunteer.entity;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Table(name = "donation")
@@ -97,11 +98,6 @@ public class Donation extends AbstractEntity implements Serializable {
 
     @Override
     public int hashCode() {
-        int result = (int) (id ^ (id >>> 32));
-        result = 31 * result + (employee != null ? employee.hashCode() : 0);
-        result = 31 * result + (medicament != null ? medicament.hashCode() : 0);
-        result = 31 * result + count;
-        result = 31 * result + (time != null ? time.hashCode() : 0);
-        return result;
+        return Objects.hash(id, medicament, employee, count, time);
     }
 }

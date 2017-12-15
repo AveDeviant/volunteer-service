@@ -6,7 +6,6 @@ import com.epam.volunteer.dao.VolunteerDAO;
 import com.epam.volunteer.dao.impl.DonationDAOImpl;
 import com.epam.volunteer.dao.impl.MedicamentDAOImpl;
 import com.epam.volunteer.dao.impl.VolunteerDAOImpl;
-import com.epam.volunteer.entity.Volunteer;
 import com.epam.volunteer.manager.EntityManagerWrapper;
 import com.epam.volunteer.service.DonationService;
 import com.epam.volunteer.service.MedicamentService;
@@ -14,10 +13,6 @@ import com.epam.volunteer.service.VolunteerService;
 import com.epam.volunteer.service.impl.DonationServiceImpl;
 import com.epam.volunteer.service.impl.MedicamentServiceImpl;
 import com.epam.volunteer.service.impl.VolunteerServiceImpl;
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.api.DynamicConfigurationService;
-import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 
 import javax.persistence.EntityManager;

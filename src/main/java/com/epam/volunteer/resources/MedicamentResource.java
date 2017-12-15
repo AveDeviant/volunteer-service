@@ -47,6 +47,8 @@ public class MedicamentResource extends AbstractResource {
             return Response.ok(dto).build();
         } catch (ServiceException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
         }
     }
 
@@ -63,6 +65,8 @@ public class MedicamentResource extends AbstractResource {
             return Response.status(Response.Status.NOT_FOUND).build();
         } catch (ServiceException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
         }
     }
 
@@ -72,18 +76,25 @@ public class MedicamentResource extends AbstractResource {
     public Response addNew(MedicamentDTO medicament, @Context UriInfo uriInfo) {   //dto?
         try {
             Medicament input = (Medicament) DTOUnmarshaller.unmarshalDTO(medicament);
-            Medicament newMed = medicamentService.addNew(input);
-            LOGGER.log(Level.INFO, newMed);
-            AbstractDTO dto = DTOMarshaller.marshalDTO(newMed, true);
-            if (newMed != null) {
-                UriBuilder builder = uriInfo.getAbsolutePathBuilder();
-                return Response.created(builder.path(String.valueOf(dto.getId())).build())
-                        .entity(dto)
-                        .build();
+            if (input != null) {
+                if (input.getVolunteer() == null) {
+                    return Response.status(Response.Status.FORBIDDEN).build();
+                }
+                Medicament newMed = medicamentService.addNew(input);
+                LOGGER.log(Level.INFO, newMed);
+                AbstractDTO dto = DTOMarshaller.marshalDTO(newMed, true);
+                if (newMed != null) {
+                    UriBuilder builder = uriInfo.getAbsolutePathBuilder();
+                    return Response.created(builder.path(String.valueOf(dto.getId())).build())
+                            .entity(dto)
+                            .build();
+                }
             }
-            return Response.status(Response.Status.BAD_REQUEST).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(ServerMessage.INVALID_INPUT).build();
         } catch (ServiceException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(ServerMessage.INVALID_INPUT).build();
         }
     }
 
@@ -96,6 +107,9 @@ public class MedicamentResource extends AbstractResource {
             Medicament medicament = medicamentService.getById(id, true);
             if (medicament != null) {
                 Donation donation1 = (Donation) DTOUnmarshaller.unmarshalDTO(donation);
+                if (donation1.getEmployee() == null) {
+                    return Response.status(Response.Status.FORBIDDEN).build();
+                }
                 if (donation1.getMedicament() != null) {
                     donation1.setMedicament(medicament);
                     donation1 = donationService.registerDonation(donation1);
@@ -107,13 +121,14 @@ public class MedicamentResource extends AbstractResource {
                     return Response.created(builder.path(String.valueOf(dto.getId())).build())
                             .entity(dto)
                             .build();
-
                 }
                 return Response.status(422).build();
             }
             return Response.status(Response.Status.NOT_FOUND).build();
         } catch (ServiceException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(ServerMessage.INVALID_INPUT).build();
         }
     }
 }

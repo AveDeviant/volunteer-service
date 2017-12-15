@@ -72,19 +72,23 @@ public class DTOMarshaller {
 
     private static AbstractDTO marshalEmployeeDTO(Employee employee, boolean withInternalObjects) {
         EmployeeDTO employeeDTO = new EmployeeDTO();
-        employeeDTO.setId(employee.getId());
-        employeeDTO.setEmail(employee.getEmail());
-        employeeDTO.setName(employee.getName());
+        if (employee != null) {
+            employeeDTO.setId(employee.getId());
+            employeeDTO.setEmail(employee.getEmail());
+            employeeDTO.setName(employee.getName());
+        }
         return employeeDTO;
     }
 
     private static AbstractDTO marshalDonationDTO(Donation donation, boolean withInternalObjects) {
         DonationDTO donationDTO = new DonationDTO();
-        donationDTO.setId(donation.getId());
-        donationDTO.setCount(donation.getCount());
-        donationDTO.setMedicament((MedicamentDTO) marshalMedicamentDTO(donation.getMedicament(), !withInternalObjects));
-        donationDTO.setEmployee((EmployeeDTO) marshalEmployeeDTO(donation.getEmployee(), withInternalObjects));
-        donationDTO.setTime(donation.getTime());
+        if (donation != null) {
+            donationDTO.setId(donation.getId());
+            donationDTO.setCount(donation.getCount());
+            donationDTO.setMedicament((MedicamentDTO) marshalMedicamentDTO(donation.getMedicament(), !withInternalObjects));
+            donationDTO.setEmployee((EmployeeDTO) marshalEmployeeDTO(donation.getEmployee(), withInternalObjects));
+            donationDTO.setTime(donation.getTime());
+        }
         return donationDTO;
     }
 }

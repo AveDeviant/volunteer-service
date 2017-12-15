@@ -8,6 +8,8 @@ import com.epam.volunteer.service.exception.ServiceException;
 import org.apache.logging.log4j.Level;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 
 public class VolunteerServiceImpl extends AbstractService implements VolunteerService {
     private VolunteerDAO volunteerDAO;
@@ -28,5 +30,18 @@ public class VolunteerServiceImpl extends AbstractService implements VolunteerSe
             throw new ServiceException(e);
         }
         return null;
+    }
+
+    @Override
+    public List<Volunteer> getAll() throws ServiceException {
+        try {
+            if (volunteerDAO != null) {
+                return volunteerDAO.getAll();
+            }
+        } catch (DAOException e) {
+            getLogger().log(Level.ERROR, e.getMessage());
+            throw new ServiceException(e);
+        }
+        return new ArrayList<>();
     }
 }

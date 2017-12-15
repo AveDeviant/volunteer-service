@@ -10,23 +10,28 @@ public class DTOUnmarshaller {
 
 
     public static AbstractEntity unmarshalDTO(AbstractDTO dto) {
-        if (dto instanceof MedicamentDTO) {
-            return unmarshalMedicament((MedicamentDTO) dto);
-        }
-        if (dto instanceof VolunteerDTO) {
-            return unmarshalVolunteer((VolunteerDTO) dto);
-        }
-        if (dto instanceof EmployeeDTO) {
-            return unmarshalEmployee((EmployeeDTO) dto);
-        }
-        if (dto instanceof DonationDTO) {
-            return unmarshallDonation((DonationDTO) dto);
+        if (dto != null) {
+            if (dto instanceof MedicamentDTO) {
+                return unmarshalMedicament((MedicamentDTO) dto);
+            }
+            if (dto instanceof VolunteerDTO) {
+                return unmarshalVolunteer((VolunteerDTO) dto);
+            }
+            if (dto instanceof EmployeeDTO) {
+                return unmarshalEmployee((EmployeeDTO) dto);
+            }
+            if (dto instanceof DonationDTO) {
+                return unmarshallDonation((DonationDTO) dto);
+            }
         }
         return null;
     }
 
 
     private static Medicament unmarshalMedicament(MedicamentDTO dto) {
+        if (dto == null) {
+            return null;
+        }
         Medicament medicament = new Medicament();
         medicament.setId(dto.getId());
         medicament.setVolunteer((Volunteer) unmarshalDTO(dto.getVolunteer()));
@@ -38,6 +43,9 @@ public class DTOUnmarshaller {
     }
 
     private static Volunteer unmarshalVolunteer(VolunteerDTO dto) {
+        if (dto == null) {
+            return null;
+        }
         Volunteer volunteer = new Volunteer();
         volunteer.setId(dto.getId());
         volunteer.setEmail(dto.getEmail());
@@ -47,10 +55,14 @@ public class DTOUnmarshaller {
             medicamentList.add((Medicament) unmarshalDTO(medicamentDTO));
         }
         volunteer.setMedicament(medicamentList);
+
         return volunteer;
     }
 
     private static Employee unmarshalEmployee(EmployeeDTO dto) {
+        if (dto == null) {
+            return null;
+        }
         Employee employee = new Employee();
         employee.setId(dto.getId());
         employee.setEmail(dto.getEmail());
@@ -59,6 +71,9 @@ public class DTOUnmarshaller {
     }
 
     private static Donation unmarshallDonation(DonationDTO dto) {
+        if (dto == null) {
+            return null;
+        }
         Donation donation = new Donation();
         donation.setId(dto.getId());
         donation.setCount(dto.getCount());

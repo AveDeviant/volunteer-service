@@ -9,7 +9,6 @@ import org.jvnet.hk2.annotations.Service;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
-import java.time.LocalDateTime;
 
 @Service
 public class DonationDAOImpl extends AbstractDAO implements DonationDAO {
@@ -26,9 +25,9 @@ public class DonationDAOImpl extends AbstractDAO implements DonationDAO {
         try {
             transaction = entityManager.getTransaction();
             transaction.begin();
-            donation.setTime(LocalDateTime.now());
             entityManager.persist(donation);
-            donation.getMedicament().setCurrentCount(donation.getMedicament().getCurrentCount() + donation.getCount());
+            donation.getMedicament().setCurrentCount(donation.getMedicament().
+                    getCurrentCount() + donation.getCount());
             if (markAsCompleted) {
                 donation.getMedicament().setStatus(false);
             }

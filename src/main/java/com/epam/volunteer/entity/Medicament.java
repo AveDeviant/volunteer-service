@@ -3,23 +3,33 @@ package com.epam.volunteer.entity;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Objects;
 
 @Entity
 @Table(name = "medicament")
+@NamedQueries({
+        @NamedQuery(name = "Medicament.getAll",
+                query = "SELECT m FROM Medicament m")
+})
 public class Medicament extends AbstractEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id_medicament")
     private long id;
+
     @Column(name = "medicament")
     private String medicament;
+
     @ManyToOne
     @JoinColumn(name = "id_volunteer")
     private Volunteer volunteer;
+
     @Column(name = "requirement")
     private int requirement;
+
     @Column(name = "current_count")
     private int currentCount;
+
     @Column(name = "status")
     private boolean status;
 
@@ -104,12 +114,6 @@ public class Medicament extends AbstractEntity implements Serializable {
 
     @Override
     public int hashCode() {
-        int result = (int) (id ^ (id >>> 32));
-        result = 31 * result + (medicament != null ? medicament.hashCode() : 0);
-        result = 31 * result + (volunteer != null ? volunteer.hashCode() : 0);
-        result = 31 * result + requirement;
-        result = 31 * result + currentCount;
-        result = 31 * result + (status ? 1 : 0);
-        return result;
+        return Objects.hash(id, medicament, currentCount, requirement, status, volunteer);
     }
 }

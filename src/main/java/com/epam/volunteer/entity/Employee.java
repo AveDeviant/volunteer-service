@@ -3,6 +3,7 @@ package com.epam.volunteer.entity;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Objects;
 
 @Entity
 @Table(name = "employee")
@@ -11,8 +12,10 @@ public class Employee extends AbstractEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id_employee")
     private long id;
+
     @Column(name = "name")
     private String name;
+
     @Column(name = "email")
     private String email;
 
@@ -66,9 +69,6 @@ public class Employee extends AbstractEntity implements Serializable {
 
     @Override
     public int hashCode() {
-        int result = (int) (id ^ (id >>> 32));
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (email != null ? email.hashCode() : 0);
-        return result;
+        return Objects.hash(id, email, name);
     }
 }

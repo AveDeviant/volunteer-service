@@ -5,7 +5,6 @@ import com.epam.volunteer.dao.exception.DAOException;
 import com.epam.volunteer.entity.Donation;
 import com.epam.volunteer.service.DonationService;
 import com.epam.volunteer.service.exception.ServiceException;
-import com.epam.volunteer.util.LocalDateTimeFormatter;
 import org.apache.logging.log4j.Level;
 import org.jvnet.hk2.annotations.Service;
 

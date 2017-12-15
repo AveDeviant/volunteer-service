@@ -30,9 +30,7 @@ public class MedicamentDAOImpl extends AbstractDAO implements MedicamentDAO {
     @Override
     public List<Medicament> getAll() throws DAOException {
         try {
-            List<Medicament> medicament;
-            medicament = entityManager.createQuery(SELECT_ALL).getResultList();
-            return medicament;
+            return entityManager.createQuery(SELECT_ALL).getResultList();
         } catch (Exception e) {
             getLogger().log(Level.ERROR, e.getMessage());
             throw new DAOException(e);

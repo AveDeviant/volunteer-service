@@ -3,10 +3,16 @@ package com.epam.volunteer.entity;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "volunteer")
+@NamedQueries({
+        @NamedQuery(name = "Volunteer.getAll",
+                query = "SELECT v FROM Volunteer v")
+})
 public class Volunteer extends AbstractEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -16,7 +22,7 @@ public class Volunteer extends AbstractEntity implements Serializable {
     private String email;
     @Column(name = "person_name")
     private String name;
-    @OneToMany( mappedBy = "volunteer")
+    @OneToMany(mappedBy = "volunteer")
     private List<Medicament> medicament;
 
     public Volunteer() {
@@ -68,19 +74,23 @@ public class Volunteer extends AbstractEntity implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         Volunteer volunteer = (Volunteer) o;
-
         if (id != volunteer.id) return false;
         if (email != null ? !email.equals(volunteer.email) : volunteer.email != null) return false;
-        return name != null ? name.equals(volunteer.name) : volunteer.name == null;
+        if (name != null ? !name.equals(volunteer.name) : volunteer.name != null) return false;
+        if (medicament != null) {
+            if (volunteer.medicament != null) {
+                Object[] medicament1 = medicament.toArray();
+                Object[] medicament2 = volunteer.medicament.toArray();
+                return Arrays.equals(medicament1, medicament2);
+            }
+            return false;
+        }
+        return volunteer.medicament == null;
     }
 
     @Override
     public int hashCode() {
-        int result = (int) (id ^ (id >>> 32));
-        result = 31 * result + (email != null ? email.hashCode() : 0);
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        return result;
+        return Objects.hash(id, email, name, medicament);
     }
 }
