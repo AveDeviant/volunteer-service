@@ -114,6 +114,12 @@ public class Medicament extends AbstractEntity implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, medicament, currentCount, requirement, status, volunteer);
+        int result = (int) (id ^ (id >>> 32));
+        result = 31 * result + (medicament != null ? medicament.hashCode() : 0);
+        result = 31 * result + (volunteer != null ? volunteer.hashCode() : 0);
+        result = 31 * result + requirement;
+        result = 31 * result + currentCount;
+        result = 31 * result + (status ? 1 : 0);
+        return result;
     }
 }

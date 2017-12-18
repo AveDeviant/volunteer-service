@@ -23,7 +23,7 @@ public class EntityManagerWrapper implements EntityManager {
     private static EntityManager entityManager;
 
 
-    //TODO: подумать.
+    //TODO: подумать. Singleton?
     public EntityManagerWrapper() {
         String schema = RESOURCE_BUNDLE.getString("persistence.unit");
         EntityManagerFactory managerFactory = Persistence.createEntityManagerFactory(schema);

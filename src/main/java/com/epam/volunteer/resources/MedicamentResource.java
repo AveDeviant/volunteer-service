@@ -11,13 +11,13 @@ import com.epam.volunteer.entity.Medicament;
 import com.epam.volunteer.service.DonationService;
 import com.epam.volunteer.service.MedicamentService;
 import com.epam.volunteer.service.exception.ServiceException;
-import org.apache.logging.log4j.Level;
 
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import java.util.List;
+import java.util.Optional;
 
 @Path("/medicament")
 public class MedicamentResource extends AbstractResource {
@@ -75,13 +75,13 @@ public class MedicamentResource extends AbstractResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response addNew(MedicamentDTO medicament, @Context UriInfo uriInfo) {   //dto?
         try {
-            Medicament input = (Medicament) DTOUnmarshaller.unmarshalDTO(medicament);
-            if (input != null) {
-                if (input.getVolunteer() == null) {
-                    return Response.status(Response.Status.FORBIDDEN).build();
+            if (Optional.ofNullable(medicament).isPresent() &&
+                    Optional.ofNullable(medicament.getMedicament()).isPresent()) {
+                if (!Optional.ofNullable(medicament.getVolunteer()).isPresent()) {
+                    return Response.status(Response.Status.UNAUTHORIZED).build();
                 }
+                Medicament input = (Medicament) DTOUnmarshaller.unmarshalDTO(medicament);
                 Medicament newMed = medicamentService.addNew(input);
-                LOGGER.log(Level.INFO, newMed);
                 AbstractDTO dto = DTOMarshaller.marshalDTO(newMed, true);
                 if (newMed != null) {
                     UriBuilder builder = uriInfo.getAbsolutePathBuilder();
@@ -105,16 +105,16 @@ public class MedicamentResource extends AbstractResource {
     public Response createDonation(@PathParam("id") long id, DonationDTO donation, @Context UriInfo uriInfo) {
         try {
             Medicament medicament = medicamentService.getById(id, true);
-            if (medicament != null) {
-                Donation donation1 = (Donation) DTOUnmarshaller.unmarshalDTO(donation);
-                if (donation1.getEmployee() == null) {
-                    return Response.status(Response.Status.FORBIDDEN).build();
+            if (Optional.ofNullable(medicament).isPresent()) {
+                if (!Optional.ofNullable(donation.getEmployee()).isPresent()) {
+                    return Response.status(Response.Status.UNAUTHORIZED).build();
                 }
-                if (donation1.getMedicament() != null) {
+                if (Optional.ofNullable(donation.getMedicament()).isPresent()) {
+                    Donation donation1 = (Donation) DTOUnmarshaller.unmarshalDTO(donation);
                     donation1.setMedicament(medicament);
                     donation1 = donationService.registerDonation(donation1);
                     if (donation1 == null) {
-                        return Response.status(422).build();
+                        return Response.status(422).entity(ServerMessage.INVALID_DONATION_SIZE).build();
                     }
                     UriBuilder builder = uriInfo.getAbsolutePathBuilder();
                     AbstractDTO dto = DTOMarshaller.marshalDTO(donation1, true);
@@ -122,7 +122,6 @@ public class MedicamentResource extends AbstractResource {
                             .entity(dto)
                             .build();
                 }
-                return Response.status(422).build();
             }
             return Response.status(Response.Status.NOT_FOUND).build();
         } catch (ServiceException e) {

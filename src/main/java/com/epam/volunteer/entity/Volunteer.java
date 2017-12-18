@@ -5,7 +5,6 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 @Entity
 @Table(name = "volunteer")
@@ -91,6 +90,9 @@ public class Volunteer extends AbstractEntity implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, email, name, medicament);
+        int result = (int) (id ^ (id >>> 32));
+        result = 31 * result + (email != null ? email.hashCode() : 0);
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        return result;
     }
 }

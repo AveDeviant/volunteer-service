@@ -9,7 +9,8 @@ public class DonationDTO extends AbstractDTO {
     private MedicamentDTO medicament;
     private EmployeeDTO employee;
 
-   public DonationDTO() {}
+    public DonationDTO() {
+    }
 
     public int getCount() {
         return count;

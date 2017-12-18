@@ -5,6 +5,7 @@ import com.epam.volunteer.entity.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class DTOUnmarshaller {
 
@@ -21,7 +22,7 @@ public class DTOUnmarshaller {
                 return unmarshalEmployee((EmployeeDTO) dto);
             }
             if (dto instanceof DonationDTO) {
-                return unmarshallDonation((DonationDTO) dto);
+                return unmarshalDonation((DonationDTO) dto);
             }
         }
         return null;
@@ -51,11 +52,10 @@ public class DTOUnmarshaller {
         volunteer.setEmail(dto.getEmail());
         volunteer.setName(dto.getName());
         List<Medicament> medicamentList = new ArrayList<>();
-        for (AbstractDTO medicamentDTO : dto.getMedicament()) {
-            medicamentList.add((Medicament) unmarshalDTO(medicamentDTO));
+        if (Optional.ofNullable(dto.getMedicament()).isPresent()) {
+            dto.getMedicament().stream().forEach(m -> medicamentList.add((Medicament) unmarshalDTO(m)));
         }
         volunteer.setMedicament(medicamentList);
-
         return volunteer;
     }
 
@@ -70,7 +70,7 @@ public class DTOUnmarshaller {
         return employee;
     }
 
-    private static Donation unmarshallDonation(DonationDTO dto) {
+    private static Donation unmarshalDonation(DonationDTO dto) {
         if (dto == null) {
             return null;
         }
