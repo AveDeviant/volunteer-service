@@ -19,4 +19,6 @@ public interface MedicamentDAO {
     List<Medicament> getFormatted(int page, int size) throws DAOException;
 
     Medicament addNew(Medicament medicament) throws DAOException;
+
+    long countActual() throws DAOException;
 }

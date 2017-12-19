@@ -21,7 +21,7 @@ public class Volunteer extends AbstractEntity implements Serializable {
     private String email;
     @Column(name = "person_name")
     private String name;
-    @OneToMany(mappedBy = "volunteer")
+    @OneToMany(mappedBy = "volunteer", fetch = FetchType.LAZY)
     private List<Medicament> medicament;
 
     public Volunteer() {

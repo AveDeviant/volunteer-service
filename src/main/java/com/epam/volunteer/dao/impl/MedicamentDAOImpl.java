@@ -20,6 +20,7 @@ import java.util.List;
 @Service
 public class MedicamentDAOImpl extends AbstractDAO implements MedicamentDAO {
     private static final String SELECT_ALL = "SELECT m FROM Medicament m";
+    private static final String QUERY_COUNT_ACTUAL = "Medicament.countActual";
     private EntityManager entityManager;
 
     @Inject
@@ -80,6 +81,16 @@ public class MedicamentDAOImpl extends AbstractDAO implements MedicamentDAO {
             }
             getLogger().log(Level.ERROR, e.getMessage());
             throw new DAOException(e);
+        }
+    }
+
+    @Override
+    public long countActual() throws DAOException {
+        try {
+            return entityManager.createNamedQuery(QUERY_COUNT_ACTUAL, Long.class).getSingleResult();
+
+        } catch (Exception e) {
+            throw new DAOException(e.getMessage());
         }
     }
 }

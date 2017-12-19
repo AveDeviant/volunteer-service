@@ -20,4 +20,7 @@ public interface MedicamentService {
 
     Medicament addNew(Medicament medicament) throws ServiceException;
 
+    void delete(long id) throws ServiceException;
+
+    long countActual() throws ServiceException;
 }

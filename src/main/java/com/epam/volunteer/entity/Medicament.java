@@ -9,7 +9,8 @@ import java.util.Objects;
 @Table(name = "medicament")
 @NamedQueries({
         @NamedQuery(name = "Medicament.getAll",
-                query = "SELECT m FROM Medicament m")
+                query = "SELECT m FROM Medicament m"),
+        @NamedQuery(name = "Medicament.countActual", query = "SELECT COUNT(m) FROM Medicament m WHERE m.status=1")
 })
 public class Medicament extends AbstractEntity implements Serializable {
     @Id
@@ -20,7 +21,7 @@ public class Medicament extends AbstractEntity implements Serializable {
     @Column(name = "medicament")
     private String medicament;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_volunteer")
     private Volunteer volunteer;
 

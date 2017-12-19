@@ -95,4 +95,19 @@ public class MedicamentServiceImpl extends AbstractService implements Medicament
             throw new ServiceException(e);
         }
     }
+
+    @Override
+    public void delete(long id) throws ServiceException {
+
+    }
+
+    @Override
+    public long countActual() throws ServiceException {
+        try {
+            return medicamentDAO.countActual();
+        } catch (DAOException e) {
+            getLogger().log(Level.ERROR, e.getMessage());
+            throw new ServiceException(e);
+        }
+    }
 }

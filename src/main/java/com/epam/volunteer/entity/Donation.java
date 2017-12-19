@@ -17,7 +17,7 @@ public class Donation extends AbstractEntity implements Serializable {
     @JoinColumn(name = "id_person")
     private Employee employee;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_medicament")
     private Medicament medicament;
 
@@ -98,6 +98,11 @@ public class Donation extends AbstractEntity implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, medicament, employee, count, time);
+        int result = (int) (id ^ (id >>> 32));
+        result = 31 * result + (employee != null ? employee.hashCode() : 0);
+        result = 31 * result + (medicament != null ? medicament.hashCode() : 0);
+        result = 31 * result + count;
+        result = 31 * result + (time != null ? time.hashCode() : 0);
+        return result;
     }
 }

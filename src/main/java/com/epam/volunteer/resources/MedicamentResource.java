@@ -8,9 +8,11 @@ import com.epam.volunteer.dto.marshaller.DTOUnmarshaller;
 import com.epam.volunteer.dto.MedicamentDTO;
 import com.epam.volunteer.entity.Donation;
 import com.epam.volunteer.entity.Medicament;
+import com.epam.volunteer.response.ServerMessage;
 import com.epam.volunteer.service.DonationService;
 import com.epam.volunteer.service.MedicamentService;
 import com.epam.volunteer.service.exception.ServiceException;
+import org.apache.logging.log4j.Level;
 
 
 import javax.inject.Inject;
@@ -129,5 +131,12 @@ public class MedicamentResource extends AbstractResource {
         } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(ServerMessage.INVALID_INPUT).build();
         }
+    }
+
+    @DELETE
+    @Path("/{id: [0-9]+ }")
+    public Response deleteMedicament(@PathParam("id") long id) {
+
+        return null;
     }
 }
