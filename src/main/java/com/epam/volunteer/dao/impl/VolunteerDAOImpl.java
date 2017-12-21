@@ -4,11 +4,13 @@ import com.epam.volunteer.dao.VolunteerDAO;
 import com.epam.volunteer.dao.exception.DAOException;
 import com.epam.volunteer.entity.Volunteer;
 import org.apache.logging.log4j.Level;
+import org.jvnet.hk2.annotations.Service;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import java.util.List;
 
+@Service
 public class VolunteerDAOImpl extends AbstractDAO implements VolunteerDAO {
     private static final String QUERY_GET_ALL = "Volunteer.getAll";
 

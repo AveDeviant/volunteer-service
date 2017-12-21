@@ -88,7 +88,6 @@ public class MedicamentDAOImpl extends AbstractDAO implements MedicamentDAO {
     public long countActual() throws DAOException {
         try {
             return entityManager.createNamedQuery(QUERY_COUNT_ACTUAL, Long.class).getSingleResult();
-
         } catch (Exception e) {
             throw new DAOException(e.getMessage());
         }

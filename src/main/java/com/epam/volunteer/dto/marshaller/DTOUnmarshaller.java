@@ -1,7 +1,17 @@
 package com.epam.volunteer.dto.marshaller;
 
 import com.epam.volunteer.dto.*;
+import com.epam.volunteer.dto.base.BaseDonationDTO;
+import com.epam.volunteer.dto.base.BaseEmployeeDTO;
+import com.epam.volunteer.dto.base.BaseMedicamentDTO;
+import com.epam.volunteer.dto.base.BaseVolunteerDTO;
+import com.epam.volunteer.dto.extended.DonationDTO;
+import com.epam.volunteer.dto.extended.EmployeeDTO;
+import com.epam.volunteer.dto.extended.MedicamentDTO;
+import com.epam.volunteer.dto.extended.VolunteerDTO;
 import com.epam.volunteer.entity.*;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,30 +22,32 @@ public class DTOUnmarshaller {
 
     public static AbstractEntity unmarshalDTO(AbstractDTO dto) {
         if (dto != null) {
-            if (dto instanceof MedicamentDTO) {
-                return unmarshalMedicament((MedicamentDTO) dto);
+            if (dto instanceof BaseMedicamentDTO) {
+                return unmarshalMedicament((BaseMedicamentDTO) dto);
             }
-            if (dto instanceof VolunteerDTO) {
-                return unmarshalVolunteer((VolunteerDTO) dto);
+            if (dto instanceof BaseVolunteerDTO) {
+                return unmarshalVolunteer((BaseVolunteerDTO) dto);
             }
-            if (dto instanceof EmployeeDTO) {
-                return unmarshalEmployee((EmployeeDTO) dto);
+            if (dto instanceof BaseEmployeeDTO) {
+                return unmarshalEmployee((BaseEmployeeDTO) dto);
             }
-            if (dto instanceof DonationDTO) {
-                return unmarshalDonation((DonationDTO) dto);
+            if (dto instanceof BaseDonationDTO) {
+                return unmarshalDonation((BaseDonationDTO) dto);
             }
         }
         return null;
     }
 
 
-    private static Medicament unmarshalMedicament(MedicamentDTO dto) {
+    private static Medicament unmarshalMedicament(BaseMedicamentDTO dto) {
         if (dto == null) {
             return null;
         }
         Medicament medicament = new Medicament();
         medicament.setId(dto.getId());
-        medicament.setVolunteer((Volunteer) unmarshalDTO(dto.getVolunteer()));
+        if (dto.getClass() == MedicamentDTO.class) {
+            medicament.setVolunteer((Volunteer) unmarshalDTO(((MedicamentDTO) dto).getVolunteerDTO()));
+        }
         medicament.setMedicament(dto.getMedicament());
         medicament.setCurrentCount(dto.getCurrentCount());
         medicament.setRequirement(dto.getRequirement());
@@ -43,7 +55,7 @@ public class DTOUnmarshaller {
         return medicament;
     }
 
-    private static Volunteer unmarshalVolunteer(VolunteerDTO dto) {
+    private static Volunteer unmarshalVolunteer(BaseVolunteerDTO dto) {
         if (dto == null) {
             return null;
         }
@@ -52,14 +64,17 @@ public class DTOUnmarshaller {
         volunteer.setEmail(dto.getEmail());
         volunteer.setName(dto.getName());
         List<Medicament> medicamentList = new ArrayList<>();
-        if (Optional.ofNullable(dto.getMedicament()).isPresent()) {
-            dto.getMedicament().stream().forEach(m -> medicamentList.add((Medicament) unmarshalDTO(m)));
+        if (dto.getClass() == VolunteerDTO.class) {
+            List<BaseMedicamentDTO> medicamentDTOs = ((VolunteerDTO) dto).getMedicamentDTO();
+            if (Optional.ofNullable(medicamentDTOs).isPresent()) {
+                medicamentDTOs.stream().forEach(m -> medicamentList.add((Medicament) unmarshalDTO(m)));
+            }
         }
         volunteer.setMedicament(medicamentList);
         return volunteer;
     }
 
-    private static Employee unmarshalEmployee(EmployeeDTO dto) {
+    private static Employee unmarshalEmployee(BaseEmployeeDTO dto) {
         if (dto == null) {
             return null;
         }
@@ -70,15 +85,19 @@ public class DTOUnmarshaller {
         return employee;
     }
 
-    private static Donation unmarshalDonation(DonationDTO dto) {
+    private static Donation unmarshalDonation(BaseDonationDTO dto) {
         if (dto == null) {
             return null;
         }
         Donation donation = new Donation();
-        donation.setId(dto.getId());
-        donation.setCount(dto.getCount());
-        donation.setEmployee(unmarshalEmployee(dto.getEmployee()));
-        donation.setMedicament(unmarshalMedicament(dto.getMedicament()));
+        try {
+            donation.setId(dto.getId());
+            donation.setCount(dto.getCount());
+            donation.setEmployee(unmarshalEmployee(dto.getEmployeeDTO()));
+            donation.setMedicament(unmarshalMedicament(dto.getMedicamentDTO()));
+        } catch (Exception e) {
+            LogManager.getLogger().log(Level.ERROR, e.getMessage());
+        }
         return donation;
     }
 

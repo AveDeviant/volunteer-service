@@ -1,11 +1,12 @@
-package com.epam.volunteer.dto;
+package com.epam.volunteer.dto.base;
 
-public class EmployeeDTO extends AbstractDTO {
+import com.epam.volunteer.dto.AbstractDTO;
 
+public class BaseVolunteerDTO extends AbstractDTO {
     private String name;
     private String email;
 
-    public EmployeeDTO() {
+    public BaseVolunteerDTO() {
     }
 
     public String getName() {
@@ -27,18 +28,28 @@ public class EmployeeDTO extends AbstractDTO {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof EmployeeDTO)) return false;
+        if (!(o instanceof BaseVolunteerDTO)) return false;
+        if (!super.equals(o)) return false;
 
-        EmployeeDTO that = (EmployeeDTO) o;
-        if (getId() != that.getId()) return false;
+        BaseVolunteerDTO that = (BaseVolunteerDTO) o;
+        if (getId()!=that.getId()) return false;
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
         return email != null ? email.equals(that.email) : that.email == null;
     }
 
     @Override
     public int hashCode() {
-        int result = name != null ? name.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (email != null ? email.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "BaseVolunteerDTO{" +
+                "name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                '}';
     }
 }

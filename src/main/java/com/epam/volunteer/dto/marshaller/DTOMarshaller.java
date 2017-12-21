@@ -1,6 +1,14 @@
 package com.epam.volunteer.dto.marshaller;
 
 import com.epam.volunteer.dto.*;
+import com.epam.volunteer.dto.base.BaseDonationDTO;
+import com.epam.volunteer.dto.base.BaseEmployeeDTO;
+import com.epam.volunteer.dto.base.BaseMedicamentDTO;
+import com.epam.volunteer.dto.base.BaseVolunteerDTO;
+import com.epam.volunteer.dto.extended.DonationDTO;
+import com.epam.volunteer.dto.extended.EmployeeDTO;
+import com.epam.volunteer.dto.extended.MedicamentDTO;
+import com.epam.volunteer.dto.extended.VolunteerDTO;
 import com.epam.volunteer.entity.Donation;
 import com.epam.volunteer.entity.Employee;
 import com.epam.volunteer.entity.Medicament;
@@ -8,87 +16,104 @@ import com.epam.volunteer.entity.Volunteer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class DTOMarshaller {
 
 
-    public static AbstractDTO marshalDTO(Object object, boolean withInternalObjects) {
+    public static AbstractDTO marshalDTO(Object object, DTOType type) {
         if (object != null) {
             if (object instanceof Medicament) {
-                return marshalMedicamentDTO((Medicament) object, withInternalObjects);
+                return marshalMedicamentDTO((Medicament) object, type);
             }
             if (object instanceof Volunteer) {
-                return marshalVolunteerDTO((Volunteer) object, withInternalObjects);
+                return marshalVolunteerDTO((Volunteer) object, type);
             }
             if (object instanceof Employee) {
-                return marshalEmployeeDTO((Employee) object, withInternalObjects);
+                return marshalEmployeeDTO((Employee) object, type);
             }
             if (object instanceof Donation) {
-                return marshalDonationDTO((Donation) object, withInternalObjects);
+                return marshalDonationDTO((Donation) object, type);
             }
         }
         return null;
     }
 
 
-    public static List<AbstractDTO> marshalDTOList(List<? extends Object> objects, boolean withInternalObjects) {
+    public static List<AbstractDTO> marshalDTOList(List<? extends Object> objects, DTOType type) {
         List<AbstractDTO> abstractDTOS = new ArrayList<>();
         if (objects != null) {
             for (Object object : objects) {
-                abstractDTOS.add(marshalDTO(object, withInternalObjects));
+                abstractDTOS.add(marshalDTO(object, type));
             }
         }
         return abstractDTOS;
     }
 
 
-    private static AbstractDTO marshalMedicamentDTO(Medicament medicament, boolean withInternalObjects) {
-        MedicamentDTO medicamentDTO = new MedicamentDTO();
-        if (medicament != null) {
-            medicamentDTO.setId(medicament.getId());
-            medicamentDTO.setMedicament(medicament.getMedicament());
-            medicamentDTO.setVolunteer((VolunteerDTO) marshalVolunteerDTO(medicament.getVolunteer(), withInternalObjects));
-            medicamentDTO.setRequirement(medicament.getRequirement());
-            medicamentDTO.setCurrentCount(medicament.getCurrentCount());
-            medicamentDTO.setStatus(medicament.isStatus());
+    private static AbstractDTO marshalMedicamentDTO(Medicament medicament, DTOType type) {
+        BaseMedicamentDTO medicamentDTO = null;
+        if (type == DTOType.EXTENDED) {
+            medicamentDTO = new MedicamentDTO();
+            ((MedicamentDTO) medicamentDTO)
+                    .setVolunteerDTO((BaseVolunteerDTO) marshalDTO(medicament.getVolunteer(), DTOType.BASIC));
+        } else {
+            medicamentDTO = new BaseMedicamentDTO();
         }
+        medicamentDTO.setId(medicament.getId());
+        medicamentDTO.setMedicament(medicament.getMedicament());
+        medicamentDTO.setRequirement(medicament.getRequirement());
+        medicamentDTO.setCurrentCount(medicament.getCurrentCount());
+        medicamentDTO.setStatus(medicament.isStatus());
         return medicamentDTO;
     }
 
-    private static AbstractDTO marshalVolunteerDTO(Volunteer volunteer, boolean withInternalObjects) {
-        VolunteerDTO volunteerDTO = new VolunteerDTO();
-        if (volunteer != null) {
-            volunteerDTO.setEmail(volunteer.getEmail());
-            volunteerDTO.setName(volunteer.getName());
-            volunteerDTO.setId(volunteer.getId());
-            if (withInternalObjects) {
-                List<AbstractDTO> medicamentDTOS = new ArrayList<>();
-                medicamentDTOS.addAll(marshalDTOList(volunteer.getMedicament(), !withInternalObjects));
-                volunteerDTO.setMedicament(medicamentDTOS);
+    private static AbstractDTO marshalVolunteerDTO(Volunteer volunteer, DTOType type) {
+        BaseVolunteerDTO volunteerDTO = null;
+        if (type == DTOType.EXTENDED) {
+            volunteerDTO = new VolunteerDTO();
+            List<BaseMedicamentDTO> medicamentDTOs = new ArrayList<>();
+            if (Optional.ofNullable(volunteer.getMedicament()).isPresent()) {
+                for (Medicament medicament : volunteer.getMedicament()) {
+                    medicamentDTOs.add((BaseMedicamentDTO) marshalMedicamentDTO(medicament, DTOType.BASIC));
+                }
             }
+            ((VolunteerDTO) volunteerDTO).
+                    setMedicamentDTO(medicamentDTOs);
+        } else {
+            volunteerDTO = new BaseVolunteerDTO();
         }
+        volunteerDTO.setEmail(volunteer.getEmail());
+        volunteerDTO.setName(volunteer.getName());
+        volunteerDTO.setId(volunteer.getId());
         return volunteerDTO;
     }
 
-    private static AbstractDTO marshalEmployeeDTO(Employee employee, boolean withInternalObjects) {
-        EmployeeDTO employeeDTO = new EmployeeDTO();
-        if (employee != null) {
-            employeeDTO.setId(employee.getId());
-            employeeDTO.setEmail(employee.getEmail());
-            employeeDTO.setName(employee.getName());
+    private static AbstractDTO marshalEmployeeDTO(Employee employee, DTOType type) {
+        BaseEmployeeDTO employeeDTO = null;
+        if (type == DTOType.EXTENDED) {
+            employeeDTO = new EmployeeDTO();
+        } else {
+            employeeDTO = new BaseEmployeeDTO();
         }
+        employeeDTO.setId(employee.getId());
+        employeeDTO.setEmail(employee.getEmail());
+        employeeDTO.setName(employee.getName());
         return employeeDTO;
     }
 
-    private static AbstractDTO marshalDonationDTO(Donation donation, boolean withInternalObjects) {
-        DonationDTO donationDTO = new DonationDTO();
-        if (donation != null) {
-            donationDTO.setId(donation.getId());
-            donationDTO.setCount(donation.getCount());
-            donationDTO.setMedicament((MedicamentDTO) marshalMedicamentDTO(donation.getMedicament(), !withInternalObjects));
-            donationDTO.setEmployee((EmployeeDTO) marshalEmployeeDTO(donation.getEmployee(), withInternalObjects));
-            donationDTO.setTime(donation.getTime());
+    private static AbstractDTO marshalDonationDTO(Donation donation, DTOType type) {
+        BaseDonationDTO donationDTO = null;
+        if (type == DTOType.EXTENDED) {
+            donationDTO = new DonationDTO();
+            ((DonationDTO) donationDTO).setTime(donation.getTime());
+        } else {
+            donationDTO = new BaseDonationDTO();
         }
+        donationDTO.setId(donation.getId());
+        donationDTO.setCount(donation.getCount());
+        donationDTO.setMedicamentDTO((BaseMedicamentDTO) marshalMedicamentDTO(donation.getMedicament(), DTOType.BASIC));
+        donationDTO.setEmployeeDTO((BaseEmployeeDTO) marshalEmployeeDTO(donation.getEmployee(), DTOType.BASIC));
         return donationDTO;
     }
 }

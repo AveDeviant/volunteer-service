@@ -1,16 +1,16 @@
-package com.epam.volunteer.dto;
+package com.epam.volunteer.dto.base;
 
+import com.epam.volunteer.dto.AbstractDTO;
 
-public class MedicamentDTO extends AbstractDTO {
+public class BaseMedicamentDTO extends AbstractDTO {
     private String medicament;
     private int requirement;
     private int currentCount;
-    private VolunteerDTO volunteer;
     private boolean status;
 
-    public MedicamentDTO() {
-    }
 
+    public BaseMedicamentDTO() {
+    }
 
     public String getMedicament() {
         return medicament;
@@ -36,14 +36,6 @@ public class MedicamentDTO extends AbstractDTO {
         this.currentCount = currentCount;
     }
 
-    public VolunteerDTO getVolunteer() {
-        return volunteer;
-    }
-
-    public void setVolunteer(VolunteerDTO volunteer) {
-        this.volunteer = volunteer;
-    }
-
     public boolean isStatus() {
         return status;
     }
@@ -53,36 +45,36 @@ public class MedicamentDTO extends AbstractDTO {
     }
 
     @Override
-    public String toString() {
-        return "MedicamentDTO{" +
-                "medicament='" + medicament + '\'' +
-                ", requirement=" + requirement +
-                ", currentCount=" + currentCount +
-                ", volunteer=" + volunteer +
-                '}';
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof BaseMedicamentDTO)) return false;
+        if (!super.equals(o)) return false;
 
-        MedicamentDTO that = (MedicamentDTO) o;
+        BaseMedicamentDTO that = (BaseMedicamentDTO) o;
         if (getId() != that.getId()) return false;
         if (requirement != that.requirement) return false;
         if (currentCount != that.currentCount) return false;
         if (status != that.status) return false;
-        if (medicament != null ? !medicament.equals(that.medicament) : that.medicament != null) return false;
-        return volunteer != null ? volunteer.equals(that.volunteer) : that.volunteer == null;
+        return medicament != null ? medicament.equals(that.medicament) : that.medicament == null;
     }
 
     @Override
     public int hashCode() {
-        int result = medicament != null ? medicament.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (medicament != null ? medicament.hashCode() : 0);
         result = 31 * result + requirement;
         result = 31 * result + currentCount;
-        result = 31 * result + (volunteer != null ? volunteer.hashCode() : 0);
         result = 31 * result + (status ? 1 : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "BaseMedicamentDTO{" +
+                "medicament='" + medicament + '\'' +
+                ", requirement=" + requirement +
+                ", currentCount=" + currentCount +
+                ", status=" + status +
+                '}';
     }
 }

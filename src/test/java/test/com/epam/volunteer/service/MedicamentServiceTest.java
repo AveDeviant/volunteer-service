@@ -1,12 +1,10 @@
-package test.com.epam.volunteer;
+package test.com.epam.volunteer.service;
 
 import com.epam.volunteer.dao.MedicamentDAO;
 import com.epam.volunteer.dao.exception.DAOException;
 import com.epam.volunteer.dao.impl.MedicamentDAOImpl;
 import com.epam.volunteer.entity.Medicament;
 import com.epam.volunteer.resources.MedicamentResource;
-import com.epam.volunteer.service.DonationService;
-import com.epam.volunteer.service.MedicamentService;
 import com.epam.volunteer.service.exception.ServiceException;
 import com.epam.volunteer.service.impl.MedicamentServiceImpl;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
@@ -51,7 +49,6 @@ public class MedicamentServiceTest extends JerseyTest {
         Mockito.when(medicamentDAO.getAll()).thenReturn(data);
         List<Medicament> result = service.getAllActual();
         assert result.size() == 2;
-
     }
 
 

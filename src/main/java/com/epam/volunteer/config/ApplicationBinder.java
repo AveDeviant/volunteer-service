@@ -8,11 +8,13 @@ import com.epam.volunteer.dao.impl.MedicamentDAOImpl;
 import com.epam.volunteer.dao.impl.VolunteerDAOImpl;
 import com.epam.volunteer.manager.EntityManagerWrapper;
 import com.epam.volunteer.service.DonationService;
+import com.epam.volunteer.service.LinkService;
 import com.epam.volunteer.service.MedicamentService;
 import com.epam.volunteer.service.VolunteerService;
 import com.epam.volunteer.service.impl.DonationServiceImpl;
 import com.epam.volunteer.service.impl.MedicamentServiceImpl;
 import com.epam.volunteer.service.impl.VolunteerServiceImpl;
+import com.epam.volunteer.service.impl.LinkServiceImpl;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 
 import javax.persistence.EntityManager;
@@ -31,5 +33,6 @@ public class ApplicationBinder extends AbstractBinder {
         bind(DonationDAOImpl.class).to(DonationDAO.class);
         bind(VolunteerServiceImpl.class).to(VolunteerService.class);
         bind(VolunteerDAOImpl.class).to(VolunteerDAO.class);
+        bind(LinkServiceImpl.class).to(LinkService.class);
     }
 }
