@@ -98,7 +98,26 @@ public class MedicamentServiceImpl extends AbstractService implements Medicament
 
     @Override
     public void delete(long id) throws ServiceException {
+        try {
+            medicamentDAO.delete(id);
+        } catch (DAOException e) {
+            getLogger().log(Level.ERROR, e.getMessage());
+            throw new ServiceException(e);
+        }
+    }
 
+    @Override
+    public Medicament update(long id, Medicament medicament) throws ServiceException {
+        try {
+            Medicament entity = getById(id, true);
+            if (entity == null) {
+                return null;
+            }
+            return medicamentDAO.update(id, medicament);
+        } catch (DAOException e) {
+            getLogger().log(Level.ERROR, e.getMessage());
+            throw new ServiceException(e);
+        }
     }
 
     @Override

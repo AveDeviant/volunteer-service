@@ -44,4 +44,14 @@ public class VolunteerServiceImpl extends AbstractService implements VolunteerSe
         }
         return new ArrayList<>();
     }
+
+    @Override
+    public Volunteer getByEmail(String email) throws ServiceException {
+        try {
+            return volunteerDAO.getByEmail(email);
+        } catch (DAOException e) {
+            getLogger().log(Level.ERROR, e.getMessage());
+            throw new ServiceException(e);
+        }
+    }
 }

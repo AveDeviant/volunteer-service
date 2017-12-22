@@ -4,6 +4,7 @@ package com.epam.volunteer.resources;
 import com.epam.volunteer.dto.AbstractDTO;
 import com.epam.volunteer.dto.DTOType;
 import com.epam.volunteer.dto.base.BaseDonationDTO;
+import com.epam.volunteer.dto.base.BaseVolunteerDTO;
 import com.epam.volunteer.dto.extended.MedicamentDTO;
 import com.epam.volunteer.dto.marshaller.DTOMarshaller;
 import com.epam.volunteer.dto.marshaller.DTOUnmarshaller;
@@ -28,6 +29,9 @@ public class MedicamentResource extends AbstractResource {
     private MedicamentService medicamentService;
     private DonationService donationService;
     private LinkService linkService;
+    @Context
+    private UriInfo uriInfo;
+
 
     @Inject
     public void setMedicamentService(MedicamentService medicamentService) {
@@ -47,8 +51,7 @@ public class MedicamentResource extends AbstractResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getMedicament(@QueryParam("page") @DefaultValue("1") int page,
-                                  @QueryParam("size") @DefaultValue("2") int size,
-                                  @Context UriInfo uriInfo) {
+                                  @QueryParam("size") @DefaultValue("2") int size) {
         try {
             List<Medicament> medicament = medicamentService.getAllActual(page, size);
             if (medicament.isEmpty()) {
@@ -62,7 +65,6 @@ public class MedicamentResource extends AbstractResource {
         } catch (ServiceException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } catch (Exception e) {
-            e.printStackTrace();
             LOGGER.log(Level.INFO, e.getMessage());
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
@@ -90,7 +92,7 @@ public class MedicamentResource extends AbstractResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response addNew(MedicamentDTO medicament, @Context UriInfo uriInfo) {
+    public Response addNew(MedicamentDTO medicament) {
         try {
             if (Optional.ofNullable(medicament).isPresent() &&
                     Optional.ofNullable(medicament.getMedicament()).isPresent()) {
@@ -120,7 +122,7 @@ public class MedicamentResource extends AbstractResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{id: [0-9]+ }/donation")
-    public Response createDonation(@PathParam("id") long id, BaseDonationDTO donation, @Context UriInfo uriInfo) {
+    public Response createDonation(@PathParam("id") long id, BaseDonationDTO donation) {
         try {
             Medicament medicament = medicamentService.getById(id, true);
             if (Optional.ofNullable(medicament).isPresent()) {
@@ -146,15 +148,53 @@ public class MedicamentResource extends AbstractResource {
             LOGGER.log(Level.ERROR, e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } catch (Exception e) {
+            e.printStackTrace();
             LOGGER.log(Level.ERROR, e.getMessage());
             return Response.status(Response.Status.BAD_REQUEST).entity(ServerMessage.INVALID_INPUT).build();
         }
     }
 
+    @POST
+    @Path("/{id: [0-9]+ }")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response update(@PathParam("id") long id, MedicamentDTO medicamentDTO) {
+        try {
+            if (Optional.ofNullable(medicamentDTO).isPresent()) {
+                if (!Optional.ofNullable(medicamentDTO.getVolunteerDTO()).isPresent()) {
+                    return Response.status(Response.Status.UNAUTHORIZED).build();
+                }
+                Medicament input = (Medicament) DTOUnmarshaller.unmarshalDTO(medicamentDTO);
+                Medicament result = medicamentService.update(id, input);
+                if (Optional.ofNullable(result).isPresent()) {
+                    AbstractDTO dto = DTOMarshaller.marshalDTO(result, DTOType.EXTENDED);
+                    return Response.ok()
+                            .entity(dto)
+                            .build();
+                }
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+            return Response.status(Response.Status.BAD_REQUEST).entity(ServerMessage.INVALID_INPUT).build();
+        } catch (ServiceException e) {
+            LOGGER.log(Level.ERROR, e.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+    }
+
     @DELETE
     @Path("/{id: [0-9]+ }")
-    public Response deleteMedicament(@PathParam("id") long id) {
-
-        return null;
+    public Response delete(@PathParam("id") long id, BaseVolunteerDTO volunteerDTO) {
+        try {
+            if (Optional.ofNullable(volunteerDTO).isPresent()) {
+                medicamentService.delete(id);
+                return Response.noContent().build();
+            }
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        } catch (ServiceException e) {
+            LOGGER.log(Level.ERROR, e.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }

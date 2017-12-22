@@ -21,6 +21,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import javax.persistence.EntityTransaction;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -85,6 +87,19 @@ public class MedicamentResourceTest extends JerseyTest {
         Mockito.when(medicamentService.getById(1, true)).thenReturn(null);
         Response response = target("/medicament/1").request().get();
         Assert.assertEquals(404, response.getStatus());
+    }
+
+
+    @Test
+    public void testAddNewUnauthorized() {
+        Medicament medicament = new Medicament();
+        medicament.setId(1);
+        medicament.setMedicament("test");
+        medicament.setStatus(true);
+        AbstractDTO dto = DTOMarshaller.marshalDTO(medicament, DTOType.EXTENDED);
+        Entity<AbstractDTO> userEntity = Entity.entity(dto, MediaType.APPLICATION_JSON);
+        Response response = target("/medicament/1").request().post(userEntity);
+        Assert.assertEquals(401, response.getStatus());
     }
 
 

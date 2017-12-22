@@ -10,4 +10,6 @@ public interface VolunteerDAO {
     Volunteer getById(long id) throws DAOException;
 
     List<Volunteer> getAll() throws DAOException;
+
+    Volunteer getByEmail(String email) throws DAOException;
 }

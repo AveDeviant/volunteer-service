@@ -23,6 +23,8 @@ import org.mockito.Mockito;
 
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
+import java.util.List;
 
 public class VolunteerResourceTest extends JerseyTest {
     private VolunteerService volunteerService = Mockito.mock(VolunteerServiceImpl.class);
@@ -49,6 +51,16 @@ public class VolunteerResourceTest extends JerseyTest {
         VolunteerDTO result = target("/volunteer/1").request().get(VolunteerDTO.class);
         Assert.assertEquals(expected, result);
         response.close();
+    }
+
+    @Test
+    public void getAll() throws ServiceException {
+        Volunteer volunteer = new Volunteer();
+        volunteer.setName("test1");
+        volunteer.setId(1);
+        List<Volunteer> volunteers = new ArrayList<>();
+        volunteers.add(volunteer);
+        Mockito.when(volunteerService.getAll()).thenReturn(volunteers);
     }
 
 

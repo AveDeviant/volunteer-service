@@ -10,4 +10,6 @@ public interface VolunteerService {
     Volunteer getById(long id) throws ServiceException;
 
     List<Volunteer> getAll() throws ServiceException;
+
+    Volunteer getByEmail(String email) throws ServiceException;
 }

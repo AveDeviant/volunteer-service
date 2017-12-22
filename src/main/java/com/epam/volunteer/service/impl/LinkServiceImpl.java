@@ -34,15 +34,15 @@ public class LinkServiceImpl extends AbstractService implements com.epam.volunte
 
     //Pagination for all business objects?
     @Override
-    public Link[] buildLinks(int page, int size, UriInfo uriInfo) throws ServiceException {
+    public Link[] buildLinks(int page, int pageOffset, UriInfo uriInfo) throws ServiceException {
         List<Link> links = new ArrayList<>();
         if (Optional.ofNullable(uriInfo).isPresent()) {
             Link self = Link.fromUri(uriInfo.getRequestUri()).rel(SELF_REF).build();
             links.add(self);
-            links.add(buildFirstLink(size, uriInfo));
-            links.add(buildLastLink(page, size, uriInfo));
-            links.add(buildPreviousLink(page, size, uriInfo));
-            links.add(buildNextLink(page, size, uriInfo));
+            links.add(buildFirstLink(pageOffset, uriInfo));
+            links.add(buildLastLink(pageOffset, uriInfo));
+            links.add(buildPreviousLink(page, pageOffset, uriInfo));
+            links.add(buildNextLink(page, pageOffset, uriInfo));
         }
         Link[] array = new Link[links.size()];
         array = links.toArray(array);
@@ -60,22 +60,22 @@ public class LinkServiceImpl extends AbstractService implements com.epam.volunte
                 .build();
     }
 
-    private Link buildLastLink(int page, int size, UriInfo uriInfo) throws ServiceException {
-        long lastPage = calculateLastPage(page, size);
+    private Link buildLastLink(int pageOffset, UriInfo uriInfo) throws ServiceException {
+        long lastPage = calculateLastPage(pageOffset);
         UriBuilder builderLast = uriInfo.getAbsolutePathBuilder();
         builderLast.queryParam(QUERY_PARAM_PAGE, lastPage);
-        builderLast.queryParam(QUERY_PARAM_SIZE, size);
+        builderLast.queryParam(QUERY_PARAM_SIZE, pageOffset);
         return Link.fromUri(builderLast.build())
                 .rel(LAST_REF)
                 .type(CONTENT_TYPE)
                 .build();
     }
 
-    private Link buildPreviousLink(int page, int size, UriInfo uriInfo) {
-        if (page > 1) {
+    private Link buildPreviousLink(int page, int pageOffset, UriInfo uriInfo) {
+        if (page > 1 && pageOffset > 0) {
             UriBuilder builderPrev = uriInfo.getAbsolutePathBuilder();
             builderPrev.queryParam(QUERY_PARAM_PAGE, page - 1);
-            builderPrev.queryParam(QUERY_PARAM_SIZE, size);
+            builderPrev.queryParam(QUERY_PARAM_SIZE, pageOffset);
             return Link.fromUri(builderPrev.build())
                     .rel(PREVIOUS_REF)
                     .type(CONTENT_TYPE)
@@ -84,12 +84,12 @@ public class LinkServiceImpl extends AbstractService implements com.epam.volunte
         return Link.fromUri("").rel(PREVIOUS_REF).build();
     }
 
-    private Link buildNextLink(int page, int size, UriInfo uriInfo) throws ServiceException {
-        long lastPage = calculateLastPage(page, size);
-        if (page < lastPage) {
+    private Link buildNextLink(int page, int pageOffset, UriInfo uriInfo) throws ServiceException {
+        long lastPage = calculateLastPage(pageOffset);
+        if (page < lastPage && pageOffset > 0) {
             UriBuilder builderPrev = uriInfo.getAbsolutePathBuilder();
             builderPrev.queryParam(QUERY_PARAM_PAGE, page + 1);
-            builderPrev.queryParam(QUERY_PARAM_SIZE, size);
+            builderPrev.queryParam(QUERY_PARAM_SIZE, pageOffset);
             return Link.fromUri(builderPrev.build())
                     .rel(NEXT_REF)
                     .type(CONTENT_TYPE)
@@ -99,12 +99,12 @@ public class LinkServiceImpl extends AbstractService implements com.epam.volunte
     }
 
 
-    private long calculateLastPage(int page, int size) throws ServiceException {
+    public long calculateLastPage(int pageOffset) throws ServiceException {
         long count = medicamentService.countActual();
         long lastPage = count;
-        if (size > 0 && page > 0) {
-            lastPage = count / (size * page);
-            if (count % (size * page) > 0) {
+        if (pageOffset > 0) {
+            lastPage = count / pageOffset;
+            if (count % pageOffset > 0) {
                 lastPage++;
             }
         }

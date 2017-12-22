@@ -20,5 +20,9 @@ public interface MedicamentDAO {
 
     Medicament addNew(Medicament medicament) throws DAOException;
 
+    Medicament update(long id, Medicament medicament) throws DAOException;
+
+    void delete(long id) throws DAOException;
+
     long countActual() throws DAOException;
 }

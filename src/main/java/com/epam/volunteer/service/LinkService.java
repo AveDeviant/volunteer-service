@@ -9,7 +9,7 @@ import javax.ws.rs.core.UriInfo;
 @Contract
 public interface LinkService {
 
-    Link[] buildLinks(int page, int size, UriInfo uriInfo) throws ServiceException;
+    Link[] buildLinks(int page, int pageOffset, UriInfo uriInfo) throws ServiceException;
 
 
 }

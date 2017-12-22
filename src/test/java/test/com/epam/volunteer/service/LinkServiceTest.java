@@ -1,25 +1,38 @@
 package test.com.epam.volunteer.service;
 
-import com.epam.volunteer.dao.MedicamentDAO;
-import com.epam.volunteer.dao.impl.MedicamentDAOImpl;
-import com.epam.volunteer.service.LinkService;
+
+import com.epam.volunteer.service.MedicamentService;
 import com.epam.volunteer.service.exception.ServiceException;
 import com.epam.volunteer.service.impl.LinkServiceImpl;
+import com.epam.volunteer.service.impl.MedicamentServiceImpl;
+import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import javax.ws.rs.core.Link;
-import javax.ws.rs.core.UriInfo;
-
 public class LinkServiceTest {
+    private LinkServiceImpl linkService = new LinkServiceImpl();
+    private MedicamentService medicamentService = Mockito.mock(MedicamentServiceImpl.class);
 
-    private MedicamentDAO medicamentDAO = Mockito.mock(MedicamentDAOImpl.class);
-    private UriInfo uriInfo = Mockito.mock(UriInfo.class);
 
     @Test
-    public void testIncorrectSizeAndPage() throws ServiceException {
-        LinkService linkService = new LinkServiceImpl();
-        Link[] output = linkService.buildLinks(-1, 2, null);
-        assert output.length == 0;
+    public void countPageAmountOddAmount() throws ServiceException {
+        linkService.setMedicamentService(medicamentService);
+        Mockito.when(medicamentService.countActual()).thenReturn(7L);
+        Assert.assertEquals(3, linkService.calculateLastPage(3));
     }
+
+    @Test
+    public void countPageAmountOddAmount2() throws ServiceException {
+        linkService.setMedicamentService(medicamentService);
+        Mockito.when(medicamentService.countActual()).thenReturn(7L);
+        Assert.assertEquals(4, linkService.calculateLastPage(2));
+    }
+
+    @Test
+    public void countPageAmountEvenAmount() throws ServiceException {
+        linkService.setMedicamentService(medicamentService);
+        Mockito.when(medicamentService.countActual()).thenReturn(4L);
+        Assert.assertEquals(2, linkService.calculateLastPage(2));
+    }
+
 }

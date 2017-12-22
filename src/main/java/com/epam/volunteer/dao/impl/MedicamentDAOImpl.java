@@ -41,6 +41,8 @@ public class MedicamentDAOImpl extends AbstractDAO implements MedicamentDAO {
     @Override
     public Medicament getById(long id) throws DAOException {
         try {
+            getLogger().log(Level.INFO, entityManager.find(Medicament.class, id));
+            entityManager.getEntityManagerFactory().getCache().evict(Medicament.class);
             return entityManager.find(Medicament.class, id);
         } catch (Exception e) {
             getLogger().log(Level.ERROR, e.getMessage());
@@ -75,6 +77,48 @@ public class MedicamentDAOImpl extends AbstractDAO implements MedicamentDAO {
             entityManager.flush();
             transaction.commit();
             return medicament;
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            getLogger().log(Level.ERROR, e.getMessage());
+            throw new DAOException(e);
+        }
+    }
+
+    @Override
+    public Medicament update(long id, Medicament medicament) throws DAOException {
+        EntityTransaction transaction = null;
+        try {
+            transaction = entityManager.getTransaction();
+            transaction.begin();
+            Medicament entity = entityManager.find(Medicament.class, id);
+            entity.setStatus(medicament.isStatus());
+            entity.setRequirement(medicament.getRequirement());
+            entity.setMedicament(medicament.getMedicament());
+            entityManager.merge(entity);
+            transaction.commit();
+            return entity;
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            getLogger().log(Level.ERROR, e.getMessage());
+            throw new DAOException(e);
+        }
+    }
+
+    @Override
+    public void delete(long id) throws DAOException {
+        EntityTransaction transaction = null;
+        try {
+            transaction = entityManager.getTransaction();
+            transaction.begin();
+            Medicament medicament = entityManager.find(Medicament.class, id);
+            if (medicament != null) {
+                entityManager.remove(medicament);
+            }
+            transaction.commit();
         } catch (Exception e) {
             if (transaction != null) {
                 transaction.rollback();
