@@ -2,7 +2,6 @@ package com.epam.volunteer.dao.impl;
 
 import com.epam.volunteer.dao.VolunteerDAO;
 import com.epam.volunteer.dao.exception.DAOException;
-import com.epam.volunteer.entity.Medicament;
 import com.epam.volunteer.entity.Volunteer;
 import org.apache.logging.log4j.Level;
 import org.jvnet.hk2.annotations.Service;

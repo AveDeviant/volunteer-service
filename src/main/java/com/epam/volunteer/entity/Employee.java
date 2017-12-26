@@ -3,7 +3,6 @@ package com.epam.volunteer.entity;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Objects;
 
 @Entity
 @Table(name = "employee")

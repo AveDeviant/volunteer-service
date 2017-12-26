@@ -2,17 +2,12 @@ package test.com.epam.volunteer.resources;
 
 import com.epam.volunteer.dto.AbstractDTO;
 import com.epam.volunteer.dto.DTOType;
-import com.epam.volunteer.dto.extended.MedicamentDTO;
 import com.epam.volunteer.dto.extended.VolunteerDTO;
 import com.epam.volunteer.dto.marshaller.DTOMarshaller;
 import com.epam.volunteer.entity.Volunteer;
-import com.epam.volunteer.resources.MedicamentResource;
 import com.epam.volunteer.resources.VolunteerResource;
-import com.epam.volunteer.service.DonationService;
-import com.epam.volunteer.service.MedicamentService;
 import com.epam.volunteer.service.VolunteerService;
 import com.epam.volunteer.service.exception.ServiceException;
-import com.epam.volunteer.service.impl.LinkServiceImpl;
 import com.epam.volunteer.service.impl.VolunteerServiceImpl;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;

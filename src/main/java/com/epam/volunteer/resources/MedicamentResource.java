@@ -102,28 +102,27 @@ public class MedicamentResource extends AbstractResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response addNew(BaseMedicamentDTO medicament, @Context HttpServletRequest request) {
+    public Response addNew(BaseMedicamentDTO medicament, @HeaderParam(HttpHeaders.AUTHORIZATION) String email) {
         try {
             if (Optional.ofNullable(medicament.getMedicament()).isPresent()) {
-                Volunteer volunteer = volunteerService.getByEmail(request.getHeader(HttpHeaders.AUTHORIZATION));
+                Volunteer volunteer = volunteerService.getByEmail(email);
                 if (!Optional.ofNullable(volunteer).isPresent()) {
                     return Response.status(Response.Status.UNAUTHORIZED).build();
                 }
                 Medicament input = (Medicament) DTOUnmarshaller.unmarshalDTO(medicament);
                 input.setVolunteer(volunteer);
                 Medicament newMed = medicamentService.addNew(input);
-                if (newMed != null) {
-                    AbstractDTO dto = DTOMarshaller.marshalDTO(newMed, DTOType.EXTENDED);
-                    UriBuilder builder = uriInfo.getAbsolutePathBuilder();
-                    return Response.created(builder.path(String.valueOf(dto.getId())).build())
-                            .entity(dto)
-                            .build();
-                }
+                AbstractDTO dto = DTOMarshaller.marshalDTO(newMed, DTOType.EXTENDED);
+                UriBuilder builder = uriInfo.getAbsolutePathBuilder();
+                return Response.created(builder.path(String.valueOf(dto.getId())).build())
+                        .entity(dto)
+                        .build();
             }
             return Response.status(422).entity(ServerMessage.INVALID_INPUT).build();
         } catch (ServiceException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } catch (Exception e) {
+            e.printStackTrace();
             LOGGER.log(Level.ERROR, e.getMessage());
             return Response.status(Response.Status.BAD_REQUEST).entity(ServerMessage.INVALID_INPUT).build();
         }
@@ -133,11 +132,12 @@ public class MedicamentResource extends AbstractResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{id: [0-9]+ }/donation")
-    public Response createDonation(@PathParam("id") long id, BaseDonationDTO donation, @Context HttpServletRequest req) {
+    public Response createDonation(@PathParam("id") long id, BaseDonationDTO donation,
+                                   @HeaderParam(HttpHeaders.AUTHORIZATION) String employeeEmail) {
         try {
             Medicament medicament = medicamentService.getById(id, true);
             if (Optional.ofNullable(medicament).isPresent()) {
-                Employee employee = employeeService.getByEmail(req.getHeader(HttpHeaders.AUTHORIZATION));
+                Employee employee = employeeService.getByEmail(employeeEmail);
                 if (!Optional.ofNullable(employee).isPresent()) {    // "authorization"
                     return Response.status(Response.Status.UNAUTHORIZED).build();
                 }
@@ -168,22 +168,25 @@ public class MedicamentResource extends AbstractResource {
     @Path("/{id: [0-9]+ }")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response update(@PathParam("id") long id, BaseMedicamentDTO medicamentDTO, @Context HttpServletRequest req) {
+    public Response update(@PathParam("id") long id, BaseMedicamentDTO medicamentDTO,
+                           @HeaderParam(HttpHeaders.AUTHORIZATION) String volunteerEmail) {
+        System.out.println("medicamentDTO:" + medicamentDTO);
         try {
             if (Optional.ofNullable(medicamentDTO).isPresent()) {
-                String volunteerEmail = req.getHeader(HttpHeaders.AUTHORIZATION);
                 if (!volunteerService.authorizationPassed(volunteerEmail, id)) {
                     return Response.status(Response.Status.UNAUTHORIZED).build();
                 }
                 Medicament input = (Medicament) DTOUnmarshaller.unmarshalDTO(medicamentDTO);
+                System.out.println("input: "+input);
                 Medicament result = medicamentService.update(id, input);
+                System.out.println(result);
                 if (Optional.ofNullable(result).isPresent()) {
                     AbstractDTO dto = DTOMarshaller.marshalDTO(result, DTOType.EXTENDED);
                     return Response.ok()
                             .entity(dto)
                             .build();
                 }
-                return Response.status(Response.Status.NOT_FOUND).build();
+                return Response.status(Response.Status.FORBIDDEN).build();
             }
             return Response.status(Response.Status.BAD_REQUEST).entity(ServerMessage.INVALID_INPUT).build();
         } catch (ServiceException e) {
@@ -196,10 +199,9 @@ public class MedicamentResource extends AbstractResource {
 
     @DELETE
     @Path("/{id: [0-9]+ }")
-    public Response delete(@PathParam("id") long id, @Context HttpServletRequest req) {
+    public Response delete(@PathParam("id") long id, @HeaderParam(HttpHeaders.AUTHORIZATION) String volunteerEmail) {
         try {
-            String volunteerEmail = req.getHeader(HttpHeaders.AUTHORIZATION);   // "authorization"
-            if (volunteerService.authorizationPassed(volunteerEmail, id)) {
+            if (volunteerService.authorizationPassed(volunteerEmail, id)) {  // "authorization"
                 medicamentService.delete(id);
                 return Response.noContent().build();
             }

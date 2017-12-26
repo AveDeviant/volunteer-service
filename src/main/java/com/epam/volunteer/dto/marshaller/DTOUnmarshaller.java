@@ -5,8 +5,6 @@ import com.epam.volunteer.dto.base.BaseDonationDTO;
 import com.epam.volunteer.dto.base.BaseEmployeeDTO;
 import com.epam.volunteer.dto.base.BaseMedicamentDTO;
 import com.epam.volunteer.dto.base.BaseVolunteerDTO;
-import com.epam.volunteer.dto.extended.DonationDTO;
-import com.epam.volunteer.dto.extended.EmployeeDTO;
 import com.epam.volunteer.dto.extended.MedicamentDTO;
 import com.epam.volunteer.dto.extended.VolunteerDTO;
 import com.epam.volunteer.entity.*;

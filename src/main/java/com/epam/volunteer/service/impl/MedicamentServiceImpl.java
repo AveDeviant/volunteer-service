@@ -110,7 +110,7 @@ public class MedicamentServiceImpl extends AbstractService implements Medicament
     public Medicament update(long id, Medicament medicament) throws ServiceException {
         try {
             Medicament entity = getById(id, true);
-            if (entity == null) {
+            if (entity == null) {  //entity doesn't exist or unable for update.
                 return null;
             }
             return medicamentDAO.update(id, medicament);
