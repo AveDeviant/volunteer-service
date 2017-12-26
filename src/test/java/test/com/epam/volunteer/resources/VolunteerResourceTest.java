@@ -22,6 +22,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import javax.ws.rs.core.Application;
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +55,13 @@ public class VolunteerResourceTest extends JerseyTest {
     }
 
     @Test
+    public void getByIdNotFound() throws ServiceException {
+        Mockito.when(volunteerService.getById(1)).thenReturn(null);
+        Response response = target("/volunteer/1").request().get();
+        Assert.assertEquals(response.getStatus(), 404);
+    }
+
+    @Test
     public void getAll() throws ServiceException {
         Volunteer volunteer = new Volunteer();
         volunteer.setName("test1");
@@ -61,8 +69,11 @@ public class VolunteerResourceTest extends JerseyTest {
         List<Volunteer> volunteers = new ArrayList<>();
         volunteers.add(volunteer);
         Mockito.when(volunteerService.getAll()).thenReturn(volunteers);
+        List<AbstractDTO> expected = DTOMarshaller.marshalDTOList(volunteers, DTOType.BASIC);
+        List<VolunteerDTO> result = target("/volunteer").request().get(new GenericType<List<VolunteerDTO>>() {
+        });
+        Assert.assertEquals(expected, result);
     }
-
 
     private class TestBinder extends AbstractBinder {
 

@@ -51,10 +51,14 @@ public class VolunteerDAOImpl extends AbstractDAO implements VolunteerDAO {
         try {
             CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
             CriteriaQuery<Volunteer> criteriaQuery = criteriaBuilder.createQuery(Volunteer.class);
-            Root<Medicament> sm = criteriaQuery.from(Medicament.class);
+            Root<Volunteer> sm = criteriaQuery.from(Volunteer.class);
             criteriaQuery.where(criteriaBuilder.equal(sm.get("email"), email));
             TypedQuery<Volunteer> typedQuery = entityManager.createQuery(criteriaQuery);
-            return typedQuery.getSingleResult();
+            List<Volunteer> volunteers = typedQuery.getResultList();
+            if (!volunteers.isEmpty()) {
+                return volunteers.get(0);
+            }
+            return null;
         } catch (Exception e) {
             getLogger().log(Level.ERROR, e.getMessage());
             throw new DAOException(e);

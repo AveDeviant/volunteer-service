@@ -93,8 +93,6 @@ public class DTOUnmarshaller {
         try {
             donation.setId(dto.getId());
             donation.setCount(dto.getCount());
-            donation.setEmployee(unmarshalEmployee(dto.getEmployeeDTO()));
-            donation.setMedicament(unmarshalMedicament(dto.getMedicamentDTO()));
         } catch (Exception e) {
             LogManager.getLogger().log(Level.ERROR, e.getMessage());
         }

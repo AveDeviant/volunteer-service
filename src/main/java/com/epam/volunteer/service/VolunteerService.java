@@ -12,4 +12,6 @@ public interface VolunteerService {
     List<Volunteer> getAll() throws ServiceException;
 
     Volunteer getByEmail(String email) throws ServiceException;
+
+    boolean authorizationPassed(String email, long medicamentId) throws ServiceException;
 }

@@ -1,6 +1,5 @@
 package com.epam.volunteer.service.exception;
 
-import javax.xml.ws.Service;
 
 public class ServiceException extends Exception {
 

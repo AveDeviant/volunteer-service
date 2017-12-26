@@ -107,13 +107,15 @@ public class DTOMarshaller {
         if (type == DTOType.EXTENDED) {
             donationDTO = new DonationDTO();
             ((DonationDTO) donationDTO).setTime(donation.getTime());
+            ((DonationDTO) donationDTO)
+                    .setMedicamentDTO((BaseMedicamentDTO) marshalMedicamentDTO(donation.getMedicament(), DTOType.BASIC));
+            ((DonationDTO) donationDTO)
+                    .setEmployeeDTO((BaseEmployeeDTO) marshalEmployeeDTO(donation.getEmployee(), DTOType.BASIC));
         } else {
             donationDTO = new BaseDonationDTO();
         }
         donationDTO.setId(donation.getId());
         donationDTO.setCount(donation.getCount());
-        donationDTO.setMedicamentDTO((BaseMedicamentDTO) marshalMedicamentDTO(donation.getMedicament(), DTOType.BASIC));
-        donationDTO.setEmployeeDTO((BaseEmployeeDTO) marshalEmployeeDTO(donation.getEmployee(), DTOType.BASIC));
         return donationDTO;
     }
 }

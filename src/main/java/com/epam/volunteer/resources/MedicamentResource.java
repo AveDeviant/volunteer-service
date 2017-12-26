@@ -4,21 +4,22 @@ package com.epam.volunteer.resources;
 import com.epam.volunteer.dto.AbstractDTO;
 import com.epam.volunteer.dto.DTOType;
 import com.epam.volunteer.dto.base.BaseDonationDTO;
-import com.epam.volunteer.dto.base.BaseVolunteerDTO;
+import com.epam.volunteer.dto.base.BaseMedicamentDTO;
 import com.epam.volunteer.dto.extended.MedicamentDTO;
 import com.epam.volunteer.dto.marshaller.DTOMarshaller;
 import com.epam.volunteer.dto.marshaller.DTOUnmarshaller;
 import com.epam.volunteer.entity.Donation;
+import com.epam.volunteer.entity.Employee;
 import com.epam.volunteer.entity.Medicament;
+import com.epam.volunteer.entity.Volunteer;
 import com.epam.volunteer.response.ServerMessage;
-import com.epam.volunteer.service.DonationService;
-import com.epam.volunteer.service.LinkService;
-import com.epam.volunteer.service.MedicamentService;
+import com.epam.volunteer.service.*;
 import com.epam.volunteer.service.exception.ServiceException;
 import org.apache.logging.log4j.Level;
 
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import java.util.List;
@@ -29,6 +30,8 @@ public class MedicamentResource extends AbstractResource {
     private MedicamentService medicamentService;
     private DonationService donationService;
     private LinkService linkService;
+    private EmployeeService employeeService;
+    private VolunteerService volunteerService;
     @Context
     private UriInfo uriInfo;
 
@@ -48,15 +51,22 @@ public class MedicamentResource extends AbstractResource {
         this.linkService = linkService;
     }
 
+    @Inject
+    public void setEmployeeService(EmployeeService employeeService) {
+        this.employeeService = employeeService;
+    }
+
+    @Inject
+    public void setVolunteerService(VolunteerService volunteerService) {
+        this.volunteerService = volunteerService;
+    }
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getMedicament(@QueryParam("page") @DefaultValue("1") int page,
                                   @QueryParam("size") @DefaultValue("2") int size) {
         try {
             List<Medicament> medicament = medicamentService.getAllActual(page, size);
-            if (medicament.isEmpty()) {
-                return Response.status(Response.Status.NOT_FOUND).build();  //логично?
-            }
             List<AbstractDTO> dto = DTOMarshaller.marshalDTOList(medicament, DTOType.BASIC);
             Link[] links = linkService.buildLinks(page, size, uriInfo);
             return Response.ok(dto)
@@ -92,24 +102,25 @@ public class MedicamentResource extends AbstractResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response addNew(MedicamentDTO medicament) {
+    public Response addNew(BaseMedicamentDTO medicament, @Context HttpServletRequest request) {
         try {
-            if (Optional.ofNullable(medicament).isPresent() &&
-                    Optional.ofNullable(medicament.getMedicament()).isPresent()) {
-                if (!Optional.ofNullable(medicament.getVolunteerDTO()).isPresent()) {
+            if (Optional.ofNullable(medicament.getMedicament()).isPresent()) {
+                Volunteer volunteer = volunteerService.getByEmail(request.getHeader(HttpHeaders.AUTHORIZATION));
+                if (!Optional.ofNullable(volunteer).isPresent()) {
                     return Response.status(Response.Status.UNAUTHORIZED).build();
                 }
                 Medicament input = (Medicament) DTOUnmarshaller.unmarshalDTO(medicament);
+                input.setVolunteer(volunteer);
                 Medicament newMed = medicamentService.addNew(input);
-                AbstractDTO dto = DTOMarshaller.marshalDTO(newMed, DTOType.EXTENDED);
                 if (newMed != null) {
+                    AbstractDTO dto = DTOMarshaller.marshalDTO(newMed, DTOType.EXTENDED);
                     UriBuilder builder = uriInfo.getAbsolutePathBuilder();
                     return Response.created(builder.path(String.valueOf(dto.getId())).build())
                             .entity(dto)
                             .build();
                 }
             }
-            return Response.status(Response.Status.BAD_REQUEST).entity(ServerMessage.INVALID_INPUT).build();
+            return Response.status(422).entity(ServerMessage.INVALID_INPUT).build();
         } catch (ServiceException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } catch (Exception e) {
@@ -122,33 +133,32 @@ public class MedicamentResource extends AbstractResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{id: [0-9]+ }/donation")
-    public Response createDonation(@PathParam("id") long id, BaseDonationDTO donation) {
+    public Response createDonation(@PathParam("id") long id, BaseDonationDTO donation, @Context HttpServletRequest req) {
         try {
             Medicament medicament = medicamentService.getById(id, true);
             if (Optional.ofNullable(medicament).isPresent()) {
-                if (!Optional.ofNullable(donation.getEmployeeDTO()).isPresent()) {
+                Employee employee = employeeService.getByEmail(req.getHeader(HttpHeaders.AUTHORIZATION));
+                if (!Optional.ofNullable(employee).isPresent()) {    // "authorization"
                     return Response.status(Response.Status.UNAUTHORIZED).build();
                 }
-                if (Optional.ofNullable(donation.getMedicamentDTO()).isPresent()) {
-                    Donation donation1 = (Donation) DTOUnmarshaller.unmarshalDTO(donation);
-                    donation1.setMedicament(medicament);
-                    donation1 = donationService.registerDonation(donation1);
-                    if (donation1 == null) {
-                        return Response.status(422).entity(ServerMessage.INVALID_DONATION).build();
-                    }
-                    UriBuilder builder = uriInfo.getAbsolutePathBuilder();
-                    AbstractDTO dto = DTOMarshaller.marshalDTO(donation1, DTOType.EXTENDED);
-                    return Response.created(builder.path(String.valueOf(dto.getId())).build())
-                            .entity(dto)
-                            .build();
+                Donation donation1 = (Donation) DTOUnmarshaller.unmarshalDTO(donation);
+                donation1.setMedicament(medicament);
+                donation1.setEmployee(employee);
+                donation1 = donationService.registerDonation(donation1);
+                if (donation1 == null) {
+                    return Response.status(422).entity(ServerMessage.INVALID_DONATION).build();
                 }
+                UriBuilder builder = uriInfo.getAbsolutePathBuilder();
+                AbstractDTO dto = DTOMarshaller.marshalDTO(donation1, DTOType.EXTENDED);
+                return Response.created(builder.path(String.valueOf(dto.getId())).build())
+                        .entity(dto)
+                        .build();
             }
             return Response.status(Response.Status.NOT_FOUND).build();
         } catch (ServiceException e) {
             LOGGER.log(Level.ERROR, e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } catch (Exception e) {
-            e.printStackTrace();
             LOGGER.log(Level.ERROR, e.getMessage());
             return Response.status(Response.Status.BAD_REQUEST).entity(ServerMessage.INVALID_INPUT).build();
         }
@@ -158,10 +168,11 @@ public class MedicamentResource extends AbstractResource {
     @Path("/{id: [0-9]+ }")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response update(@PathParam("id") long id, MedicamentDTO medicamentDTO) {
+    public Response update(@PathParam("id") long id, BaseMedicamentDTO medicamentDTO, @Context HttpServletRequest req) {
         try {
             if (Optional.ofNullable(medicamentDTO).isPresent()) {
-                if (!Optional.ofNullable(medicamentDTO.getVolunteerDTO()).isPresent()) {
+                String volunteerEmail = req.getHeader(HttpHeaders.AUTHORIZATION);
+                if (!volunteerService.authorizationPassed(volunteerEmail, id)) {
                     return Response.status(Response.Status.UNAUTHORIZED).build();
                 }
                 Medicament input = (Medicament) DTOUnmarshaller.unmarshalDTO(medicamentDTO);
@@ -185,9 +196,10 @@ public class MedicamentResource extends AbstractResource {
 
     @DELETE
     @Path("/{id: [0-9]+ }")
-    public Response delete(@PathParam("id") long id, BaseVolunteerDTO volunteerDTO) {
+    public Response delete(@PathParam("id") long id, @Context HttpServletRequest req) {
         try {
-            if (Optional.ofNullable(volunteerDTO).isPresent()) {
+            String volunteerEmail = req.getHeader(HttpHeaders.AUTHORIZATION);   // "authorization"
+            if (volunteerService.authorizationPassed(volunteerEmail, id)) {
                 medicamentService.delete(id);
                 return Response.noContent().build();
             }

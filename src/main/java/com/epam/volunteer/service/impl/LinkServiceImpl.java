@@ -1,8 +1,5 @@
 package com.epam.volunteer.service.impl;
 
-import com.epam.volunteer.entity.AbstractEntity;
-import com.epam.volunteer.entity.Medicament;
-import com.epam.volunteer.service.MainService;
 import com.epam.volunteer.service.MedicamentService;
 import com.epam.volunteer.service.exception.ServiceException;
 import org.jvnet.hk2.annotations.Service;
@@ -32,7 +29,7 @@ public class LinkServiceImpl extends AbstractService implements com.epam.volunte
         this.medicamentService = medicamentService;
     }
 
-    //Pagination for all business objects?
+
     @Override
     public Link[] buildLinks(int page, int pageOffset, UriInfo uriInfo) throws ServiceException {
         List<Link> links = new ArrayList<>();
