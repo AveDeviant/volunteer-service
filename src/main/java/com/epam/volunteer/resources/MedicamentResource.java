@@ -110,17 +110,18 @@ public class MedicamentResource extends AbstractResource {
                 Medicament input = (Medicament) DTOUnmarshaller.unmarshalDTO(medicament);
                 input.setVolunteer(volunteer);
                 Medicament newMed = medicamentService.addNew(input);
-                AbstractDTO dto = DTOMarshaller.marshalDTO(newMed, DTOType.EXTENDED);
-                UriBuilder builder = uriInfo.getAbsolutePathBuilder();
-                return Response.created(builder.path(String.valueOf(dto.getId())).build())
-                        .entity(dto)
-                        .build();
+                if (Optional.ofNullable(newMed).isPresent()) {
+                    AbstractDTO dto = DTOMarshaller.marshalDTO(newMed, DTOType.EXTENDED);
+                    UriBuilder builder = uriInfo.getAbsolutePathBuilder();
+                    return Response.created(builder.path(String.valueOf(dto.getId())).build())
+                            .entity(dto)
+                            .build();
+                }
             }
             return Response.status(422).entity(ServerMessage.INVALID_INPUT).build();
         } catch (ServiceException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } catch (Exception e) {
-            e.printStackTrace();
             LOGGER.log(Level.ERROR, e.getMessage());
             return Response.status(Response.Status.BAD_REQUEST).entity(ServerMessage.INVALID_INPUT).build();
         }
@@ -144,7 +145,7 @@ public class MedicamentResource extends AbstractResource {
                 donation1.setEmployee(employee);
                 donation1 = donationService.registerDonation(donation1);
                 if (donation1 == null) {
-                    return Response.status(422).entity(ServerMessage.INVALID_DONATION).build();
+                    return Response.status(Response.Status.FORBIDDEN).build();
                 }
                 UriBuilder builder = uriInfo.getAbsolutePathBuilder();
                 AbstractDTO dto = DTOMarshaller.marshalDTO(donation1, DTOType.EXTENDED);
@@ -175,14 +176,14 @@ public class MedicamentResource extends AbstractResource {
                 }
                 Medicament input = (Medicament) DTOUnmarshaller.unmarshalDTO(medicamentDTO);
                 Medicament result = medicamentService.update(id, input);
-                if (Optional.ofNullable(result).isPresent()) {
-                    AbstractDTO dto = DTOMarshaller.marshalDTO(result, DTOType.EXTENDED);
-                    return Response.ok()
-                            .entity(dto)
-                            .build();
+                    if (Optional.ofNullable(result).isPresent()) {
+                        AbstractDTO dto = DTOMarshaller.marshalDTO(result, DTOType.EXTENDED);
+                        return Response.ok()
+                                .entity(dto)
+                                .build();
+                    }
+                    return Response.status(Response.Status.FORBIDDEN).build();
                 }
-                return Response.status(Response.Status.FORBIDDEN).build();
-            }
             return Response.status(Response.Status.BAD_REQUEST).entity(ServerMessage.INVALID_INPUT).build();
         } catch (ServiceException e) {
             LOGGER.log(Level.ERROR, e.getMessage());

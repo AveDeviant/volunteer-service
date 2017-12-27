@@ -11,6 +11,7 @@ import org.jvnet.hk2.annotations.Service;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -88,12 +89,15 @@ public class MedicamentServiceImpl extends AbstractService implements Medicament
 
     @Override
     public Medicament addNew(Medicament medicament) throws ServiceException {
-        try {
-            return medicamentDAO.addNew(medicament);
-        } catch (DAOException e) {
-            getLogger().log(Level.ERROR, e.getMessage());
-            throw new ServiceException(e);
+        if (Optional.ofNullable(medicament).isPresent()) {
+            try {
+                return medicamentDAO.addNew(medicament);
+            } catch (DAOException e) {
+                getLogger().log(Level.ERROR, e.getMessage());
+                throw new ServiceException(e);
+            }
         }
+        return null;
     }
 
     @Override
@@ -110,7 +114,8 @@ public class MedicamentServiceImpl extends AbstractService implements Medicament
     public Medicament update(long id, Medicament medicament) throws ServiceException {
         try {
             Medicament entity = getById(id, true);
-            if (entity == null) {  //entity doesn't exist or unable for update.
+            //   entity doesn't exist or unable for update\ uninitialized entered entity.
+            if (entity == null || !Optional.ofNullable(medicament).isPresent()) {
                 return null;
             }
             return medicamentDAO.update(id, medicament);

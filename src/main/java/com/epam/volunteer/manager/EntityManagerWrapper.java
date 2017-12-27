@@ -1,8 +1,6 @@
 package com.epam.volunteer.manager;
 
 
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
 import org.jvnet.hk2.annotations.Service;
 
 
@@ -25,9 +23,7 @@ public class EntityManagerWrapper implements EntityManager {
     private static EntityManager entityManager;
 
 
-    //TODO: подумать. Singleton?
     public EntityManagerWrapper() {
-        LogManager.getLogger().log(Level.INFO, "QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ");
         String schema = RESOURCE_BUNDLE.getString("persistence.unit");
         EntityManagerFactory managerFactory = Persistence.createEntityManagerFactory(schema);
         entityManager = managerFactory.createEntityManager();

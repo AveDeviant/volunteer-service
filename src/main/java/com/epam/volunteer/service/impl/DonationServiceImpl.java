@@ -6,6 +6,7 @@ import com.epam.volunteer.dao.exception.DAOException;
 import com.epam.volunteer.entity.Donation;
 import com.epam.volunteer.entity.Medicament;
 import com.epam.volunteer.service.DonationService;
+import com.epam.volunteer.service.MedicamentService;
 import com.epam.volunteer.service.exception.ServiceException;
 import org.apache.logging.log4j.Level;
 import org.jvnet.hk2.annotations.Service;
@@ -19,7 +20,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class DonationServiceImpl extends AbstractService implements DonationService {
     private static ReentrantLock lock = new ReentrantLock();
     private DonationDAO donationDAO;
-    private MedicamentDAO medicamentDAO;
+    private MedicamentService medicamentService;
 
     @Inject
     public void setDonationDAO(DonationDAO donationDAO) {
@@ -27,19 +28,20 @@ public class DonationServiceImpl extends AbstractService implements DonationServ
     }
 
     @Inject
-    public void setMedicamentDAO(MedicamentDAO medicamentDAO) {
-        this.medicamentDAO = medicamentDAO;
+    public void setMedicamentService(MedicamentService medicamentService) {
+        this.medicamentService = medicamentService;
     }
 
     @Override
     public Donation registerDonation(Donation donation) throws ServiceException {
         try {
-            if (donation.getCount() < 1) {
+            if (donation.getCount() < 1 || !Optional.ofNullable(donation.getEmployee()).isPresent() ||
+                    !Optional.ofNullable(donation.getMedicament()).isPresent()) {
                 return null;
             }
             try {
                 lock.lock();
-                Medicament medicament = medicamentDAO.getById(donation.getMedicament().getId());
+                Medicament medicament = medicamentService.getById(donation.getMedicament().getId(),true);
                 if (Optional.ofNullable(medicament).isPresent()) {
                     LocalDateTime dateTime = LocalDateTime.now();
                     donation.setTime(dateTime);

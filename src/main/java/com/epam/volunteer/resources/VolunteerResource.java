@@ -9,7 +9,6 @@ import com.epam.volunteer.entity.Volunteer;
 import com.epam.volunteer.response.ServerMessage;
 import com.epam.volunteer.service.VolunteerService;
 import com.epam.volunteer.service.exception.ServiceException;
-import com.sun.org.apache.regexp.internal.RE;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;

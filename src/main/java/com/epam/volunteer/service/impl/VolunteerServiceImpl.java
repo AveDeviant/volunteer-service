@@ -70,15 +70,12 @@ public class VolunteerServiceImpl extends AbstractService implements VolunteerSe
 
     @Override
     public Volunteer addNew(Volunteer volunteer) throws ServiceException {
-        if (Optional.ofNullable(volunteer).isPresent()) {
-            if (Validator.checkEmail(volunteer.getEmail())) {
-                System.out.println("lol");
-                try {
-                    return volunteerDAO.addNew(volunteer);
-                } catch (DAOException e) {
-                    getLogger().log(Level.ERROR, e.getMessage());
-                    throw new ServiceException(e);
-                }
+        if (Optional.ofNullable(volunteer).isPresent() && Validator.checkEmail(volunteer.getEmail())) {
+            try {
+                return volunteerDAO.addNew(volunteer);
+            } catch (DAOException e) {
+                getLogger().log(Level.ERROR, e.getMessage());
+                throw new ServiceException(e);
             }
         }
         return null;

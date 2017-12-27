@@ -96,7 +96,7 @@ public class LinkServiceImpl extends AbstractService implements com.epam.volunte
     }
 
 
-    public long calculateLastPage(int pageOffset) throws ServiceException {
+    private long calculateLastPage(int pageOffset) throws ServiceException {
         long count = medicamentService.countActual();
         long lastPage = count;
         if (pageOffset > 0) {

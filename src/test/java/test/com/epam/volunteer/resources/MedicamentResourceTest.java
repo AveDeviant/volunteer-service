@@ -3,21 +3,23 @@ package test.com.epam.volunteer.resources;
 
 import com.epam.volunteer.dto.AbstractDTO;
 import com.epam.volunteer.dto.DTOType;
+import com.epam.volunteer.dto.base.BaseDonationDTO;
+import com.epam.volunteer.dto.extended.DonationDTO;
 import com.epam.volunteer.dto.extended.MedicamentDTO;
 import com.epam.volunteer.dto.marshaller.DTOMarshaller;
 import com.epam.volunteer.dto.marshaller.DTOUnmarshaller;
-import com.epam.volunteer.entity.AbstractEntity;
-import com.epam.volunteer.entity.Medicament;
-import com.epam.volunteer.entity.Volunteer;
+import com.epam.volunteer.entity.*;
 import com.epam.volunteer.resources.MedicamentResource;
 import com.epam.volunteer.service.*;
 import com.epam.volunteer.service.impl.*;
 import com.epam.volunteer.service.exception.ServiceException;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 
 
@@ -26,6 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.*;
 import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,8 +44,6 @@ public class MedicamentResourceTest extends JerseyTest {
     private EmployeeService employeeService = Mockito.mock(EmployeeServiceImpl.class);
     private VolunteerService volunteerService = Mockito.mock(VolunteerService.class);
     private HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-    private UriInfo uriInfo = Mockito.mock(UriInfo.class);
-    private UriBuilder uriBuilder = Mockito.mock(UriBuilder.class);
 
     @Override
     protected Application configure() {
@@ -134,7 +135,7 @@ public class MedicamentResourceTest extends JerseyTest {
         Mockito.when(volunteerService.getByEmail("test")).thenReturn(volunteer);
         medicament.setVolunteer(volunteer);
         Mockito.when(medicamentService.addNew(medicament)).thenReturn(medicament);
-        Response response = target("/medicament").request().header("Authorization", "test")
+        Response response = target("/medicament").request().header(HttpHeaders.AUTHORIZATION, "test")
                 .buildPost(dtoEntity).invoke();
         Mockito.verify(medicamentService, times(1)).addNew(medicament);
         Assert.assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
@@ -144,7 +145,7 @@ public class MedicamentResourceTest extends JerseyTest {
     @Test
     public void deleteUnauthorized() throws ServiceException {
         Mockito.when(volunteerService.authorizationPassed("test", 1)).thenReturn(false);
-        Response response = target("/medicament/1").request().header("Authorization", "test")
+        Response response = target("/medicament/1").request().header(HttpHeaders.AUTHORIZATION, "test")
                 .buildDelete().invoke();
         Mockito.verify(medicamentService, never()).delete(1);
         Assert.assertEquals(401, response.getStatus());
@@ -158,7 +159,7 @@ public class MedicamentResourceTest extends JerseyTest {
         medicament.setVolunteer(volunteer);
         Mockito.when(volunteerService.authorizationPassed("test", 1)).thenReturn(true);
         Mockito.when(medicamentService.getById(1)).thenReturn(medicament);
-        Response response = target("/medicament/1").request().header("Authorization", "test")
+        Response response = target("/medicament/1").request().header(HttpHeaders.AUTHORIZATION, "test")
                 .buildDelete().invoke();
         Mockito.verify(medicamentService, times(1)).delete(1);
         Assert.assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
@@ -188,20 +189,20 @@ public class MedicamentResourceTest extends JerseyTest {
         Entity<AbstractDTO> dtoEntity = Entity.entity(abstractDTO, MediaType.APPLICATION_JSON);
         Mockito.when(volunteerService.authorizationPassed("test", 1)).thenReturn(true);
         Mockito.when(medicamentService.getById(1, true)).thenReturn(new Medicament());
-        Response response = target("/medicament/1").request().header("Authorization", "test")
+        target("/medicament/1").request().header(HttpHeaders.AUTHORIZATION, "test")
                 .buildPost(dtoEntity).invoke();
         verify(medicamentService, times(1)).update(1, (Medicament) DTOUnmarshaller.unmarshalDTO(abstractDTO));
     }
 
     @Test
-    public void updateResourceUnable() throws ServiceException {
+    public void updateResourceIsntAvailable() throws ServiceException {
         Medicament medicament = new Medicament();
         medicament.setRequirement(20);
         medicament.setId(1);
         AbstractDTO abstractDTO = DTOMarshaller.marshalDTO(medicament, DTOType.BASIC);
         Entity<AbstractDTO> dtoEntity = Entity.entity(abstractDTO, MediaType.APPLICATION_JSON);
         Mockito.when(volunteerService.authorizationPassed("test", 1)).thenReturn(true);
-        Response response = target("/medicament/1").request().header("Authorization", "test")
+        Response response = target("/medicament/1").request().header(HttpHeaders.AUTHORIZATION, "test")
                 .buildPost(dtoEntity).invoke();
         Mockito.when(medicamentService.update(1, medicament)).thenReturn(null);
         Assert.assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
@@ -217,11 +218,44 @@ public class MedicamentResourceTest extends JerseyTest {
         Entity<AbstractDTO> dtoEntity = Entity.entity(abstractDTO, MediaType.APPLICATION_JSON);
         Mockito.when(volunteerService.authorizationPassed("test", 1)).thenReturn(true);
         Mockito.when(medicamentService.update(1, medicament)).thenReturn(medicament);
-        Response response = target("/medicament/1").request().header("Authorization", "test")
+        Response response = target("/medicament/1").request().header(HttpHeaders.AUTHORIZATION, "test")
                 .buildPost(dtoEntity).invoke();
         Mockito.verify(medicamentService, times(1)).update(1, medicament);
-        Mockito.when(medicamentService.getById(1,true)).thenReturn(medicament);
+        Mockito.when(medicamentService.getById(1, true)).thenReturn(medicament);
         Assert.assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+    }
+
+    @Test
+    public void donationUnauthorizedPerson() throws ServiceException {
+        Donation donation = new Donation();
+        donation.setCount(1);
+        AbstractDTO dto = DTOMarshaller.marshalDTO(donation, DTOType.BASIC);
+        Entity<AbstractDTO> dtoEntity = Entity.entity(dto, MediaType.APPLICATION_JSON);
+        Mockito.when(medicamentService.getById(1, true)).thenReturn(new Medicament());
+        Response response = target("/medicament/1/donation").request()
+                .buildPost(dtoEntity).invoke();
+        Assert.assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
+    }
+
+
+    @Test
+    public void donationAcceptedTest() throws ServiceException {
+        Donation donation = new Donation();
+        donation.setCount(1);
+        donation.setMedicament(new Medicament());
+        Employee employee = new Employee();
+        AbstractDTO dto = DTOMarshaller.marshalDTO(donation, DTOType.BASIC);
+        Entity<AbstractDTO> dtoEntity = Entity.entity(dto, MediaType.APPLICATION_JSON);
+        Mockito.when(medicamentService.getById(1, true)).thenReturn(new Medicament());
+        Mockito.when(employeeService.getByEmail("test")).thenReturn(employee);
+        donation.setEmployee(employee);
+        Donation expected = new Donation();
+        expected.setTime(LocalDateTime.now());
+        Mockito.when(donationService.registerDonation(donation)).thenReturn(expected);
+        Response response = target("/medicament/1/donation").request().header(HttpHeaders.AUTHORIZATION, "test")
+                .buildPost(dtoEntity).invoke();
+        Mockito.verify(donationService, times(1)).registerDonation(donation);
+        Assert.assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
     }
 
 

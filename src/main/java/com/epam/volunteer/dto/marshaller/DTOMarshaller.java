@@ -75,7 +75,7 @@ public class DTOMarshaller {
             List<BaseMedicamentDTO> medicamentDTOs = new ArrayList<>();
             if (Optional.ofNullable(volunteer.getMedicament()).isPresent()) {
                 for (Medicament medicament : volunteer.getMedicament()) {
-                    medicamentDTOs.add((BaseMedicamentDTO) marshalMedicamentDTO(medicament, DTOType.BASIC));
+                    medicamentDTOs.add((BaseMedicamentDTO) marshalDTO(medicament, DTOType.BASIC));
                 }
             }
             ((VolunteerDTO) volunteerDTO).
@@ -108,9 +108,9 @@ public class DTOMarshaller {
             donationDTO = new DonationDTO();
             ((DonationDTO) donationDTO).setTime(donation.getTime());
             ((DonationDTO) donationDTO)
-                    .setMedicamentDTO((BaseMedicamentDTO) marshalMedicamentDTO(donation.getMedicament(), DTOType.BASIC));
+                    .setMedicamentDTO((BaseMedicamentDTO) marshalDTO(donation.getMedicament(), DTOType.BASIC));
             ((DonationDTO) donationDTO)
-                    .setEmployeeDTO((BaseEmployeeDTO) marshalEmployeeDTO(donation.getEmployee(), DTOType.BASIC));
+                    .setEmployeeDTO((BaseEmployeeDTO) marshalDTO(donation.getEmployee(), DTOType.BASIC));
         } else {
             donationDTO = new BaseDonationDTO();
         }

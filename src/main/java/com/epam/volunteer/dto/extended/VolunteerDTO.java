@@ -2,7 +2,6 @@ package com.epam.volunteer.dto.extended;
 
 import com.epam.volunteer.dto.base.BaseMedicamentDTO;
 import com.epam.volunteer.dto.base.BaseVolunteerDTO;
-import com.epam.volunteer.entity.Volunteer;
 
 import java.util.List;
 

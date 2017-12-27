@@ -74,6 +74,21 @@ public class VolunteerResourceTest extends JerseyTest {
     }
 
     @Test
+    public void addNewUniquenessConflict() throws ServiceException {
+        Volunteer volunteer = new Volunteer();
+        volunteer.setName("test1");
+        volunteer.setId(1);
+        volunteer.setEmail("test222222@mail.com");
+        AbstractDTO dto = DTOMarshaller.marshalDTO(volunteer, DTOType.BASIC);
+        Entity<AbstractDTO> dtoEntity = Entity.entity(dto, MediaType.APPLICATION_JSON);
+        Volunteer expected = (Volunteer) DTOUnmarshaller.unmarshalDTO(dto);
+        Mockito.when(volunteerService.addNew(expected)).thenThrow(ServiceException.class);
+        Response response = target("/volunteer").request()
+                .buildPost(dtoEntity).invoke();
+        Assert.assertEquals(Response.Status.CONFLICT.getStatusCode(), response.getStatus());
+    }
+
+    @Test
     public void addNew() throws ServiceException {
         Volunteer volunteer = new Volunteer();
         volunteer.setName("test1");
@@ -81,11 +96,11 @@ public class VolunteerResourceTest extends JerseyTest {
         volunteer.setEmail("test222222@mail.com");
         AbstractDTO dto = DTOMarshaller.marshalDTO(volunteer, DTOType.BASIC);
         Entity<AbstractDTO> dtoEntity = Entity.entity(dto, MediaType.APPLICATION_JSON);
-      Volunteer expected = (Volunteer) DTOUnmarshaller.unmarshalDTO(dto);
-        Mockito.when(volunteerService.addNew(expected)).thenThrow(ServiceException.class);
+        Volunteer expected = (Volunteer) DTOUnmarshaller.unmarshalDTO(dto);
+        Mockito.when(volunteerService.addNew(expected)).thenReturn(expected);
         Response response = target("/volunteer").request()
                 .buildPost(dtoEntity).invoke();
-        Assert.assertEquals(Response.Status.CONFLICT.getStatusCode(), response.getStatus());
+        Assert.assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
     }
 
     private class TestBinder extends AbstractBinder {
