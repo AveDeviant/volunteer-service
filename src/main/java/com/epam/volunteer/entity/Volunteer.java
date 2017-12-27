@@ -17,7 +17,7 @@ public class Volunteer extends AbstractEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id_person")
     private long id;
-    @Column(name = "email")
+    @Column(name = "email", unique = true)
     private String email;
     @Column(name = "person_name")
     private String name;

@@ -13,5 +13,7 @@ public interface VolunteerService {
 
     Volunteer getByEmail(String email) throws ServiceException;
 
+    Volunteer addNew(Volunteer volunteer) throws ServiceException;
+
     boolean authorizationPassed(String email, long medicamentId) throws ServiceException;
 }

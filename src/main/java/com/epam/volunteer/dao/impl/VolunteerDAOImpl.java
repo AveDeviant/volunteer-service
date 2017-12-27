@@ -8,6 +8,7 @@ import org.jvnet.hk2.annotations.Service;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -59,6 +60,25 @@ public class VolunteerDAOImpl extends AbstractDAO implements VolunteerDAO {
             }
             return null;
         } catch (Exception e) {
+            getLogger().log(Level.ERROR, e.getMessage());
+            throw new DAOException(e);
+        }
+    }
+
+    @Override
+    public Volunteer addNew(Volunteer volunteer) throws DAOException {
+        EntityTransaction transaction = null;
+        try {
+            transaction = entityManager.getTransaction();
+            transaction.begin();
+            entityManager.persist(volunteer);
+            entityManager.flush();
+            transaction.commit();
+            return volunteer;
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
             getLogger().log(Level.ERROR, e.getMessage());
             throw new DAOException(e);
         }

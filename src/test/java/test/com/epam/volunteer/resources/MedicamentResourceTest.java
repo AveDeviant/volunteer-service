@@ -21,9 +21,11 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 
+import javax.servlet.MultipartConfigElement;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.*;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -130,10 +132,12 @@ public class MedicamentResourceTest extends JerseyTest {
         AbstractDTO dto = DTOMarshaller.marshalDTO(medicament, DTOType.BASIC);
         Entity<AbstractDTO> dtoEntity = Entity.entity(dto, MediaType.APPLICATION_JSON);
         Mockito.when(volunteerService.getByEmail("test")).thenReturn(volunteer);
+        medicament.setVolunteer(volunteer);
+        Mockito.when(medicamentService.addNew(medicament)).thenReturn(medicament);
         Response response = target("/medicament").request().header("Authorization", "test")
                 .buildPost(dtoEntity).invoke();
-        medicament.setVolunteer(volunteer);
         Mockito.verify(medicamentService, times(1)).addNew(medicament);
+        Assert.assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
     }
 
 
@@ -204,24 +208,21 @@ public class MedicamentResourceTest extends JerseyTest {
     }
 
 
-//    @Test
-//    public void updateSuccess() throws ServiceException {
-//        Medicament medicament = new Medicament();
-//        medicament.setRequirement(20);
-//        medicament.setId(1);
-//        AbstractDTO abstractDTO = DTOMarshaller.marshalDTO(medicament, DTOType.BASIC);
-//        Entity<AbstractDTO> dtoEntity = Entity.entity(abstractDTO, MediaType.APPLICATION_JSON);
-//        Mockito.when(volunteerService.authorizationPassed("test", 1)).thenReturn(true);
-//        Response response = target("/medicament/1").request().header("Authorization", "test")
-//                .buildPost(dtoEntity).invoke();
-//        Medicament medicament1 = new Medicament();
-//        medicament1.setRequirement(20);
-//        medicament.setId(2);
-//        Medicament entity = (Medicament) DTOUnmarshaller.unmarshalDTO(abstractDTO);
-//        System.out.println("test" +entity);
-//        Mockito.when(medicamentService.update(1, (Medicament) entity)).thenReturn(medicament1);
-//        Assert.assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-//    }
+    @Test
+    public void updateSuccess() throws ServiceException {
+        Medicament medicament = new Medicament();
+        medicament.setRequirement(20);
+        medicament.setId(1);
+        AbstractDTO abstractDTO = DTOMarshaller.marshalDTO(medicament, DTOType.BASIC);
+        Entity<AbstractDTO> dtoEntity = Entity.entity(abstractDTO, MediaType.APPLICATION_JSON);
+        Mockito.when(volunteerService.authorizationPassed("test", 1)).thenReturn(true);
+        Mockito.when(medicamentService.update(1, medicament)).thenReturn(medicament);
+        Response response = target("/medicament/1").request().header("Authorization", "test")
+                .buildPost(dtoEntity).invoke();
+        Mockito.verify(medicamentService, times(1)).update(1, medicament);
+        Mockito.when(medicamentService.getById(1,true)).thenReturn(medicament);
+        Assert.assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+    }
 
 
     private class TestBinder extends AbstractBinder {

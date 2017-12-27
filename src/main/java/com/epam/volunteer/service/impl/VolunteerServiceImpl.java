@@ -69,6 +69,22 @@ public class VolunteerServiceImpl extends AbstractService implements VolunteerSe
     }
 
     @Override
+    public Volunteer addNew(Volunteer volunteer) throws ServiceException {
+        if (Optional.ofNullable(volunteer).isPresent()) {
+            if (Validator.checkEmail(volunteer.getEmail())) {
+                System.out.println("lol");
+                try {
+                    return volunteerDAO.addNew(volunteer);
+                } catch (DAOException e) {
+                    getLogger().log(Level.ERROR, e.getMessage());
+                    throw new ServiceException(e);
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
     public boolean authorizationPassed(String email, long medicamentId) throws ServiceException {
         Medicament medicament = medicamentService.getById(medicamentId);
         if (Optional.ofNullable(medicament).isPresent()) {

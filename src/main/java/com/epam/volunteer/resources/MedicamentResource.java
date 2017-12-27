@@ -5,7 +5,6 @@ import com.epam.volunteer.dto.AbstractDTO;
 import com.epam.volunteer.dto.DTOType;
 import com.epam.volunteer.dto.base.BaseDonationDTO;
 import com.epam.volunteer.dto.base.BaseMedicamentDTO;
-import com.epam.volunteer.dto.extended.MedicamentDTO;
 import com.epam.volunteer.dto.marshaller.DTOMarshaller;
 import com.epam.volunteer.dto.marshaller.DTOUnmarshaller;
 import com.epam.volunteer.entity.Donation;
@@ -19,7 +18,6 @@ import org.apache.logging.log4j.Level;
 
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import java.util.List;
@@ -170,16 +168,13 @@ public class MedicamentResource extends AbstractResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response update(@PathParam("id") long id, BaseMedicamentDTO medicamentDTO,
                            @HeaderParam(HttpHeaders.AUTHORIZATION) String volunteerEmail) {
-        System.out.println("medicamentDTO:" + medicamentDTO);
         try {
             if (Optional.ofNullable(medicamentDTO).isPresent()) {
                 if (!volunteerService.authorizationPassed(volunteerEmail, id)) {
                     return Response.status(Response.Status.UNAUTHORIZED).build();
                 }
                 Medicament input = (Medicament) DTOUnmarshaller.unmarshalDTO(medicamentDTO);
-                System.out.println("input: "+input);
                 Medicament result = medicamentService.update(id, input);
-                System.out.println(result);
                 if (Optional.ofNullable(result).isPresent()) {
                     AbstractDTO dto = DTOMarshaller.marshalDTO(result, DTOType.EXTENDED);
                     return Response.ok()

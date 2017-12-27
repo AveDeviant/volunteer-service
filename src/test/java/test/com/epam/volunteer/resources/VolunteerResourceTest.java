@@ -4,6 +4,7 @@ import com.epam.volunteer.dto.AbstractDTO;
 import com.epam.volunteer.dto.DTOType;
 import com.epam.volunteer.dto.extended.VolunteerDTO;
 import com.epam.volunteer.dto.marshaller.DTOMarshaller;
+import com.epam.volunteer.dto.marshaller.DTOUnmarshaller;
 import com.epam.volunteer.entity.Volunteer;
 import com.epam.volunteer.resources.VolunteerResource;
 import com.epam.volunteer.service.VolunteerService;
@@ -16,8 +17,10 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
@@ -68,6 +71,21 @@ public class VolunteerResourceTest extends JerseyTest {
         List<VolunteerDTO> result = target("/volunteer").request().get(new GenericType<List<VolunteerDTO>>() {
         });
         Assert.assertEquals(expected, result);
+    }
+
+    @Test
+    public void addNew() throws ServiceException {
+        Volunteer volunteer = new Volunteer();
+        volunteer.setName("test1");
+        volunteer.setId(1);
+        volunteer.setEmail("test222222@mail.com");
+        AbstractDTO dto = DTOMarshaller.marshalDTO(volunteer, DTOType.BASIC);
+        Entity<AbstractDTO> dtoEntity = Entity.entity(dto, MediaType.APPLICATION_JSON);
+      Volunteer expected = (Volunteer) DTOUnmarshaller.unmarshalDTO(dto);
+        Mockito.when(volunteerService.addNew(expected)).thenThrow(ServiceException.class);
+        Response response = target("/volunteer").request()
+                .buildPost(dtoEntity).invoke();
+        Assert.assertEquals(Response.Status.CONFLICT.getStatusCode(), response.getStatus());
     }
 
     private class TestBinder extends AbstractBinder {

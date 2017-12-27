@@ -2,19 +2,20 @@ package com.epam.volunteer.resources;
 
 import com.epam.volunteer.dto.AbstractDTO;
 import com.epam.volunteer.dto.DTOType;
+import com.epam.volunteer.dto.base.BaseVolunteerDTO;
 import com.epam.volunteer.dto.marshaller.DTOMarshaller;
+import com.epam.volunteer.dto.marshaller.DTOUnmarshaller;
 import com.epam.volunteer.entity.Volunteer;
+import com.epam.volunteer.response.ServerMessage;
 import com.epam.volunteer.service.VolunteerService;
 import com.epam.volunteer.service.exception.ServiceException;
+import com.sun.org.apache.regexp.internal.RE;
 
 import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.*;
+import javax.ws.rs.core.*;
 import java.util.List;
+import java.util.Optional;
 
 @Path("/volunteer")
 public class VolunteerResource extends AbstractResource {
@@ -49,6 +50,31 @@ public class VolunteerResource extends AbstractResource {
             List<AbstractDTO> abstractDTOs = DTOMarshaller.marshalDTOList(volunteerList, DTOType.BASIC);
             return Response.ok(abstractDTOs).build();
         } catch (ServiceException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response addNew(BaseVolunteerDTO volunteerDTO, @Context UriInfo uriInfo) {
+        try {
+            if (Optional.ofNullable(volunteerDTO).isPresent()) {
+                Volunteer volunteer = (Volunteer) DTOUnmarshaller.unmarshalDTO(volunteerDTO);
+                Volunteer result = volunteerService.addNew(volunteer);
+                if (Optional.ofNullable(result).isPresent()) {
+                    AbstractDTO dto = DTOMarshaller.marshalDTO(result, DTOType.EXTENDED);
+                    UriBuilder builder = uriInfo.getAbsolutePathBuilder();
+                    return Response.created(builder.path(String.valueOf(dto.getId())).build())
+                            .entity(dto)
+                            .build();
+                }
+                return Response.status(422).build();
+            }
+            return Response.status(Response.Status.BAD_REQUEST).entity(ServerMessage.INVALID_INPUT).build();
+        } catch (ServiceException e) {
+            return Response.status(Response.Status.CONFLICT).build();
+        } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
