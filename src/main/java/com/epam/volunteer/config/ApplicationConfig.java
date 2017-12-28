@@ -3,6 +3,7 @@ package com.epam.volunteer.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import io.swagger.jaxrs.config.BeanConfig;
 import org.glassfish.jersey.jackson.internal.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import org.glassfish.jersey.server.ResourceConfig;
 
@@ -14,10 +15,10 @@ public class ApplicationConfig extends ResourceConfig {
         packages("com.epam.volunteer.resources");
         register(new ApplicationBinder());
         register(configureJSONProvider());
+        configureSwagger();
     }
 
-
-    private static JacksonJaxbJsonProvider configureJSONProvider() {
+    private  JacksonJaxbJsonProvider configureJSONProvider() {
         ObjectMapper mapper = new ObjectMapper();
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
         //mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);          //Instead of custom DTO?
@@ -25,5 +26,20 @@ public class ApplicationConfig extends ResourceConfig {
         provider.setMapper(mapper);
         return provider;
     }
+
+    private void configureSwagger() {
+        register(io.swagger.jaxrs.listing.ApiListingResource.class);
+        register(io.swagger.jaxrs.listing.SwaggerSerializers.class);
+        BeanConfig config = new BeanConfig();
+        config.setTitle("Volunteer service");
+        config.setVersion("v1");
+        config.setSchemes(new String[]{"http"});
+        config.setHost("localhost:8000");
+        config.setBasePath("/pet-volunteer/rest");
+        config.setResourcePackage("com.epam.volunteer.resources");
+        config.setPrettyPrint(true);
+        config.setScan(true);
+    }
+
 
 }

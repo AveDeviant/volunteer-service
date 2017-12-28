@@ -32,6 +32,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -58,8 +59,9 @@ public class MedicamentResourceTest extends JerseyTest {
         Medicament medicament = new Medicament();
         medicament.setId(1);
         medicament.setMedicament("TEST");
+        medicament.setStatus(true);
         medicament.setVolunteer(new Volunteer());
-        Mockito.when(medicamentService.getById(1, true)).thenReturn(medicament);
+        Mockito.when(medicamentService.getById(1)).thenReturn(medicament);
         Response response = target("/medicament/1").request().get();
         Assert.assertEquals(response.getStatus(), 200);
         AbstractDTO expected = DTOMarshaller.marshalDTO(medicament, DTOType.EXTENDED);
@@ -67,6 +69,36 @@ public class MedicamentResourceTest extends JerseyTest {
         Assert.assertEquals(expected, result);
         response.close();
     }
+    @Test
+    public void getEntityIsntAvailableButPersonWasAuthorized() throws ServiceException {
+        Medicament medicament = new Medicament();
+        medicament.setId(1);
+        medicament.setMedicament("TEST");
+        medicament.setStatus(false);
+        Volunteer volunteer = new Volunteer();
+        medicament.setVolunteer(volunteer);
+        Mockito.when(medicamentService.getById(1)).thenReturn(medicament);
+        Mockito.when(volunteerService.authorizationPassed("email@email.com",1)).thenReturn(true);
+        Response response = target("/medicament/1").request().header(HttpHeaders.AUTHORIZATION, "email@email.com").get();
+        Assert.assertEquals(response.getStatus(), 200);
+        AbstractDTO expected = DTOMarshaller.marshalDTO(medicament, DTOType.EXTENDED);
+        MedicamentDTO result = target("/medicament/1").request().header(HttpHeaders.AUTHORIZATION, "email@email.com")
+                .get(MedicamentDTO.class);
+        Assert.assertEquals(expected, result);
+        response.close();
+    }
+
+    @Test
+    public void testMedicamentIsntAvailablePersonUnauthorized() throws ServiceException {
+        Medicament medicament = new Medicament();
+        medicament.setId(1);
+        medicament.setMedicament("TEST");
+        medicament.setStatus(false);
+        Mockito.when(medicamentService.getById(1)).thenReturn(medicament);
+        Response response = target("/medicament/1").request().get();
+        assert Response.Status.FORBIDDEN.getStatusCode()==response.getStatus();
+    }
+
 
 
     @Test

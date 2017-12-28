@@ -5,6 +5,7 @@ import com.epam.volunteer.dto.AbstractDTO;
 import com.epam.volunteer.dto.DTOType;
 import com.epam.volunteer.dto.base.BaseDonationDTO;
 import com.epam.volunteer.dto.base.BaseMedicamentDTO;
+import com.epam.volunteer.dto.extended.MedicamentDTO;
 import com.epam.volunteer.dto.marshaller.DTOMarshaller;
 import com.epam.volunteer.dto.marshaller.DTOUnmarshaller;
 import com.epam.volunteer.entity.Donation;
@@ -15,6 +16,7 @@ import com.epam.volunteer.response.ServerMessage;
 import com.epam.volunteer.service.*;
 import com.epam.volunteer.service.exception.ServiceException;
 import com.epam.volunteer.service.impl.*;
+import io.swagger.annotations.*;
 import org.apache.logging.log4j.Level;
 
 
@@ -25,6 +27,8 @@ import java.util.List;
 import java.util.Optional;
 
 @Path("/medicament")
+@Api(value = "medicament")
+@Produces("application/json")
 public class MedicamentResource extends AbstractResource {
     private MedicamentService medicamentService;
     private DonationService donationService;
@@ -61,8 +65,19 @@ public class MedicamentResource extends AbstractResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getMedicament(@QueryParam("page") @DefaultValue("1") int page,
-                                  @QueryParam("size") @DefaultValue("2") int size) {
+    @ApiOperation(value = "Get medicament list in page format.",
+            response = BaseMedicamentDTO.class, responseContainer = "List")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", responseHeaders = {@ResponseHeader(name = "Link", description =
+                    "Link to the current page of medicament list ", response = Link.class),
+                    @ResponseHeader(name = "Link", description = "Link to the first page of the medicament list"),
+                    @ResponseHeader(name = "Link", description = "Link to the last page of the medicament list"),
+                    @ResponseHeader(name = "Link", description = "Link to the previous page of the medicament list"),
+                    @ResponseHeader(name = "Link", description = "Link to the next page of the medicament list")}),
+            @ApiResponse(code = 500, message = "Internal error.")
+    })
+    public Response getMedicament(@ApiParam(value = "page") @QueryParam("page") @DefaultValue("1") int page,
+                                  @ApiParam(value = "offset") @QueryParam("size") @DefaultValue("2") int size) {
         try {
             provideInitialization();
             List<Medicament> medicament = medicamentService.getAllActual(page, size);
@@ -82,13 +97,21 @@ public class MedicamentResource extends AbstractResource {
     @GET
     @Path("/{id : [0-9]+ }")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getById(@PathParam("id") long id) {
+    @ApiOperation(value = "Get medicament with specified ID.", notes = "Authorization header should be provided in case" +
+            " user attempts to access the  medicament that is already unavailable. In this case only a volunteer who" +
+            " exposed this medicament can access this resource. It is assumed that an email address will be sent via the authorization header.",
+            authorizations = {@Authorization(value = "authorization_header")}, response = MedicamentDTO.class)
+    public Response getById(@ApiParam(value = "Medicament ID", required = true) @PathParam("id") long id,
+                            @ApiParam(value = "Authorization") @HeaderParam(HttpHeaders.AUTHORIZATION) String email) {
         try {
             provideInitialization();
-            Medicament medicament = medicamentService.getById(id, true);
-            if (medicament != null) {
-                AbstractDTO dto = DTOMarshaller.marshalDTO(medicament, DTOType.EXTENDED);
-                return Response.ok(dto).build();
+            Medicament medicament = medicamentService.getById(id);
+            if (medicament != null) {    //workaround below
+                if (medicament.isStatus() || (!medicament.isStatus() && volunteerService.authorizationPassed(email, id))) {
+                    AbstractDTO dto = DTOMarshaller.marshalDTO(medicament, DTOType.EXTENDED);
+                    return Response.ok(dto).build();
+                }
+                return Response.status(Response.Status.FORBIDDEN).build();
             }
             return Response.status(Response.Status.NOT_FOUND).build();
         } catch (ServiceException e) {
