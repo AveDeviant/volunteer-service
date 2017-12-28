@@ -75,7 +75,7 @@ public class MedicamentResource extends AbstractResource {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } catch (Exception e) {
             LOGGER.log(Level.INFO, e.getMessage());
-            return Response.status(Response.Status.BAD_REQUEST).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
 
