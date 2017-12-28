@@ -8,9 +8,6 @@ import java.util.List;
 public class VolunteerDTO extends BaseVolunteerDTO {
     private List<BaseMedicamentDTO> medicamentDTOs;
 
-    public VolunteerDTO() {
-    }
-
     public List<BaseMedicamentDTO> getMedicamentDTO() {
         return medicamentDTOs;
     }

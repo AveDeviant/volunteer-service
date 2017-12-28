@@ -8,10 +8,6 @@ public class BaseMedicamentDTO extends AbstractDTO {
     private int currentCount;
     private boolean status;
 
-
-    public BaseMedicamentDTO() {
-    }
-
     public String getMedicament() {
         return medicament;
     }

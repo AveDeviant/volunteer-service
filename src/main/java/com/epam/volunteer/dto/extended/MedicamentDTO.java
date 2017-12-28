@@ -6,8 +6,6 @@ import com.epam.volunteer.dto.base.BaseVolunteerDTO;
 public class MedicamentDTO extends BaseMedicamentDTO {
     private BaseVolunteerDTO volunteerDTO;
 
-    public MedicamentDTO() {}
-
     public BaseVolunteerDTO getVolunteerDTO() {
         return volunteerDTO;
     }

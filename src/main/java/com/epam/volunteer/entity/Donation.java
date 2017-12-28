@@ -25,6 +25,7 @@ public class Donation extends AbstractEntity implements Serializable {
 
     @Column(name = "time")
     @Temporal(TemporalType.TIMESTAMP)
+    @SuppressWarnings("squid:S3437")
     private LocalDateTime time;
 
     public Donation() {

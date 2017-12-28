@@ -6,9 +6,6 @@ public class BaseEmployeeDTO extends AbstractDTO {
     private String email;
     private String name;
 
-    public BaseEmployeeDTO() {
-    }
-
     public String getEmail() {
         return email;
     }

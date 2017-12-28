@@ -18,7 +18,6 @@ import java.util.List;
 @Service
 public class VolunteerDAOImpl extends AbstractDAO implements VolunteerDAO {
     private static final String QUERY_GET_ALL = "Volunteer.getAll";
-
     private EntityManager entityManager;
 
     @Inject

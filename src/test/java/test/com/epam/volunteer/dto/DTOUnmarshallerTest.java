@@ -32,7 +32,6 @@ public class DTOUnmarshallerTest {
         volunteer.setMedicament(new ArrayList<>());
         AbstractDTO dto = DTOMarshaller.marshalDTO(volunteer, DTOType.BASIC);
         AbstractEntity entity = DTOUnmarshaller.unmarshalDTO(dto);
-        System.out.println(entity);
         assert Volunteer.class.equals(entity.getClass());
         assert volunteer.equals(entity);
     }

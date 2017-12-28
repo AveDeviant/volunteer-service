@@ -11,9 +11,6 @@ public class DonationDTO extends BaseDonationDTO {
     private BaseEmployeeDTO employeeDTO;
     private BaseMedicamentDTO medicamentDTO;
 
-    public DonationDTO() {
-    }
-
     public LocalDateTime getTime() {
         return time;
     }

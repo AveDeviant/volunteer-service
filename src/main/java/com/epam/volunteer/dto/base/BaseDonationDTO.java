@@ -5,9 +5,6 @@ import com.epam.volunteer.dto.AbstractDTO;
 public class BaseDonationDTO extends AbstractDTO {
     private int count;
 
-    public BaseDonationDTO() {
-    }
-
     public int getCount() {
         return count;
     }

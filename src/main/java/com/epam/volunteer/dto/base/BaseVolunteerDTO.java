@@ -6,9 +6,6 @@ public class BaseVolunteerDTO extends AbstractDTO {
     private String name;
     private String email;
 
-    public BaseVolunteerDTO() {
-    }
-
     public String getName() {
         return name;
     }
