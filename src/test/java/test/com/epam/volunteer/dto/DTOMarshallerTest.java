@@ -1,6 +1,5 @@
 package test.com.epam.volunteer.dto;
 
-import com.epam.volunteer.dao.DonationDAO;
 import com.epam.volunteer.dto.AbstractDTO;
 import com.epam.volunteer.dto.DTOType;
 import com.epam.volunteer.dto.base.BaseMedicamentDTO;

@@ -20,6 +20,7 @@ import java.util.Optional;
 
 public class DTOMarshaller {
 
+    private DTOMarshaller() {}
 
     public static AbstractDTO marshalDTO(Object object, DTOType type) {
         if (object != null) {

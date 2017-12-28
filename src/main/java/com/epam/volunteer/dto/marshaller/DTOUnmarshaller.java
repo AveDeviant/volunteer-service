@@ -17,6 +17,8 @@ import java.util.Optional;
 
 public class DTOUnmarshaller {
 
+    private DTOUnmarshaller() {
+    }
 
     public static AbstractEntity unmarshalDTO(AbstractDTO dto) {
         if (dto != null) {
