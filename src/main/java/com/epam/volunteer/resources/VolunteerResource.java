@@ -6,9 +6,11 @@ import com.epam.volunteer.dto.base.BaseVolunteerDTO;
 import com.epam.volunteer.dto.marshaller.DTOMarshaller;
 import com.epam.volunteer.dto.marshaller.DTOUnmarshaller;
 import com.epam.volunteer.entity.Volunteer;
+import com.epam.volunteer.manager.EntityManagerWrapper;
 import com.epam.volunteer.response.ServerMessage;
 import com.epam.volunteer.service.VolunteerService;
 import com.epam.volunteer.service.exception.ServiceException;
+import com.epam.volunteer.service.impl.VolunteerServiceImpl;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
@@ -30,6 +32,7 @@ public class VolunteerResource extends AbstractResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getById(@PathParam("id") long id) {
         try {
+            provideInitialization();
             Volunteer volunteer = volunteerService.getById(id);
             if (volunteer != null) {
                 AbstractDTO dto = DTOMarshaller.marshalDTO(volunteer, DTOType.EXTENDED);
@@ -45,6 +48,7 @@ public class VolunteerResource extends AbstractResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAll() {
         try {
+            provideInitialization();
             List<Volunteer> volunteerList = volunteerService.getAll();
             List<AbstractDTO> abstractDTOs = DTOMarshaller.marshalDTOList(volunteerList, DTOType.BASIC);
             return Response.ok(abstractDTOs).build();
@@ -59,6 +63,7 @@ public class VolunteerResource extends AbstractResource {
     public Response addNew(BaseVolunteerDTO volunteerDTO, @Context UriInfo uriInfo) {
         try {
             if (Optional.ofNullable(volunteerDTO).isPresent()) {
+                provideInitialization();
                 Volunteer volunteer = (Volunteer) DTOUnmarshaller.unmarshalDTO(volunteerDTO);
                 Volunteer result = volunteerService.addNew(volunteer);
                 if (Optional.ofNullable(result).isPresent()) {
@@ -76,5 +81,9 @@ public class VolunteerResource extends AbstractResource {
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    private void provideInitialization() {
+        volunteerService = Optional.ofNullable(volunteerService).orElse(new VolunteerServiceImpl());
     }
 }

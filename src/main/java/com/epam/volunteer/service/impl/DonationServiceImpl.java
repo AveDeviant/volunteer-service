@@ -1,8 +1,8 @@
 package com.epam.volunteer.service.impl;
 
 import com.epam.volunteer.dao.DonationDAO;
-import com.epam.volunteer.dao.MedicamentDAO;
 import com.epam.volunteer.dao.exception.DAOException;
+import com.epam.volunteer.dao.impl.DonationDAOImpl;
 import com.epam.volunteer.entity.Donation;
 import com.epam.volunteer.entity.Medicament;
 import com.epam.volunteer.service.DonationService;
@@ -41,7 +41,8 @@ public class DonationServiceImpl extends AbstractService implements DonationServ
             }
             try {
                 lock.lock();
-                Medicament medicament = medicamentService.getById(donation.getMedicament().getId(),true);
+                provideInitialization();
+                Medicament medicament = medicamentService.getById(donation.getMedicament().getId(), true);
                 if (Optional.ofNullable(medicament).isPresent()) {
                     LocalDateTime dateTime = LocalDateTime.now();
                     donation.setTime(dateTime);
@@ -60,5 +61,10 @@ public class DonationServiceImpl extends AbstractService implements DonationServ
             getLogger().log(Level.ERROR, e.getMessage());
             throw new ServiceException(e);
         }
+    }
+
+    private void provideInitialization() {
+        medicamentService = Optional.ofNullable(medicamentService).orElse(new MedicamentServiceImpl());
+        donationDAO = Optional.ofNullable(donationDAO).orElse(new DonationDAOImpl());
     }
 }

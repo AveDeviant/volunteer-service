@@ -3,6 +3,7 @@ package com.epam.volunteer.dao.impl;
 import com.epam.volunteer.dao.EmployeeDAO;
 import com.epam.volunteer.dao.exception.DAOException;
 import com.epam.volunteer.entity.Employee;
+import com.epam.volunteer.manager.EntityManagerWrapper;
 import org.apache.logging.log4j.Level;
 
 import javax.inject.Inject;
@@ -12,6 +13,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.util.List;
+import java.util.Optional;
 
 public class EmployeeDAOImpl extends AbstractDAO implements EmployeeDAO {
     private EntityManager entityManager;
@@ -24,6 +26,7 @@ public class EmployeeDAOImpl extends AbstractDAO implements EmployeeDAO {
     @Override
     public Employee getByEmail(String email) throws DAOException {
         try {
+            entityManager = Optional.ofNullable(entityManager).orElse(EntityManagerWrapper.getInstance());
             CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
             CriteriaQuery<Employee> criteriaQuery = criteriaBuilder.createQuery(Employee.class);
             Root<Employee> sm = criteriaQuery.from(Employee.class);

@@ -2,6 +2,7 @@ package com.epam.volunteer.service.impl;
 
 import com.epam.volunteer.dao.VolunteerDAO;
 import com.epam.volunteer.dao.exception.DAOException;
+import com.epam.volunteer.dao.impl.VolunteerDAOImpl;
 import com.epam.volunteer.entity.Medicament;
 import com.epam.volunteer.entity.Volunteer;
 import com.epam.volunteer.service.MedicamentService;
@@ -32,6 +33,7 @@ public class VolunteerServiceImpl extends AbstractService implements VolunteerSe
     @Override
     public Volunteer getById(long id) throws ServiceException {
         try {
+            provideInitialization();
             if (volunteerDAO != null) {
                 return volunteerDAO.getById(id);
             }
@@ -45,6 +47,7 @@ public class VolunteerServiceImpl extends AbstractService implements VolunteerSe
     @Override
     public List<Volunteer> getAll() throws ServiceException {
         try {
+            provideInitialization();
             if (volunteerDAO != null) {
                 return volunteerDAO.getAll();
             }
@@ -59,6 +62,7 @@ public class VolunteerServiceImpl extends AbstractService implements VolunteerSe
     public Volunteer getByEmail(String email) throws ServiceException {
         if (Validator.checkEmail(email)) {
             try {
+                provideInitialization();
                 return volunteerDAO.getByEmail(email);
             } catch (DAOException e) {
                 getLogger().log(Level.ERROR, e.getMessage());
@@ -72,6 +76,7 @@ public class VolunteerServiceImpl extends AbstractService implements VolunteerSe
     public Volunteer addNew(Volunteer volunteer) throws ServiceException {
         if (Optional.ofNullable(volunteer).isPresent() && Validator.checkEmail(volunteer.getEmail())) {
             try {
+                provideInitialization();
                 return volunteerDAO.addNew(volunteer);
             } catch (DAOException e) {
                 getLogger().log(Level.ERROR, e.getMessage());
@@ -83,10 +88,16 @@ public class VolunteerServiceImpl extends AbstractService implements VolunteerSe
 
     @Override
     public boolean authorizationPassed(String email, long medicamentId) throws ServiceException {
+        provideInitialization();
         Medicament medicament = medicamentService.getById(medicamentId);
         if (Optional.ofNullable(medicament).isPresent()) {
             return medicament.getVolunteer().getEmail().equals(email);
         }
         return false;
+    }
+
+    private void provideInitialization() {
+        medicamentService = Optional.ofNullable(medicamentService).orElse(new MedicamentServiceImpl());
+        volunteerDAO = Optional.ofNullable(volunteerDAO).orElse(new VolunteerDAOImpl());
     }
 }

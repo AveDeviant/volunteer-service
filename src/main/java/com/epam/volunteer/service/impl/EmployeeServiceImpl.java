@@ -2,6 +2,7 @@ package com.epam.volunteer.service.impl;
 
 import com.epam.volunteer.dao.EmployeeDAO;
 import com.epam.volunteer.dao.exception.DAOException;
+import com.epam.volunteer.dao.impl.EmployeeDAOImpl;
 import com.epam.volunteer.entity.Employee;
 import com.epam.volunteer.service.EmployeeService;
 import com.epam.volunteer.service.exception.ServiceException;
@@ -10,6 +11,7 @@ import org.apache.logging.log4j.Level;
 import org.jvnet.hk2.annotations.Service;
 
 import javax.inject.Inject;
+import java.util.Optional;
 
 @Service
 public class EmployeeServiceImpl extends AbstractService implements EmployeeService {
@@ -22,9 +24,9 @@ public class EmployeeServiceImpl extends AbstractService implements EmployeeServ
 
     @Override
     public Employee getByEmail(String email) throws ServiceException {
-        getLogger().log(Level.INFO, email);
         if (Validator.checkEmail(email)) {
             try {
+                provideInitialization();
                 return employeeDAO.getByEmail(email);
             } catch (DAOException e) {
                 getLogger().log(Level.ERROR, e.getMessage());
@@ -32,5 +34,10 @@ public class EmployeeServiceImpl extends AbstractService implements EmployeeServ
             }
         }
         return null;
+    }
+
+
+    private void provideInitialization() {
+        employeeDAO = Optional.ofNullable(employeeDAO).orElse(new EmployeeDAOImpl());
     }
 }

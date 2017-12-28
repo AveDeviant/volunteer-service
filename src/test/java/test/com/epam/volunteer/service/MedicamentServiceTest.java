@@ -4,7 +4,6 @@ import com.epam.volunteer.dao.MedicamentDAO;
 import com.epam.volunteer.dao.exception.DAOException;
 import com.epam.volunteer.dao.impl.MedicamentDAOImpl;
 import com.epam.volunteer.entity.Medicament;
-import com.epam.volunteer.service.MedicamentService;
 import com.epam.volunteer.service.exception.ServiceException;
 import com.epam.volunteer.service.impl.MedicamentServiceImpl;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;

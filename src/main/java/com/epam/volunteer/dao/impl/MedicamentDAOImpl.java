@@ -4,6 +4,7 @@ package com.epam.volunteer.dao.impl;
 import com.epam.volunteer.dao.MedicamentDAO;
 import com.epam.volunteer.dao.exception.DAOException;
 import com.epam.volunteer.entity.Medicament;
+import com.epam.volunteer.manager.EntityManagerWrapper;
 import org.apache.logging.log4j.Level;
 import org.jvnet.hk2.annotations.Service;
 
@@ -15,6 +16,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -31,6 +33,7 @@ public class MedicamentDAOImpl extends AbstractDAO implements MedicamentDAO {
     @Override
     public List<Medicament> getAll() throws DAOException {
         try {
+            entityManager = Optional.ofNullable(entityManager).orElse(EntityManagerWrapper.getInstance());
             return entityManager.createQuery(SELECT_ALL).getResultList();
         } catch (Exception e) {
             getLogger().log(Level.ERROR, e.getMessage());
@@ -41,7 +44,6 @@ public class MedicamentDAOImpl extends AbstractDAO implements MedicamentDAO {
     @Override
     public Medicament getById(long id) throws DAOException {
         try {
-            getLogger().log(Level.INFO, entityManager.find(Medicament.class, id));
             entityManager.getEntityManagerFactory().getCache().evict(Medicament.class);
             return entityManager.find(Medicament.class, id);
         } catch (Exception e) {

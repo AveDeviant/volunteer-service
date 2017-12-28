@@ -7,6 +7,5 @@ import org.jvnet.hk2.annotations.Contract;
 @Contract
 public interface DonationService {
 
-
     Donation registerDonation(Donation donation) throws ServiceException;
 }

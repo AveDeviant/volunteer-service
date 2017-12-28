@@ -3,12 +3,14 @@ package com.epam.volunteer.dao.impl;
 import com.epam.volunteer.dao.DonationDAO;
 import com.epam.volunteer.dao.exception.DAOException;
 import com.epam.volunteer.entity.Donation;
+import com.epam.volunteer.manager.EntityManagerWrapper;
 import org.apache.logging.log4j.Level;
 import org.jvnet.hk2.annotations.Service;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
+import java.util.Optional;
 
 @Service
 public class DonationDAOImpl extends AbstractDAO implements DonationDAO {
@@ -23,6 +25,7 @@ public class DonationDAOImpl extends AbstractDAO implements DonationDAO {
     public Donation addDonation(Donation donation, boolean markAsCompleted) throws DAOException {
         EntityTransaction transaction = null;
         try {
+            entityManager = Optional.ofNullable(entityManager).orElse(EntityManagerWrapper.getInstance());
             transaction = entityManager.getTransaction();
             transaction.begin();
             entityManager.persist(donation);

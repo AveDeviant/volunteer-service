@@ -1,6 +1,8 @@
 package com.epam.volunteer.manager;
 
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
 import org.jvnet.hk2.annotations.Service;
 
 
@@ -13,6 +15,8 @@ import javax.persistence.metamodel.Metamodel;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author Mikita Buslauski
@@ -20,14 +24,33 @@ import java.util.ResourceBundle;
 @Service
 public class EntityManagerWrapper implements EntityManager {
     private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("persistenceConfig");
+    private static AtomicBoolean isCreated = new AtomicBoolean(false);
+    private static ReentrantLock lock = new ReentrantLock();
     private static EntityManager entityManager;
+    private static EntityManagerWrapper wrapper;
 
-
-    public EntityManagerWrapper() {
+    private EntityManagerWrapper() {
         String schema = RESOURCE_BUNDLE.getString("persistence.unit");
         EntityManagerFactory managerFactory = Persistence.createEntityManagerFactory(schema);
         entityManager = managerFactory.createEntityManager();
+        LogManager.getLogger().log(Level.INFO, "JPA Entity Manager initialized.");
     }
+
+    public static EntityManager getInstance() {
+        if (!isCreated.get()) {
+            try {
+                lock.lock();
+                if (entityManager == null) {
+                    wrapper = new EntityManagerWrapper();
+                    isCreated.getAndSet(true);
+                }
+            } finally {
+                lock.unlock();
+            }
+        }
+        return wrapper;
+    }
+
 
     @Override
     public void persist(Object o) {
