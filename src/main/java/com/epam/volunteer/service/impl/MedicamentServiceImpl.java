@@ -94,9 +94,11 @@ public class MedicamentServiceImpl extends AbstractService implements Medicament
     public Medicament addNew(Medicament medicament) throws ServiceException {
         if (Optional.ofNullable(medicament).isPresent()) {
             try {
-                provideInitialization();
-                medicament.setStatus(true);
-                return medicamentDAO.addNew(medicament);
+                if (medicament.getRequirement() > medicament.getCurrentCount()) {
+                    provideInitialization();
+                    medicament.setStatus(true);
+                    return medicamentDAO.addNew(medicament);
+                }
             } catch (DAOException e) {
                 getLogger().log(Level.ERROR, e.getMessage());
                 throw new ServiceException(e);
