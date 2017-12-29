@@ -9,10 +9,7 @@ import com.epam.volunteer.dto.extended.DonationDTO;
 import com.epam.volunteer.dto.extended.EmployeeDTO;
 import com.epam.volunteer.dto.extended.MedicamentDTO;
 import com.epam.volunteer.dto.extended.VolunteerDTO;
-import com.epam.volunteer.entity.Donation;
-import com.epam.volunteer.entity.Employee;
-import com.epam.volunteer.entity.Medicament;
-import com.epam.volunteer.entity.Volunteer;
+import com.epam.volunteer.entity.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +38,7 @@ public class DTOMarshaller {
     }
 
 
-    public static List<AbstractDTO> marshalDTOList(List<? extends Object> objects, DTOType type) {
+    public static List<AbstractDTO> marshalDTOList(List<? extends AbstractEntity> objects, DTOType type) {
         List<AbstractDTO> abstractDTOS = new ArrayList<>();
         if (objects != null) {
             for (Object object : objects) {

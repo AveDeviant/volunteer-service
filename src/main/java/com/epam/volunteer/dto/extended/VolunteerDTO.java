@@ -2,12 +2,16 @@ package com.epam.volunteer.dto.extended;
 
 import com.epam.volunteer.dto.base.BaseMedicamentDTO;
 import com.epam.volunteer.dto.base.BaseVolunteerDTO;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.util.List;
 
+@ApiModel(value = "volunteerEx", parent = BaseVolunteerDTO.class)
 public class VolunteerDTO extends BaseVolunteerDTO {
     private List<BaseMedicamentDTO> medicamentDTOs;
 
+    @ApiModelProperty(value = "List of medicament")
     public List<BaseMedicamentDTO> getMedicamentDTO() {
         return medicamentDTOs;
     }

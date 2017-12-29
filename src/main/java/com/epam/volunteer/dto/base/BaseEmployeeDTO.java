@@ -1,11 +1,16 @@
 package com.epam.volunteer.dto.base;
 
 import com.epam.volunteer.dto.AbstractDTO;
+import com.epam.volunteer.dto.extended.EmployeeDTO;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
+@ApiModel(value = "employee", description = "A company employee.", subTypes = EmployeeDTO.class)
 public class BaseEmployeeDTO extends AbstractDTO {
     private String email;
     private String name;
 
+    @ApiModelProperty(value = "Employee email.")
     public String getEmail() {
         return email;
     }
@@ -14,6 +19,7 @@ public class BaseEmployeeDTO extends AbstractDTO {
         this.email = email;
     }
 
+    @ApiModelProperty(value = "Employee name.")
     public String getName() {
         return name;
     }

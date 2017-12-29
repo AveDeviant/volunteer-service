@@ -3,14 +3,18 @@ package com.epam.volunteer.dto.extended;
 import com.epam.volunteer.dto.base.BaseDonationDTO;
 import com.epam.volunteer.dto.base.BaseEmployeeDTO;
 import com.epam.volunteer.dto.base.BaseMedicamentDTO;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.time.LocalDateTime;
 
+@ApiModel(value = "donationEx", parent = BaseDonationDTO.class, description = "Donation to volunteers from a company employee")
 public class DonationDTO extends BaseDonationDTO {
     private LocalDateTime time;
     private BaseEmployeeDTO employeeDTO;
     private BaseMedicamentDTO medicamentDTO;
 
+    @ApiModelProperty(value = "Donation confirmation time.")
     public LocalDateTime getTime() {
         return time;
     }
@@ -19,7 +23,7 @@ public class DonationDTO extends BaseDonationDTO {
         this.time = time;
     }
 
-
+    @ApiModelProperty(value = "A company employee who made a donation.")
     public BaseEmployeeDTO getEmployeeDTO() {
         return employeeDTO;
     }
@@ -29,7 +33,7 @@ public class DonationDTO extends BaseDonationDTO {
         this.employeeDTO = employeeDTO;
     }
 
-
+    @ApiModelProperty(value = "Desired medicament")
     public BaseMedicamentDTO getMedicamentDTO() {
         return medicamentDTO;
     }

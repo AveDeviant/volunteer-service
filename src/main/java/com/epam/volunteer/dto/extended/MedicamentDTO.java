@@ -2,10 +2,14 @@ package com.epam.volunteer.dto.extended;
 
 import com.epam.volunteer.dto.base.BaseMedicamentDTO;
 import com.epam.volunteer.dto.base.BaseVolunteerDTO;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
+@ApiModel(value = "medicamentEx", parent = BaseMedicamentDTO.class, description = "Medicament that a volunteer needs.")
 public class MedicamentDTO extends BaseMedicamentDTO {
     private BaseVolunteerDTO volunteerDTO;
 
+    @ApiModelProperty(value = "Volunteer who needs medicament.")
     public BaseVolunteerDTO getVolunteerDTO() {
         return volunteerDTO;
     }

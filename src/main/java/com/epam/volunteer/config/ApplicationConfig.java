@@ -14,17 +14,17 @@ public class ApplicationConfig extends ResourceConfig {
     public ApplicationConfig() {
         packages("com.epam.volunteer.resource");
         register(new ApplicationBinder());
-        register(configureJSONProvider());
+        configureJSONProvider();
         configureSwagger();
     }
 
-    private  JacksonJaxbJsonProvider configureJSONProvider() {
+    private void configureJSONProvider() {
         ObjectMapper mapper = new ObjectMapper();
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
         //mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);          //Instead of custom DTO?
         JacksonJaxbJsonProvider provider = new JacksonJaxbJsonProvider();
         provider.setMapper(mapper);
-        return provider;
+        register(provider);
     }
 
     private void configureSwagger() {

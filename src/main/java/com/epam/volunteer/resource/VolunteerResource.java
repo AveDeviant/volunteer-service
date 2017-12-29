@@ -2,7 +2,10 @@ package com.epam.volunteer.resource;
 
 import com.epam.volunteer.dto.AbstractDTO;
 import com.epam.volunteer.dto.DTOType;
+import com.epam.volunteer.dto.base.BaseDonationDTO;
+import com.epam.volunteer.dto.base.BaseMedicamentDTO;
 import com.epam.volunteer.dto.base.BaseVolunteerDTO;
+import com.epam.volunteer.dto.extended.VolunteerDTO;
 import com.epam.volunteer.dto.marshaller.DTOMarshaller;
 import com.epam.volunteer.dto.marshaller.DTOUnmarshaller;
 import com.epam.volunteer.entity.Volunteer;
@@ -10,6 +13,8 @@ import com.epam.volunteer.response.ServerMessage;
 import com.epam.volunteer.service.VolunteerService;
 import com.epam.volunteer.service.exception.ServiceException;
 import com.epam.volunteer.service.impl.VolunteerServiceImpl;
+import io.swagger.annotations.*;
+import jdk.net.SocketFlow;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
@@ -18,6 +23,8 @@ import java.util.List;
 import java.util.Optional;
 
 @Path("/volunteer")
+@Api(value = "volunteer")
+@Produces("application/json")
 public class VolunteerResource extends AbstractResource {
     private VolunteerService volunteerService;
 
@@ -29,7 +36,14 @@ public class VolunteerResource extends AbstractResource {
     @GET
     @Path("/{id: [0-9]+ }")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getById(@PathParam("id") long id) {
+    @ApiOperation(value = "Get volunteer with specified ID.",
+            response = VolunteerDTO.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 404, message = "Volunteer with specified ID nor found."),
+            @ApiResponse(code = 500, message = "Internal error.")
+    })
+    public Response getById(@ApiParam(value = "Volunteer ID", required = true) @PathParam("id") long id) {
         try {
             provideInitialization();
             Volunteer volunteer = volunteerService.getById(id);
@@ -45,6 +59,12 @@ public class VolunteerResource extends AbstractResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Get all volunteers.",
+            response = BaseVolunteerDTO.class, responseContainer = "List")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 500, message = "Internal error.")
+    })
     public Response getAll() {
         try {
             provideInitialization();
@@ -59,7 +79,18 @@ public class VolunteerResource extends AbstractResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response addNew(BaseVolunteerDTO volunteerDTO, @Context UriInfo uriInfo) {
+    @ApiOperation(value = "Register a new volunteer.",
+            response = VolunteerDTO.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "OK", responseHeaders = {
+                    @ResponseHeader(name = "Location", description = "URL of created resource", response = String.class)}),
+            @ApiResponse(code = 500, message = "Internal error."),
+            @ApiResponse(code = 422, message = "Unprocessable entity/invalid email."),
+            @ApiResponse(code = 409, message = "Non-unique volunteer name/email"),
+            @ApiResponse(code = 400, message = "Bad request.")
+    })
+    public Response addNew(@ApiParam(value = "New volunteer object.", required = true)
+                                   BaseVolunteerDTO volunteerDTO, @Context UriInfo uriInfo) {
         try {
             if (Optional.ofNullable(volunteerDTO).isPresent()) {
                 provideInitialization();

@@ -1,13 +1,18 @@
 package com.epam.volunteer.dto.base;
 
 import com.epam.volunteer.dto.AbstractDTO;
+import com.epam.volunteer.dto.extended.MedicamentDTO;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
+@ApiModel(value = "medicament", description = "Medicament that a volunteer needs.", subTypes = {MedicamentDTO.class})
 public class BaseMedicamentDTO extends AbstractDTO {
     private String medicament;
     private int requirement;
     private int currentCount;
     private boolean status;
 
+    @ApiModelProperty(value = "Medicament title.")
     public String getMedicament() {
         return medicament;
     }
@@ -16,6 +21,7 @@ public class BaseMedicamentDTO extends AbstractDTO {
         this.medicament = medicament;
     }
 
+    @ApiModelProperty(value = "Medicament requirement.")
     public int getRequirement() {
         return requirement;
     }
@@ -24,6 +30,7 @@ public class BaseMedicamentDTO extends AbstractDTO {
         this.requirement = requirement;
     }
 
+    @ApiModelProperty(value = "Number of medicament that already collected.")
     public int getCurrentCount() {
         return currentCount;
     }
@@ -32,6 +39,7 @@ public class BaseMedicamentDTO extends AbstractDTO {
         this.currentCount = currentCount;
     }
 
+    @ApiModelProperty(value = "Medicament actuality.")
     public boolean isStatus() {
         return status;
     }
