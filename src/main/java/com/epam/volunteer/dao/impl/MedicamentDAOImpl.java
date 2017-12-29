@@ -33,7 +33,7 @@ public class MedicamentDAOImpl extends AbstractDAO implements MedicamentDAO {
     @Override
     public List<Medicament> getAll() throws DAOException {
         try {
-            entityManager = Optional.ofNullable(entityManager).orElse(EntityManagerWrapper.getInstance());
+            provideInitialization();
             return entityManager.createQuery(SELECT_ALL).getResultList();
         } catch (Exception e) {
             getLogger().log(Level.ERROR, e.getMessage());
@@ -44,6 +44,7 @@ public class MedicamentDAOImpl extends AbstractDAO implements MedicamentDAO {
     @Override
     public Medicament getById(long id) throws DAOException {
         try {
+            provideInitialization();
             entityManager.getEntityManagerFactory().getCache().evict(Medicament.class);
             return entityManager.find(Medicament.class, id);
         } catch (Exception e) {
@@ -55,6 +56,7 @@ public class MedicamentDAOImpl extends AbstractDAO implements MedicamentDAO {
     @Override
     public List<Medicament> getFormatted(int page, int size) throws DAOException {
         try {
+            provideInitialization();
             CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
             CriteriaQuery<Medicament> criteriaQuery = criteriaBuilder.createQuery(Medicament.class);
             Root<Medicament> sm = criteriaQuery.from(Medicament.class);
@@ -73,6 +75,7 @@ public class MedicamentDAOImpl extends AbstractDAO implements MedicamentDAO {
     public Medicament addNew(Medicament medicament) throws DAOException {
         EntityTransaction transaction = null;
         try {
+            provideInitialization();
             transaction = entityManager.getTransaction();
             transaction.begin();
             entityManager.persist(medicament);
@@ -92,6 +95,7 @@ public class MedicamentDAOImpl extends AbstractDAO implements MedicamentDAO {
     public Medicament update(long id, Medicament medicament) throws DAOException {
         EntityTransaction transaction = null;
         try {
+            provideInitialization();
             transaction = entityManager.getTransaction();
             transaction.begin();
             Medicament entity = entityManager.find(Medicament.class, id);
@@ -114,6 +118,7 @@ public class MedicamentDAOImpl extends AbstractDAO implements MedicamentDAO {
     public void delete(long id) throws DAOException {
         EntityTransaction transaction = null;
         try {
+            provideInitialization();
             transaction = entityManager.getTransaction();
             transaction.begin();
             Medicament medicament = entityManager.find(Medicament.class, id);
@@ -133,9 +138,14 @@ public class MedicamentDAOImpl extends AbstractDAO implements MedicamentDAO {
     @Override
     public long countActual() throws DAOException {
         try {
+            provideInitialization();
             return entityManager.createNamedQuery(QUERY_COUNT_ACTUAL, Long.class).getSingleResult();
         } catch (Exception e) {
             throw new DAOException(e.getMessage());
         }
+    }
+
+    private void provideInitialization() {
+        entityManager = Optional.ofNullable(entityManager).orElse(EntityManagerWrapper.getInstance());
     }
 }

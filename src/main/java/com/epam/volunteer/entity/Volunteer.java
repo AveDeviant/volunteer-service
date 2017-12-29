@@ -10,7 +10,8 @@ import java.util.List;
 @Table(name = "volunteer")
 @NamedQueries({
         @NamedQuery(name = "Volunteer.getAll",
-                query = "SELECT v FROM Volunteer v")
+                query = "SELECT v FROM Volunteer v"),
+        @NamedQuery(name = "Volunteer.countAll", query = "SELECT COUNT(v) FROM Volunteer v")
 })
 public class Volunteer extends AbstractEntity implements Serializable {
     @Id

@@ -1,33 +1,27 @@
-package test.com.epam.volunteer.resources;
+package test.com.epam.volunteer.resource;
 
 
 import com.epam.volunteer.dto.AbstractDTO;
 import com.epam.volunteer.dto.DTOType;
-import com.epam.volunteer.dto.base.BaseDonationDTO;
-import com.epam.volunteer.dto.extended.DonationDTO;
 import com.epam.volunteer.dto.extended.MedicamentDTO;
 import com.epam.volunteer.dto.marshaller.DTOMarshaller;
 import com.epam.volunteer.dto.marshaller.DTOUnmarshaller;
 import com.epam.volunteer.entity.*;
-import com.epam.volunteer.resources.MedicamentResource;
+import com.epam.volunteer.resource.MedicamentResource;
 import com.epam.volunteer.service.*;
 import com.epam.volunteer.service.impl.*;
 import com.epam.volunteer.service.exception.ServiceException;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 
 
-import javax.servlet.MultipartConfigElement;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.*;
-import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -117,7 +111,7 @@ public class MedicamentResourceTest extends JerseyTest {
         available.add(medicament);
         available.add(medicament2);
         Mockito.when(medicamentService.getAllActual(1, 2)).thenReturn(available);
-        Mockito.when(linkService.buildLinks(1, 2, Mockito.mock(UriInfo.class))).thenReturn(new Link[]{Link.fromUri("").build()});
+        Mockito.when(linkService.buildLinks(1, 2, Mockito.mock(UriInfo.class), Medicament.class)).thenReturn(new Link[]{Link.fromUri("").build()});
         Response response = target("/medicament").request().get();
         Assert.assertEquals(response.getStatus(), 200);
         List<AbstractDTO> expected = DTOMarshaller.marshalDTOList(available, DTOType.BASIC);

@@ -25,7 +25,7 @@ public class DonationDAOImpl extends AbstractDAO implements DonationDAO {
     public Donation addDonation(Donation donation, boolean markAsCompleted) throws DAOException {
         EntityTransaction transaction = null;
         try {
-            entityManager = Optional.ofNullable(entityManager).orElse(EntityManagerWrapper.getInstance());
+            provideInitialization();
             transaction = entityManager.getTransaction();
             transaction.begin();
             entityManager.persist(donation);
@@ -45,5 +45,9 @@ public class DonationDAOImpl extends AbstractDAO implements DonationDAO {
             getLogger().log(Level.ERROR, e.getMessage());
             throw new DAOException(e);
         }
+    }
+
+    private void provideInitialization() {
+        entityManager = Optional.ofNullable(entityManager).orElse(EntityManagerWrapper.getInstance());
     }
 }

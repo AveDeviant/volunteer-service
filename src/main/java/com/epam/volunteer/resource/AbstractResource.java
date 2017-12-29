@@ -1,10 +1,10 @@
-package com.epam.volunteer.resources;
+package com.epam.volunteer.resource;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * Created by Acer on 12/11/2017.
+ * @author Mikita Buslauski
  */
 abstract class AbstractResource {
     static final Logger LOGGER = LogManager.getLogger();

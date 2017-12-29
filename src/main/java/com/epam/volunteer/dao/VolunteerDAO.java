@@ -11,7 +11,11 @@ public interface VolunteerDAO {
 
     List<Volunteer> getAll() throws DAOException;
 
+    List<Volunteer> getAll(int page, int size) throws DAOException;
+
     Volunteer getByEmail(String email) throws DAOException;
 
     Volunteer addNew(Volunteer volunteer) throws DAOException;
+
+    long countAll() throws DAOException;
 }

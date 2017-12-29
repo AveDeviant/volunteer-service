@@ -48,14 +48,26 @@ public class VolunteerServiceImpl extends AbstractService implements VolunteerSe
     public List<Volunteer> getAll() throws ServiceException {
         try {
             provideInitialization();
-            if (volunteerDAO != null) {
-                return volunteerDAO.getAll();
-            }
+            return volunteerDAO.getAll();
         } catch (DAOException e) {
             getLogger().log(Level.ERROR, e.getMessage());
             throw new ServiceException(e);
         }
-        return new ArrayList<>();
+    }
+
+    @Override
+    public List<Volunteer> getAll(int page, int size) throws ServiceException {
+        List<Volunteer> volunteers = new ArrayList<>();
+        try {
+            if (!(page <= 0) && !(size <= 0)) {
+                provideInitialization();
+                volunteers.addAll(volunteerDAO.getAll(page, size));
+            }
+            return volunteers;
+        } catch (DAOException e) {
+            getLogger().log(Level.ERROR, e.getMessage());
+            throw new ServiceException(e);
+        }
     }
 
     @Override
@@ -94,6 +106,17 @@ public class VolunteerServiceImpl extends AbstractService implements VolunteerSe
             return medicament.getVolunteer().getEmail().equals(email);
         }
         return false;
+    }
+
+    @Override
+    public long countAll() throws ServiceException {
+        provideInitialization();
+        try {
+            return volunteerDAO.countAll();
+        } catch (DAOException e) {
+            getLogger().log(Level.ERROR, e.getMessage());
+            throw new ServiceException(e);
+        }
     }
 
     private void provideInitialization() {

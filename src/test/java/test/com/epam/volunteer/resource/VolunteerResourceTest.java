@@ -1,4 +1,4 @@
-package test.com.epam.volunteer.resources;
+package test.com.epam.volunteer.resource;
 
 import com.epam.volunteer.dto.AbstractDTO;
 import com.epam.volunteer.dto.DTOType;
@@ -6,7 +6,7 @@ import com.epam.volunteer.dto.extended.VolunteerDTO;
 import com.epam.volunteer.dto.marshaller.DTOMarshaller;
 import com.epam.volunteer.dto.marshaller.DTOUnmarshaller;
 import com.epam.volunteer.entity.Volunteer;
-import com.epam.volunteer.resources.VolunteerResource;
+import com.epam.volunteer.resource.VolunteerResource;
 import com.epam.volunteer.service.VolunteerService;
 import com.epam.volunteer.service.exception.ServiceException;
 import com.epam.volunteer.service.impl.VolunteerServiceImpl;

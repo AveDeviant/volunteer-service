@@ -1,6 +1,10 @@
 package com.epam.volunteer.service.impl;
 
+import com.epam.volunteer.entity.AbstractEntity;
+import com.epam.volunteer.entity.Medicament;
+import com.epam.volunteer.entity.Volunteer;
 import com.epam.volunteer.service.MedicamentService;
+import com.epam.volunteer.service.VolunteerService;
 import com.epam.volunteer.service.exception.ServiceException;
 import org.jvnet.hk2.annotations.Service;
 
@@ -23,23 +27,29 @@ public class LinkServiceImpl extends AbstractService implements com.epam.volunte
     private static final String QUERY_PARAM_PAGE = "page";
     private static final String CONTENT_TYPE = "application/json";
     private MedicamentService medicamentService;
+    private VolunteerService volunteerService;
 
     @Inject
     public void setMedicamentService(MedicamentService medicamentService) {
         this.medicamentService = medicamentService;
     }
 
+    @Inject
+    public void setVolunteerService(VolunteerService volunteerService) {
+        this.volunteerService = volunteerService;
+    }
 
     @Override
-    public Link[] buildLinks(int page, int pageOffset, UriInfo uriInfo) throws ServiceException {
+    public Link[] buildLinks(int page, int pageOffset, UriInfo uriInfo,
+                             Class<? extends AbstractEntity> cl) throws ServiceException {
         List<Link> links = new ArrayList<>();
         if (Optional.ofNullable(uriInfo).isPresent()) {
             Link self = Link.fromUri(uriInfo.getRequestUri()).rel(SELF_REF).build();
             links.add(self);
             links.add(buildFirstLink(pageOffset, uriInfo));
-            links.add(buildLastLink(pageOffset, uriInfo));
+            links.add(buildLastLink(pageOffset, uriInfo, cl));
             links.add(buildPreviousLink(page, pageOffset, uriInfo));
-            links.add(buildNextLink(page, pageOffset, uriInfo));
+            links.add(buildNextLink(page, pageOffset, uriInfo, cl));
         }
         Link[] array = new Link[links.size()];
         array = links.toArray(array);
@@ -57,8 +67,9 @@ public class LinkServiceImpl extends AbstractService implements com.epam.volunte
                 .build();
     }
 
-    private Link buildLastLink(int pageOffset, UriInfo uriInfo) throws ServiceException {
-        long lastPage = calculateLastPage(pageOffset);
+    private Link buildLastLink(int pageOffset, UriInfo uriInfo,
+                               Class<? extends AbstractEntity> cl) throws ServiceException {
+        long lastPage = calculateLastPage(pageOffset, cl);
         UriBuilder builderLast = uriInfo.getAbsolutePathBuilder();
         builderLast.queryParam(QUERY_PARAM_PAGE, lastPage);
         builderLast.queryParam(QUERY_PARAM_SIZE, pageOffset);
@@ -81,8 +92,9 @@ public class LinkServiceImpl extends AbstractService implements com.epam.volunte
         return Link.fromUri("").rel(PREVIOUS_REF).build();
     }
 
-    private Link buildNextLink(int page, int pageOffset, UriInfo uriInfo) throws ServiceException {
-        long lastPage = calculateLastPage(pageOffset);
+    private Link buildNextLink(int page, int pageOffset, UriInfo uriInfo,
+                               Class<? extends AbstractEntity> cl) throws ServiceException {
+        long lastPage = calculateLastPage(pageOffset, cl);
         if (page < lastPage && pageOffset > 0) {
             UriBuilder builderPrev = uriInfo.getAbsolutePathBuilder();
             builderPrev.queryParam(QUERY_PARAM_PAGE, page + 1);
@@ -95,10 +107,15 @@ public class LinkServiceImpl extends AbstractService implements com.epam.volunte
         return Link.fromUri("").rel(NEXT_REF).build();
     }
 
-
-    private long calculateLastPage(int pageOffset) throws ServiceException {
+    private long calculateLastPage(int pageOffset, Class<? extends AbstractEntity> cl) throws ServiceException {
         provideInitialization();
-        long count = medicamentService.countActual();
+        long count = 0;
+        //workaround
+        if (Medicament.class == cl) {
+            count = medicamentService.countActual();
+        } else if (Volunteer.class == cl) {
+            count = volunteerService.countAll();
+        }
         long lastPage = count;
         if (pageOffset > 0) {
             lastPage = count / pageOffset;

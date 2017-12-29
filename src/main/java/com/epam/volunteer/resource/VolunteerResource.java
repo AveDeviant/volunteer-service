@@ -1,4 +1,4 @@
-package com.epam.volunteer.resources;
+package com.epam.volunteer.resource;
 
 import com.epam.volunteer.dto.AbstractDTO;
 import com.epam.volunteer.dto.DTOType;
@@ -6,7 +6,6 @@ import com.epam.volunteer.dto.base.BaseVolunteerDTO;
 import com.epam.volunteer.dto.marshaller.DTOMarshaller;
 import com.epam.volunteer.dto.marshaller.DTOUnmarshaller;
 import com.epam.volunteer.entity.Volunteer;
-import com.epam.volunteer.manager.EntityManagerWrapper;
 import com.epam.volunteer.response.ServerMessage;
 import com.epam.volunteer.service.VolunteerService;
 import com.epam.volunteer.service.exception.ServiceException;

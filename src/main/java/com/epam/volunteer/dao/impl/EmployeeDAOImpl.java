@@ -26,6 +26,7 @@ public class EmployeeDAOImpl extends AbstractDAO implements EmployeeDAO {
     @Override
     public Employee getByEmail(String email) throws DAOException {
         try {
+            provideInitialization();
             entityManager = Optional.ofNullable(entityManager).orElse(EntityManagerWrapper.getInstance());
             CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
             CriteriaQuery<Employee> criteriaQuery = criteriaBuilder.createQuery(Employee.class);
@@ -42,5 +43,9 @@ public class EmployeeDAOImpl extends AbstractDAO implements EmployeeDAO {
             getLogger().log(Level.ERROR, e.getMessage());
             throw new DAOException(e);
         }
+    }
+
+    private void provideInitialization() {
+        entityManager = Optional.ofNullable(entityManager).orElse(EntityManagerWrapper.getInstance());
     }
 }

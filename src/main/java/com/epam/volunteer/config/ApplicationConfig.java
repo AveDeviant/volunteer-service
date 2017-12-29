@@ -12,7 +12,7 @@ import javax.ws.rs.ApplicationPath;
 @ApplicationPath("rest")
 public class ApplicationConfig extends ResourceConfig {
     public ApplicationConfig() {
-        packages("com.epam.volunteer.resources");
+        packages("com.epam.volunteer.resource");
         register(new ApplicationBinder());
         register(configureJSONProvider());
         configureSwagger();
@@ -36,7 +36,7 @@ public class ApplicationConfig extends ResourceConfig {
         config.setSchemes(new String[]{"http"});
         config.setHost("localhost:8000");
         config.setBasePath("/pet-volunteer/rest");
-        config.setResourcePackage("com.epam.volunteer.resources");
+        config.setResourcePackage("com.epam.volunteer.resource");
         config.setPrettyPrint(true);
         config.setScan(true);
     }

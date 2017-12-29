@@ -1,4 +1,4 @@
-package com.epam.volunteer.resources;
+package com.epam.volunteer.resource;
 
 
 import com.epam.volunteer.dto.AbstractDTO;
@@ -70,10 +70,14 @@ public class MedicamentResource extends AbstractResource {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", responseHeaders = {@ResponseHeader(name = "Link", description =
                     "Link to the current page of medicament list ", response = Link.class),
-                    @ResponseHeader(name = "Link", description = "Link to the first page of the medicament list"),
-                    @ResponseHeader(name = "Link", description = "Link to the last page of the medicament list"),
-                    @ResponseHeader(name = "Link", description = "Link to the previous page of the medicament list"),
-                    @ResponseHeader(name = "Link", description = "Link to the next page of the medicament list")}),
+                    @ResponseHeader(name = "Link", description = "Link to the first page of the medicament list",
+                            response = Link.class),
+                    @ResponseHeader(name = "Link", description = "Link to the last page of the medicament list",
+                            response = Link.class),
+                    @ResponseHeader(name = "Link", description = "Link to the previous page of the medicament list",
+                            response = Link.class),
+                    @ResponseHeader(name = "Link", description = "Link to the next page of the medicament list",
+                            response = Link.class)}),
             @ApiResponse(code = 500, message = "Internal error.")
     })
     public Response getMedicament(@ApiParam(value = "page") @QueryParam("page") @DefaultValue("1") int page,
@@ -81,11 +85,14 @@ public class MedicamentResource extends AbstractResource {
         try {
             provideInitialization();
             List<Medicament> medicament = medicamentService.getAllActual(page, size);
-            List<AbstractDTO> dto = DTOMarshaller.marshalDTOList(medicament, DTOType.BASIC);
-            Link[] links = linkService.buildLinks(page, size, uriInfo);
-            return Response.ok(dto)
-                    .links(links)
-                    .build();
+            if (!medicament.isEmpty()) {
+                List<AbstractDTO> dto = DTOMarshaller.marshalDTOList(medicament, DTOType.BASIC);
+                Link[] links = linkService.buildLinks(page, size, uriInfo, Medicament.class);
+                return Response.ok(dto)
+                        .links(links)
+                        .build();
+            }
+            return Response.status(Response.Status.NOT_FOUND).build();
         } catch (ServiceException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } catch (Exception e) {
@@ -98,8 +105,9 @@ public class MedicamentResource extends AbstractResource {
     @Path("/{id : [0-9]+ }")
     @Produces(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Get medicament with specified ID.", notes = "Authorization header should be provided in case" +
-            " user attempts to access the  medicament that is already unavailable. In this case only a volunteer who" +
-            " exposed this medicament can access this resource. It is assumed that an email address will be sent via the authorization header.",
+            " user attempts to access the medicament that is already unavailable. In this case only a volunteer who" +
+            " exposed this medicament can access this resource. It is assumed that an email address will be sent via the" +
+            " authorization header (mock authorization)).",
             authorizations = {@Authorization(value = "authorization_header")}, response = MedicamentDTO.class)
     public Response getById(@ApiParam(value = "Medicament ID", required = true) @PathParam("id") long id,
                             @ApiParam(value = "Authorization") @HeaderParam(HttpHeaders.AUTHORIZATION) String email) {
