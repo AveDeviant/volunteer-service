@@ -125,7 +125,8 @@ public class MedicamentResource extends AbstractResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Add new medicament to the list.", notes = "Authorization header must be provided. It is" +
+    @ApiOperation(value = "Add new medicament to the list.", notes = "Note: new medicament becomes available even if" +
+            " medicament status equals to false. Authorization header must be provided. It is" +
             " assumed that volunteer email will be sent via the authorization header (MOCK AUTHORIZATION!).",
             response = MedicamentDTO.class,
             authorizations = {@Authorization(value = "authorization_header")})
