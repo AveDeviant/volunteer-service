@@ -24,33 +24,15 @@ import java.util.concurrent.locks.ReentrantLock;
 @Service
 public class EntityManagerWrapper implements EntityManager {
     private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("persistenceConfig");
-    private static AtomicBoolean isCreated = new AtomicBoolean(false);
-    private static ReentrantLock lock = new ReentrantLock();
     private static EntityManager entityManager;
-    private static EntityManagerWrapper wrapper;
 
-    private EntityManagerWrapper() {
+
+    public EntityManagerWrapper() {
         String schema = RESOURCE_BUNDLE.getString("persistence.unit");
         EntityManagerFactory managerFactory = Persistence.createEntityManagerFactory(schema);
         entityManager = managerFactory.createEntityManager();
         LogManager.getLogger().log(Level.INFO, "JPA Entity Manager initialized.");
     }
-
-    public static EntityManager getInstance() {
-        if (!isCreated.get()) {
-            try {
-                lock.lock();
-                if (entityManager == null) {
-                    wrapper = new EntityManagerWrapper();
-                    isCreated.getAndSet(true);
-                }
-            } finally {
-                lock.unlock();
-            }
-        }
-        return wrapper;
-    }
-
 
     @Override
     public void persist(Object o) {

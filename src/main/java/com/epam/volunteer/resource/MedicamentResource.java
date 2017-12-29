@@ -16,7 +16,6 @@ import com.epam.volunteer.entity.Volunteer;
 import com.epam.volunteer.response.ServerMessage;
 import com.epam.volunteer.service.*;
 import com.epam.volunteer.service.exception.ServiceException;
-import com.epam.volunteer.service.impl.*;
 import io.swagger.annotations.*;
 import org.apache.logging.log4j.Level;
 
@@ -76,7 +75,6 @@ public class MedicamentResource extends AbstractResource {
     public Response getMedicament(@ApiParam(value = "page") @QueryParam("page") @DefaultValue("1") int page,
                                   @ApiParam(value = "offset") @QueryParam("size") @DefaultValue("2") int size) {
         try {
-            provideInitialization();
             List<Medicament> medicament = medicamentService.getAllActual(page, size);
             if (!medicament.isEmpty()) {
                 List<AbstractDTO> dto = DTOMarshaller.marshalDTOList(medicament, DTOType.BASIC);
@@ -107,10 +105,9 @@ public class MedicamentResource extends AbstractResource {
     public Response getById(@ApiParam(value = "Medicament ID", required = true) @PathParam("id") long id,
                             @ApiParam(value = "Authorization") @HeaderParam(HttpHeaders.AUTHORIZATION) String email) {
         try {
-            provideInitialization();
             Medicament medicament = medicamentService.getById(id);
             if (medicament != null) {    //workaround below
-                if (medicament.isStatus() || (!medicament.isStatus() && volunteerService.authorizationPassed(email, id))) {
+                if (medicament.isActual() || (!medicament.isActual() && volunteerService.authorizationPassed(email, id))) {
                     AbstractDTO dto = DTOMarshaller.marshalDTO(medicament, DTOType.EXTENDED);
                     return Response.ok(dto).build();
                 }
@@ -141,7 +138,6 @@ public class MedicamentResource extends AbstractResource {
                            @HeaderParam(HttpHeaders.AUTHORIZATION) String email) {
         try {
             if (Optional.ofNullable(medicament.getMedicament()).isPresent()) {
-                provideInitialization();
                 Volunteer volunteer = volunteerService.getByEmail(email);
                 if (!Optional.ofNullable(volunteer).isPresent()) {
                     return Response.status(Response.Status.UNAUTHORIZED).build();
@@ -167,7 +163,7 @@ public class MedicamentResource extends AbstractResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/{id: [0-9]+ }/donation")
+    @Path("/{id: [0-9]+ }/donations")
     @ApiOperation(value = "Make a donation for specified medicament.", notes = "Company employee sends the amount of donation" +
             " he wants to make. Authorization header must be provided. It is assumed that employee email will be sent via" +
             " authorization header (MOCK AUTHORIZATION!).",
@@ -185,7 +181,6 @@ public class MedicamentResource extends AbstractResource {
                                    @ApiParam(value = "Authorization", required = true)
                                    @HeaderParam(HttpHeaders.AUTHORIZATION) String employeeEmail) {
         try {
-            provideInitialization();
             Medicament medicament = medicamentService.getById(id, true);
             if (Optional.ofNullable(medicament).isPresent()) {
                 Employee employee = employeeService.getByEmail(employeeEmail);
@@ -232,7 +227,6 @@ public class MedicamentResource extends AbstractResource {
                            @HeaderParam(HttpHeaders.AUTHORIZATION) String volunteerEmail) {
         try {
             if (Optional.ofNullable(medicamentDTO).isPresent()) {
-                provideInitialization();
                 if (!volunteerService.authorizationPassed(volunteerEmail, id)) {
                     return Response.status(Response.Status.UNAUTHORIZED).build();
                 }
@@ -266,7 +260,6 @@ public class MedicamentResource extends AbstractResource {
                            @ApiParam(value = "Authorization", required = true)
                            @HeaderParam(HttpHeaders.AUTHORIZATION) String volunteerEmail) {
         try {
-            provideInitialization();
             if (volunteerService.authorizationPassed(volunteerEmail, id)) {  // "authorization"
                 medicamentService.delete(id);
                 return Response.noContent().build();
@@ -278,12 +271,4 @@ public class MedicamentResource extends AbstractResource {
         }
     }
 
-
-    private void provideInitialization() {
-        employeeService = Optional.ofNullable(employeeService).orElse(new EmployeeServiceImpl());
-        donationService = Optional.ofNullable(donationService).orElse(new DonationServiceImpl());
-        medicamentService = Optional.ofNullable(medicamentService).orElse(new MedicamentServiceImpl());
-        volunteerService = Optional.ofNullable(volunteerService).orElse(new VolunteerServiceImpl());
-        linkService = Optional.ofNullable(linkService).orElse(new LinkServiceImpl());
-    }
 }

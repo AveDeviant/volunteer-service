@@ -9,15 +9,15 @@ import java.util.List;
 
 @ApiModel(value = "volunteerEx", parent = BaseVolunteerDTO.class)
 public class VolunteerDTO extends BaseVolunteerDTO {
-    private List<BaseMedicamentDTO> medicamentDTOs;
+    private List<BaseMedicamentDTO> medicament;
 
     @ApiModelProperty(value = "List of medicament")
     public List<BaseMedicamentDTO> getMedicamentDTO() {
-        return medicamentDTOs;
+        return medicament;
     }
 
     public void setMedicamentDTO(List<BaseMedicamentDTO> medicamentDTOs) {
-        this.medicamentDTOs = medicamentDTOs;
+        this.medicament = medicamentDTOs;
     }
 
     @Override
@@ -28,20 +28,20 @@ public class VolunteerDTO extends BaseVolunteerDTO {
 
         VolunteerDTO that = (VolunteerDTO) o;
 
-        return medicamentDTOs != null ? medicamentDTOs.equals(that.medicamentDTOs) : that.medicamentDTOs == null;
+        return medicament != null ? medicament.equals(that.medicament) : that.medicament == null;
     }
 
     @Override
     public int hashCode() {
         int result = super.hashCode();
-        result = 31 * result + (medicamentDTOs != null ? medicamentDTOs.hashCode() : 0);
+        result = 31 * result + (medicament != null ? medicament.hashCode() : 0);
         return result;
     }
 
     @Override
     public String toString() {
         return "VolunteerDTO{ " + super.toString() +
-                " medicamentDTOs=" + medicamentDTOs +
+                " medicamentDTOs=" + medicament +
                 '}';
     }
 }

@@ -26,6 +26,7 @@ public class ApplicationBinder extends AbstractBinder {
     protected void configure() {
         bind(MedicamentDAOImpl.class).to(MedicamentDAO.class).in(Singleton.class);
         bind(MedicamentServiceImpl.class).to(MedicamentService.class).in(Singleton.class);
+        //TODO: remove scope?
         bindFactory(EntityManagerFactory.class).to(EntityManager.class).in(Singleton.class);
         bind(DonationServiceImpl.class).to(DonationService.class).in(Singleton.class);
         bind(DonationDAOImpl.class).to(DonationDAO.class).in(Singleton.class);

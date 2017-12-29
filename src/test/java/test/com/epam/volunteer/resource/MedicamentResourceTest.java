@@ -53,7 +53,7 @@ public class MedicamentResourceTest extends JerseyTest {
         Medicament medicament = new Medicament();
         medicament.setId(1);
         medicament.setMedicament("TEST");
-        medicament.setStatus(true);
+        medicament.setActual(true);
         medicament.setVolunteer(new Volunteer());
         Mockito.when(medicamentService.getById(1)).thenReturn(medicament);
         Response response = target("/medicament/1").request().get();
@@ -68,7 +68,7 @@ public class MedicamentResourceTest extends JerseyTest {
         Medicament medicament = new Medicament();
         medicament.setId(1);
         medicament.setMedicament("TEST");
-        medicament.setStatus(false);
+        medicament.setActual(false);
         Volunteer volunteer = new Volunteer();
         medicament.setVolunteer(volunteer);
         Mockito.when(medicamentService.getById(1)).thenReturn(medicament);
@@ -87,7 +87,7 @@ public class MedicamentResourceTest extends JerseyTest {
         Medicament medicament = new Medicament();
         medicament.setId(1);
         medicament.setMedicament("TEST");
-        medicament.setStatus(false);
+        medicament.setActual(false);
         Mockito.when(medicamentService.getById(1)).thenReturn(medicament);
         Response response = target("/medicament/1").request().get();
         assert Response.Status.FORBIDDEN.getStatusCode()==response.getStatus();
@@ -100,18 +100,19 @@ public class MedicamentResourceTest extends JerseyTest {
         Medicament medicament = new Medicament();
         medicament.setId(1);
         medicament.setMedicament("TEST");
-        medicament.setStatus(true);
+        medicament.setActual(true);
         medicament.setVolunteer(new Volunteer());
         Medicament medicament2 = new Medicament();
         medicament2.setId(2);
-        medicament2.setStatus(true);
+        medicament2.setActual(true);
         medicament2.setMedicament("TEST2");
         medicament2.setVolunteer(new Volunteer());
         List<Medicament> available = new ArrayList<>();
         available.add(medicament);
         available.add(medicament2);
         Mockito.when(medicamentService.getAllActual(1, 2)).thenReturn(available);
-        Mockito.when(linkService.buildLinks(1, 2, Mockito.mock(UriInfo.class), Medicament.class)).thenReturn(new Link[]{Link.fromUri("").build()});
+        Mockito.when(linkService.buildLinks(1, 2, Mockito.mock(UriInfo.class), Medicament.class))
+                .thenReturn(new Link[]{Link.fromUri("").build()});
         Response response = target("/medicament").request().get();
         Assert.assertEquals(response.getStatus(), 200);
         List<AbstractDTO> expected = DTOMarshaller.marshalDTOList(available, DTOType.BASIC);
@@ -133,7 +134,7 @@ public class MedicamentResourceTest extends JerseyTest {
         Medicament medicament = new Medicament();
         medicament.setId(1);
         medicament.setMedicament("test");
-        medicament.setStatus(true);
+        medicament.setActual(true);
         AbstractDTO dto = DTOMarshaller.marshalDTO(medicament, DTOType.BASIC);
         Entity<AbstractDTO> med = Entity.entity(dto, MediaType.APPLICATION_JSON);
         Mockito.when(volunteerService.getByEmail("test")).thenReturn(null);
@@ -149,7 +150,7 @@ public class MedicamentResourceTest extends JerseyTest {
         Medicament medicament = new Medicament();
         medicament.setId(1);
         medicament.setMedicament("test");
-        medicament.setStatus(true);
+        medicament.setActual(true);
         medicament.setRequirement(2);
         medicament.setCurrentCount(0);
         Volunteer volunteer = new Volunteer();
@@ -258,7 +259,7 @@ public class MedicamentResourceTest extends JerseyTest {
         AbstractDTO dto = DTOMarshaller.marshalDTO(donation, DTOType.BASIC);
         Entity<AbstractDTO> dtoEntity = Entity.entity(dto, MediaType.APPLICATION_JSON);
         Mockito.when(medicamentService.getById(1, true)).thenReturn(new Medicament());
-        Response response = target("/medicament/1/donation").request()
+        Response response = target("/medicament/1/donations").request()
                 .buildPost(dtoEntity).invoke();
         Assert.assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
     }
@@ -278,7 +279,7 @@ public class MedicamentResourceTest extends JerseyTest {
         Donation expected = new Donation();
         expected.setTime(LocalDateTime.now());
         Mockito.when(donationService.registerDonation(donation)).thenReturn(expected);
-        Response response = target("/medicament/1/donation").request().header(HttpHeaders.AUTHORIZATION, "test")
+        Response response = target("/medicament/1/donations").request().header(HttpHeaders.AUTHORIZATION, "test")
                 .buildPost(dtoEntity).invoke();
         Mockito.verify(donationService, times(1)).registerDonation(donation);
         Assert.assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());

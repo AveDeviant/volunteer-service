@@ -10,7 +10,7 @@ public class BaseMedicamentDTO extends AbstractDTO {
     private String medicament;
     private int requirement;
     private int currentCount;
-    private boolean status;
+    private boolean isActual;
 
     @ApiModelProperty(value = "Medicament title.")
     public String getMedicament() {
@@ -40,12 +40,12 @@ public class BaseMedicamentDTO extends AbstractDTO {
     }
 
     @ApiModelProperty(value = "Medicament actuality.")
-    public boolean isStatus() {
-        return status;
+    public boolean isActual() {
+        return isActual;
     }
 
-    public void setStatus(boolean status) {
-        this.status = status;
+    public void setActual(boolean status) {
+        this.isActual = status;
     }
 
     @Override
@@ -58,7 +58,7 @@ public class BaseMedicamentDTO extends AbstractDTO {
         if (getId() != that.getId()) return false;
         if (requirement != that.requirement) return false;
         if (currentCount != that.currentCount) return false;
-        if (status != that.status) return false;
+        if (isActual != that.isActual) return false;
         return medicament != null ? medicament.equals(that.medicament) : that.medicament == null;
     }
 
@@ -68,7 +68,7 @@ public class BaseMedicamentDTO extends AbstractDTO {
         result = 31 * result + (medicament != null ? medicament.hashCode() : 0);
         result = 31 * result + requirement;
         result = 31 * result + currentCount;
-        result = 31 * result + (status ? 1 : 0);
+        result = 31 * result + (isActual ? 1 : 0);
         return result;
     }
 
@@ -78,7 +78,7 @@ public class BaseMedicamentDTO extends AbstractDTO {
                 "medicament='" + medicament + '\'' +
                 ", requirement=" + requirement +
                 ", currentCount=" + currentCount +
-                ", status=" + status +
+                ", status=" + isActual +
                 '}';
     }
 }

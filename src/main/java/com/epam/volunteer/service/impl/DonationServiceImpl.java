@@ -41,7 +41,6 @@ public class DonationServiceImpl extends AbstractService implements DonationServ
             }
             try {
                 lock.lock();
-                provideInitialization();
                 Medicament medicament = medicamentService.getById(donation.getMedicament().getId(), true);
                 if (Optional.ofNullable(medicament).isPresent()) {
                     LocalDateTime dateTime = LocalDateTime.now();
@@ -63,8 +62,4 @@ public class DonationServiceImpl extends AbstractService implements DonationServ
         }
     }
 
-    private void provideInitialization() {
-        medicamentService = Optional.ofNullable(medicamentService).orElse(new MedicamentServiceImpl());
-        donationDAO = Optional.ofNullable(donationDAO).orElse(new DonationDAOImpl());
-    }
 }

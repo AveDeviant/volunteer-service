@@ -32,7 +32,6 @@ public class VolunteerDAOImpl extends AbstractDAO implements VolunteerDAO {
     @Override
     public Volunteer getById(long id) throws DAOException {
         try {
-            provideInitialization();
             return entityManager.find(Volunteer.class, id);
         } catch (Exception e) {
             getLogger().log(Level.ERROR, e.getMessage());
@@ -43,7 +42,6 @@ public class VolunteerDAOImpl extends AbstractDAO implements VolunteerDAO {
     @Override
     public List<Volunteer> getAll() throws DAOException {
         try {
-            provideInitialization();
             return entityManager.createNamedQuery(QUERY_GET_ALL, Volunteer.class).getResultList();
         } catch (Exception e) {
             getLogger().log(Level.ERROR, e.getMessage());
@@ -54,7 +52,6 @@ public class VolunteerDAOImpl extends AbstractDAO implements VolunteerDAO {
     @Override
     public List<Volunteer> getAll(int page, int size) throws DAOException {
         try {
-            provideInitialization();
             CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
             CriteriaQuery<Volunteer> criteriaQuery = criteriaBuilder.createQuery(Volunteer.class);
             TypedQuery<Volunteer> typedQuery = entityManager.createQuery(criteriaQuery);
@@ -70,7 +67,6 @@ public class VolunteerDAOImpl extends AbstractDAO implements VolunteerDAO {
     @Override
     public Volunteer getByEmail(String email) throws DAOException {
         try {
-            provideInitialization();
             CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
             CriteriaQuery<Volunteer> criteriaQuery = criteriaBuilder.createQuery(Volunteer.class);
             Root<Volunteer> sm = criteriaQuery.from(Volunteer.class);
@@ -91,7 +87,6 @@ public class VolunteerDAOImpl extends AbstractDAO implements VolunteerDAO {
     public Volunteer addNew(Volunteer volunteer) throws DAOException {
         EntityTransaction transaction = null;
         try {
-            provideInitialization();
             transaction = entityManager.getTransaction();
             transaction.begin();
             entityManager.persist(volunteer);
@@ -110,14 +105,10 @@ public class VolunteerDAOImpl extends AbstractDAO implements VolunteerDAO {
     @Override
     public long countAll() throws DAOException {
         try {
-            provideInitialization();
             return entityManager.createNamedQuery(QUERY_COUNT_ALL, Long.class).getSingleResult();
         } catch (Exception e) {
             throw new DAOException(e.getMessage());
         }
     }
 
-    private void provideInitialization() {
-        entityManager = Optional.ofNullable(entityManager).orElse(EntityManagerWrapper.getInstance());
-    }
 }

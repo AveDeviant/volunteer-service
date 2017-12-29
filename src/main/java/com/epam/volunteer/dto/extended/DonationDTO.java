@@ -11,8 +11,8 @@ import java.time.LocalDateTime;
 @ApiModel(value = "donationEx", parent = BaseDonationDTO.class, description = "Donation to volunteers from a company employee")
 public class DonationDTO extends BaseDonationDTO {
     private LocalDateTime time;
-    private BaseEmployeeDTO employeeDTO;
-    private BaseMedicamentDTO medicamentDTO;
+    private BaseEmployeeDTO employee;
+    private BaseMedicamentDTO medicament;
 
     @ApiModelProperty(value = "Donation confirmation time.")
     public LocalDateTime getTime() {
@@ -24,23 +24,23 @@ public class DonationDTO extends BaseDonationDTO {
     }
 
     @ApiModelProperty(value = "A company employee who made a donation.")
-    public BaseEmployeeDTO getEmployeeDTO() {
-        return employeeDTO;
+    public BaseEmployeeDTO getEmployee() {
+        return employee;
     }
 
 
     public void setEmployeeDTO(BaseEmployeeDTO employeeDTO) {
-        this.employeeDTO = employeeDTO;
+        this.employee = employeeDTO;
     }
 
     @ApiModelProperty(value = "Desired medicament")
-    public BaseMedicamentDTO getMedicamentDTO() {
-        return medicamentDTO;
+    public BaseMedicamentDTO getMedicament() {
+        return medicament;
     }
 
 
     public void setMedicamentDTO(BaseMedicamentDTO medicamentDTO) {
-        this.medicamentDTO = medicamentDTO;
+        this.medicament = medicamentDTO;
     }
 
     @Override
@@ -52,16 +52,16 @@ public class DonationDTO extends BaseDonationDTO {
         DonationDTO that = (DonationDTO) o;
 
         if (time != null ? !time.equals(that.time) : that.time != null) return false;
-        if (employeeDTO != null ? !employeeDTO.equals(that.employeeDTO) : that.employeeDTO != null) return false;
-        return medicamentDTO != null ? medicamentDTO.equals(that.medicamentDTO) : that.medicamentDTO == null;
+        if (employee != null ? !employee.equals(that.employee) : that.employee != null) return false;
+        return medicament != null ? medicament.equals(that.medicament) : that.medicament == null;
     }
 
     @Override
     public int hashCode() {
         int result = super.hashCode();
         result = 31 * result + (time != null ? time.hashCode() : 0);
-        result = 31 * result + (employeeDTO != null ? employeeDTO.hashCode() : 0);
-        result = 31 * result + (medicamentDTO != null ? medicamentDTO.hashCode() : 0);
+        result = 31 * result + (employee != null ? employee.hashCode() : 0);
+        result = 31 * result + (medicament != null ? medicament.hashCode() : 0);
         return result;
     }
 }

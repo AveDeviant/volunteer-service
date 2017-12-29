@@ -9,7 +9,7 @@ import java.io.Serializable;
 @NamedQueries({
         @NamedQuery(name = "Medicament.getAll",
                 query = "SELECT m FROM Medicament m"),
-        @NamedQuery(name = "Medicament.countActual", query = "SELECT COUNT(m) FROM Medicament m WHERE m.status=1")
+        @NamedQuery(name = "Medicament.countActual", query = "SELECT COUNT(m) FROM Medicament m WHERE m.isActual=1")
 })
 public class Medicament extends AbstractEntity implements Serializable {
     @Id
@@ -31,7 +31,7 @@ public class Medicament extends AbstractEntity implements Serializable {
     private int currentCount;
 
     @Column(name = "status")
-    private boolean status;
+    private boolean isActual;
 
     public Medicament() {
     }
@@ -77,12 +77,12 @@ public class Medicament extends AbstractEntity implements Serializable {
         this.currentCount = currentCount;
     }
 
-    public boolean isStatus() {
-        return status;
+    public boolean isActual() {
+        return isActual;
     }
 
-    public void setStatus(boolean status) {
-        this.status = status;
+    public void setActual(boolean actual) {
+        this.isActual = actual;
     }
 
     @Override
@@ -93,7 +93,7 @@ public class Medicament extends AbstractEntity implements Serializable {
                 ", volunteer=" + volunteer +
                 ", requirement=" + requirement +
                 ", currentCount=" + currentCount +
-                ", status=" + status +
+                ", isActual=" + isActual +
                 '}';
     }
 
@@ -107,7 +107,7 @@ public class Medicament extends AbstractEntity implements Serializable {
         if (id != that.id) return false;
         if (requirement != that.requirement) return false;
         if (currentCount != that.currentCount) return false;
-        if (status != that.status) return false;
+        if (isActual != that.isActual) return false;
         if (medicament != null ? !medicament.equals(that.medicament) : that.medicament != null) return false;
         return volunteer != null ? volunteer.equals(that.volunteer) : that.volunteer == null;
     }
@@ -119,7 +119,7 @@ public class Medicament extends AbstractEntity implements Serializable {
         result = 31 * result + (volunteer != null ? volunteer.hashCode() : 0);
         result = 31 * result + requirement;
         result = 31 * result + currentCount;
-        result = 31 * result + (status ? 1 : 0);
+        result = 31 * result + (isActual ? 1 : 0);
         return result;
     }
 }

@@ -29,9 +29,8 @@ public class MedicamentServiceImpl extends AbstractService implements Medicament
     public Medicament getById(long id, boolean status) throws ServiceException {
         Medicament medicament = null;
         try {
-            provideInitialization();
             medicament = medicamentDAO.getById(id);
-            if (medicament == null || medicament.isStatus() != status) {
+            if (medicament == null || medicament.isActual() != status) {
                 return null;
             }
             return medicament;
@@ -44,7 +43,6 @@ public class MedicamentServiceImpl extends AbstractService implements Medicament
     @Override
     public Medicament getById(long id) throws ServiceException {
         try {
-            provideInitialization();
             return medicamentDAO.getById(id);
         } catch (DAOException e) {
             getLogger().log(Level.ERROR, e.getMessage());
@@ -56,7 +54,6 @@ public class MedicamentServiceImpl extends AbstractService implements Medicament
     public List<Medicament> getAll() throws ServiceException {
         List<Medicament> medicament = new ArrayList<>();
         try {
-            provideInitialization();
             medicament.addAll(medicamentDAO.getAll());
             return medicament;
         } catch (DAOException e) {
@@ -68,7 +65,7 @@ public class MedicamentServiceImpl extends AbstractService implements Medicament
     @Override
     public List<Medicament> getAllActual() throws ServiceException {
         try {
-            return getAll().stream().filter(m -> m != null && m.isStatus()).collect(Collectors.toList());
+            return getAll().stream().filter(m -> m != null && m.isActual()).collect(Collectors.toList());
         } catch (ServiceException e) {
             getLogger().log(Level.ERROR, e.getMessage());
             throw new ServiceException(e);
@@ -80,7 +77,6 @@ public class MedicamentServiceImpl extends AbstractService implements Medicament
         List<Medicament> medicament = new ArrayList<>();
         try {
             if (!(page <= 0) && !(size <= 0)) {
-                provideInitialization();
                 medicament.addAll(medicamentDAO.getFormatted(page, size));
             }
             return medicament;
@@ -95,8 +91,7 @@ public class MedicamentServiceImpl extends AbstractService implements Medicament
         if (Optional.ofNullable(medicament).isPresent()) {
             try {
                 if (medicament.getRequirement() > medicament.getCurrentCount()) {
-                    provideInitialization();
-                    medicament.setStatus(true);
+                    medicament.setActual(true);
                     return medicamentDAO.addNew(medicament);
                 }
             } catch (DAOException e) {
@@ -110,7 +105,6 @@ public class MedicamentServiceImpl extends AbstractService implements Medicament
     @Override
     public void delete(long id) throws ServiceException {
         try {
-            provideInitialization();
             medicamentDAO.delete(id);
         } catch (DAOException e) {
             getLogger().log(Level.ERROR, e.getMessage());
@@ -126,7 +120,6 @@ public class MedicamentServiceImpl extends AbstractService implements Medicament
             if (entity == null || !Optional.ofNullable(medicament).isPresent()) {
                 return null;
             }
-            provideInitialization();
             return medicamentDAO.update(id, medicament);
         } catch (DAOException e) {
             getLogger().log(Level.ERROR, e.getMessage());
@@ -137,15 +130,10 @@ public class MedicamentServiceImpl extends AbstractService implements Medicament
     @Override
     public long countActual() throws ServiceException {
         try {
-            provideInitialization();
             return medicamentDAO.countActual();
         } catch (DAOException e) {
             getLogger().log(Level.ERROR, e.getMessage());
             throw new ServiceException(e);
         }
-    }
-
-    private void provideInitialization() {
-        medicamentDAO = Optional.ofNullable(medicamentDAO).orElse(new MedicamentDAOImpl());
     }
 }

@@ -46,12 +46,12 @@ public class DTOUnmarshaller {
         Medicament medicament = new Medicament();
         medicament.setId(dto.getId());
         if (dto.getClass() == MedicamentDTO.class) {
-            medicament.setVolunteer((Volunteer) unmarshalDTO(((MedicamentDTO) dto).getVolunteerDTO()));
+            medicament.setVolunteer((Volunteer) unmarshalDTO(((MedicamentDTO) dto).getVolunteer()));
         }
         medicament.setMedicament(dto.getMedicament());
         medicament.setCurrentCount(dto.getCurrentCount());
         medicament.setRequirement(dto.getRequirement());
-        medicament.setStatus(dto.isStatus());
+        medicament.setActual(dto.isActual());
         return medicament;
     }
 

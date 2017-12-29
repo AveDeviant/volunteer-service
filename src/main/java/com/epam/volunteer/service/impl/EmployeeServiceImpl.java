@@ -26,7 +26,6 @@ public class EmployeeServiceImpl extends AbstractService implements EmployeeServ
     public Employee getByEmail(String email) throws ServiceException {
         if (Validator.checkEmail(email)) {
             try {
-                provideInitialization();
                 return employeeDAO.getByEmail(email);
             } catch (DAOException e) {
                 getLogger().log(Level.ERROR, e.getMessage());
@@ -36,8 +35,4 @@ public class EmployeeServiceImpl extends AbstractService implements EmployeeServ
         return null;
     }
 
-
-    private void provideInitialization() {
-        employeeDAO = Optional.ofNullable(employeeDAO).orElse(new EmployeeDAOImpl());
-    }
 }

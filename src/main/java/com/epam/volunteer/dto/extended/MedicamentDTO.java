@@ -7,15 +7,15 @@ import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(value = "medicamentEx", parent = BaseMedicamentDTO.class, description = "Medicament that a volunteer needs.")
 public class MedicamentDTO extends BaseMedicamentDTO {
-    private BaseVolunteerDTO volunteerDTO;
+    private BaseVolunteerDTO volunteer;
 
     @ApiModelProperty(value = "Volunteer who needs medicament.")
-    public BaseVolunteerDTO getVolunteerDTO() {
-        return volunteerDTO;
+    public BaseVolunteerDTO getVolunteer() {
+        return volunteer;
     }
 
     public void setVolunteerDTO(BaseVolunteerDTO volunteerDTO) {
-        this.volunteerDTO = volunteerDTO;
+        this.volunteer = volunteerDTO;
     }
 
     @Override
@@ -26,20 +26,20 @@ public class MedicamentDTO extends BaseMedicamentDTO {
 
         MedicamentDTO that = (MedicamentDTO) o;
 
-        return volunteerDTO != null ? volunteerDTO.equals(that.volunteerDTO) : that.volunteerDTO == null;
+        return volunteer != null ? volunteer.equals(that.volunteer) : that.volunteer == null;
     }
 
     @Override
     public int hashCode() {
         int result = super.hashCode();
-        result = 31 * result + (volunteerDTO != null ? volunteerDTO.hashCode() : 0);
+        result = 31 * result + (volunteer!= null ? volunteer.hashCode() : 0);
         return result;
     }
 
     @Override
     public String toString() {
         return "MedicamentDTO{ " + super.toString() +
-                " volunteerDTO=" + volunteerDTO +
+                " volunteerDTO=" + volunteer +
                 '}';
     }
 }

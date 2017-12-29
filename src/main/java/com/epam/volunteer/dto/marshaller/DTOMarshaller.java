@@ -62,7 +62,7 @@ public class DTOMarshaller {
         medicamentDTO.setMedicament(medicament.getMedicament());
         medicamentDTO.setRequirement(medicament.getRequirement());
         medicamentDTO.setCurrentCount(medicament.getCurrentCount());
-        medicamentDTO.setStatus(medicament.isStatus());
+        medicamentDTO.setActual(medicament.isActual());
         return medicamentDTO;
     }
 

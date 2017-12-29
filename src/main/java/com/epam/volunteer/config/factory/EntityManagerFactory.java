@@ -8,7 +8,7 @@ import javax.persistence.EntityManager;
 public class EntityManagerFactory implements Factory<EntityManager> {
     @Override
     public EntityManager provide() {
-        return EntityManagerWrapper.getInstance();
+        return new EntityManagerWrapper();
     }
 
     @Override

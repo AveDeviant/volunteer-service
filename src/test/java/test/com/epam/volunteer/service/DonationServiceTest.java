@@ -40,7 +40,7 @@ public class DonationServiceTest extends JerseyTest {
         donation.setEmployee(new Employee());
         Medicament medicament = new Medicament();
         medicament.setId(1);
-        medicament.setStatus(true);
+        medicament.setActual(true);
         medicament.setRequirement(20);
         medicament.setCurrentCount(15);
         donation.setMedicament(medicament);
@@ -70,7 +70,7 @@ public class DonationServiceTest extends JerseyTest {
         Donation donation = new Donation();
         Medicament medicament = new Medicament();
         medicament.setId(1);
-        medicament.setStatus(true);
+        medicament.setActual(true);
         medicament.setRequirement(20);
         medicament.setCurrentCount(15);
         donation.setCount(2);
@@ -89,7 +89,7 @@ public class DonationServiceTest extends JerseyTest {
         donation.setEmployee(new Employee());
         Medicament medicament = new Medicament();
         medicament.setId(1);
-        medicament.setStatus(true);
+        medicament.setActual(true);
         medicament.setRequirement(20);
         medicament.setCurrentCount(15);
         donation.setMedicament(medicament);
@@ -108,7 +108,7 @@ public class DonationServiceTest extends JerseyTest {
         donation.setEmployee(new Employee());
         Medicament medicament = new Medicament();
         medicament.setId(1);
-        medicament.setStatus(true);
+        medicament.setActual(true);
         medicament.setRequirement(20);
         medicament.setCurrentCount(15);
         donation.setMedicament(medicament);
@@ -127,7 +127,7 @@ public class DonationServiceTest extends JerseyTest {
         donation.setEmployee(new Employee());
         Medicament medicament = new Medicament();
         medicament.setId(1);
-        medicament.setStatus(true);
+        medicament.setActual(true);
         medicament.setRequirement(20);
         medicament.setCurrentCount(15);
         donation.setMedicament(medicament);

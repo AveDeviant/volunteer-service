@@ -22,8 +22,8 @@ import javax.ws.rs.core.*;
 import java.util.List;
 import java.util.Optional;
 
-@Path("/volunteer")
-@Api(value = "volunteer")
+@Path("/volunteers")
+@Api(value = "volunteers")
 @Produces("application/json")
 public class VolunteerResource extends AbstractResource {
     private VolunteerService volunteerService;
@@ -45,7 +45,6 @@ public class VolunteerResource extends AbstractResource {
     })
     public Response getById(@ApiParam(value = "Volunteer ID", required = true) @PathParam("id") long id) {
         try {
-            provideInitialization();
             Volunteer volunteer = volunteerService.getById(id);
             if (volunteer != null) {
                 AbstractDTO dto = DTOMarshaller.marshalDTO(volunteer, DTOType.EXTENDED);
@@ -67,7 +66,6 @@ public class VolunteerResource extends AbstractResource {
     })
     public Response getAll() {
         try {
-            provideInitialization();
             List<Volunteer> volunteerList = volunteerService.getAll();
             List<AbstractDTO> abstractDTOs = DTOMarshaller.marshalDTOList(volunteerList, DTOType.BASIC);
             return Response.ok(abstractDTOs).build();
@@ -93,7 +91,6 @@ public class VolunteerResource extends AbstractResource {
                                    BaseVolunteerDTO volunteerDTO, @Context UriInfo uriInfo) {
         try {
             if (Optional.ofNullable(volunteerDTO).isPresent()) {
-                provideInitialization();
                 Volunteer volunteer = (Volunteer) DTOUnmarshaller.unmarshalDTO(volunteerDTO);
                 Volunteer result = volunteerService.addNew(volunteer);
                 if (Optional.ofNullable(result).isPresent()) {
@@ -113,7 +110,4 @@ public class VolunteerResource extends AbstractResource {
         }
     }
 
-    private void provideInitialization() {
-        volunteerService = Optional.ofNullable(volunteerService).orElse(new VolunteerServiceImpl());
-    }
 }

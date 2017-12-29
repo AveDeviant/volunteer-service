@@ -44,10 +44,10 @@ public class VolunteerResourceTest extends JerseyTest {
         volunteer.setName("test1");
         volunteer.setId(1);
         Mockito.when(volunteerService.getById(1)).thenReturn(volunteer);
-        Response response = target("/volunteer/1").request().get();
+        Response response = target("/volunteers/1").request().get();
         Assert.assertEquals(response.getStatus(), 200);
         AbstractDTO expected = DTOMarshaller.marshalDTO(volunteer, DTOType.EXTENDED);
-        VolunteerDTO result = target("/volunteer/1").request().get(VolunteerDTO.class);
+        VolunteerDTO result = target("/volunteers/1").request().get(VolunteerDTO.class);
         Assert.assertEquals(expected, result);
         response.close();
     }
@@ -55,7 +55,7 @@ public class VolunteerResourceTest extends JerseyTest {
     @Test
     public void getByIdNotFound() throws ServiceException {
         Mockito.when(volunteerService.getById(1)).thenReturn(null);
-        Response response = target("/volunteer/1").request().get();
+        Response response = target("/volunteers/1").request().get();
         Assert.assertEquals(response.getStatus(), 404);
     }
 
@@ -68,7 +68,7 @@ public class VolunteerResourceTest extends JerseyTest {
         volunteers.add(volunteer);
         Mockito.when(volunteerService.getAll()).thenReturn(volunteers);
         List<AbstractDTO> expected = DTOMarshaller.marshalDTOList(volunteers, DTOType.BASIC);
-        List<VolunteerDTO> result = target("/volunteer").request().get(new GenericType<List<VolunteerDTO>>() {
+        List<VolunteerDTO> result = target("/volunteers").request().get(new GenericType<List<VolunteerDTO>>() {
         });
         Assert.assertEquals(expected, result);
     }
@@ -83,7 +83,7 @@ public class VolunteerResourceTest extends JerseyTest {
         Entity<AbstractDTO> dtoEntity = Entity.entity(dto, MediaType.APPLICATION_JSON);
         Volunteer expected = (Volunteer) DTOUnmarshaller.unmarshalDTO(dto);
         Mockito.when(volunteerService.addNew(expected)).thenThrow(ServiceException.class);
-        Response response = target("/volunteer").request()
+        Response response = target("/volunteers").request()
                 .buildPost(dtoEntity).invoke();
         Assert.assertEquals(Response.Status.CONFLICT.getStatusCode(), response.getStatus());
     }
@@ -98,7 +98,7 @@ public class VolunteerResourceTest extends JerseyTest {
         Entity<AbstractDTO> dtoEntity = Entity.entity(dto, MediaType.APPLICATION_JSON);
         Volunteer expected = (Volunteer) DTOUnmarshaller.unmarshalDTO(dto);
         Mockito.when(volunteerService.addNew(expected)).thenReturn(expected);
-        Response response = target("/volunteer").request()
+        Response response = target("/volunteers").request()
                 .buildPost(dtoEntity).invoke();
         Assert.assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
     }
