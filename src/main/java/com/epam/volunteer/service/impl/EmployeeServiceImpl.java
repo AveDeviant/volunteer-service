@@ -8,13 +8,16 @@ import com.epam.volunteer.service.EmployeeService;
 import com.epam.volunteer.service.exception.ServiceException;
 import com.epam.volunteer.util.Validator;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jvnet.hk2.annotations.Service;
 
 import javax.inject.Inject;
 import java.util.Optional;
 
 @Service
-public class EmployeeServiceImpl extends AbstractService implements EmployeeService {
+public class EmployeeServiceImpl implements EmployeeService {
+    private static final Logger LOGGER = LogManager.getLogger();
     private EmployeeDAO employeeDAO;
 
     @Inject
@@ -28,7 +31,7 @@ public class EmployeeServiceImpl extends AbstractService implements EmployeeServ
             try {
                 return employeeDAO.getByEmail(email);
             } catch (DAOException e) {
-                getLogger().log(Level.ERROR, e.getMessage());
+                LOGGER.log(Level.ERROR, e.getMessage());
                 throw new ServiceException(e);
             }
         }

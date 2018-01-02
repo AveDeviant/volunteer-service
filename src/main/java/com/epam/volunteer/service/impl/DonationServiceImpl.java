@@ -9,6 +9,8 @@ import com.epam.volunteer.service.DonationService;
 import com.epam.volunteer.service.MedicamentService;
 import com.epam.volunteer.service.exception.ServiceException;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jvnet.hk2.annotations.Service;
 
 import javax.inject.Inject;
@@ -17,8 +19,9 @@ import java.util.Optional;
 import java.util.concurrent.locks.ReentrantLock;
 
 @Service
-public class DonationServiceImpl extends AbstractService implements DonationService {
-    private static ReentrantLock lock = new ReentrantLock();
+public class DonationServiceImpl implements DonationService {
+    private static final Logger LOGGER = LogManager.getLogger();
+    private static final ReentrantLock lock = new ReentrantLock();
     private DonationDAO donationDAO;
     private MedicamentService medicamentService;
 
@@ -57,7 +60,7 @@ public class DonationServiceImpl extends AbstractService implements DonationServ
                 lock.unlock();
             }
         } catch (DAOException e) {
-            getLogger().log(Level.ERROR, e.getMessage());
+            LOGGER.log(Level.ERROR, e.getMessage());
             throw new ServiceException(e);
         }
     }

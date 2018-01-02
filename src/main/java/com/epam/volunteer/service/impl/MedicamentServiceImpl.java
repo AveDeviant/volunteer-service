@@ -2,11 +2,12 @@ package com.epam.volunteer.service.impl;
 
 import com.epam.volunteer.dao.MedicamentDAO;
 import com.epam.volunteer.dao.exception.DAOException;
-import com.epam.volunteer.dao.impl.MedicamentDAOImpl;
 import com.epam.volunteer.entity.Medicament;
 import com.epam.volunteer.service.MedicamentService;
 import com.epam.volunteer.service.exception.ServiceException;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jvnet.hk2.annotations.Service;
 
 import javax.inject.Inject;
@@ -17,7 +18,8 @@ import java.util.stream.Collectors;
 
 
 @Service
-public class MedicamentServiceImpl extends AbstractService implements MedicamentService {
+public class MedicamentServiceImpl implements MedicamentService {
+    private static final Logger LOGGER = LogManager.getLogger();
     private MedicamentDAO medicamentDAO;
 
     @Inject
@@ -35,7 +37,7 @@ public class MedicamentServiceImpl extends AbstractService implements Medicament
             }
             return medicament;
         } catch (DAOException e) {
-            getLogger().log(Level.ERROR, e.getMessage());
+            LOGGER.log(Level.ERROR, e.getMessage());
             throw new ServiceException(e);
         }
     }
@@ -45,7 +47,7 @@ public class MedicamentServiceImpl extends AbstractService implements Medicament
         try {
             return medicamentDAO.getById(id);
         } catch (DAOException e) {
-            getLogger().log(Level.ERROR, e.getMessage());
+            LOGGER.log(Level.ERROR, e.getMessage());
             throw new ServiceException(e);
         }
     }
@@ -57,7 +59,7 @@ public class MedicamentServiceImpl extends AbstractService implements Medicament
             medicament.addAll(medicamentDAO.getAll());
             return medicament;
         } catch (DAOException e) {
-            getLogger().log(Level.ERROR, e.getMessage());
+            LOGGER.log(Level.ERROR, e.getMessage());
             throw new ServiceException(e);
         }
     }
@@ -67,7 +69,7 @@ public class MedicamentServiceImpl extends AbstractService implements Medicament
         try {
             return getAll().stream().filter(m -> m != null && m.isActual()).collect(Collectors.toList());
         } catch (ServiceException e) {
-            getLogger().log(Level.ERROR, e.getMessage());
+            LOGGER.log(Level.ERROR, e.getMessage());
             throw new ServiceException(e);
         }
     }
@@ -81,7 +83,7 @@ public class MedicamentServiceImpl extends AbstractService implements Medicament
             }
             return medicament;
         } catch (DAOException e) {
-            getLogger().log(Level.ERROR, e.getMessage());
+            LOGGER.log(Level.ERROR, e.getMessage());
             throw new ServiceException(e);
         }
     }
@@ -95,7 +97,7 @@ public class MedicamentServiceImpl extends AbstractService implements Medicament
                     return medicamentDAO.addNew(medicament);
                 }
             } catch (DAOException e) {
-                getLogger().log(Level.ERROR, e.getMessage());
+                LOGGER.log(Level.ERROR, e.getMessage());
                 throw new ServiceException(e);
             }
         }
@@ -107,7 +109,7 @@ public class MedicamentServiceImpl extends AbstractService implements Medicament
         try {
             medicamentDAO.delete(id);
         } catch (DAOException e) {
-            getLogger().log(Level.ERROR, e.getMessage());
+            LOGGER.log(Level.ERROR, e.getMessage());
             throw new ServiceException(e);
         }
     }
@@ -122,7 +124,7 @@ public class MedicamentServiceImpl extends AbstractService implements Medicament
             }
             return medicamentDAO.update(id, medicament);
         } catch (DAOException e) {
-            getLogger().log(Level.ERROR, e.getMessage());
+            LOGGER.log(Level.ERROR, e.getMessage());
             throw new ServiceException(e);
         }
     }
@@ -132,7 +134,7 @@ public class MedicamentServiceImpl extends AbstractService implements Medicament
         try {
             return medicamentDAO.countActual();
         } catch (DAOException e) {
-            getLogger().log(Level.ERROR, e.getMessage());
+            LOGGER.log(Level.ERROR, e.getMessage());
             throw new ServiceException(e);
         }
     }

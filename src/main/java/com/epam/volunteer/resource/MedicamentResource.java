@@ -18,6 +18,8 @@ import com.epam.volunteer.service.*;
 import com.epam.volunteer.service.exception.ServiceException;
 import io.swagger.annotations.*;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 
 import javax.inject.Inject;
@@ -29,7 +31,8 @@ import java.util.Optional;
 @Path("/medicament")
 @Api(value = "medicament")
 @Produces("application/json")
-public class MedicamentResource extends AbstractResource {
+public class MedicamentResource {
+    private static final Logger LOGGER = LogManager.getLogger();
     private MedicamentService medicamentService;
     private DonationService donationService;
     private LinkService linkService;

@@ -9,9 +9,11 @@ import com.epam.volunteer.dao.impl.DonationDAOImpl;
 import com.epam.volunteer.dao.impl.EmployeeDAOImpl;
 import com.epam.volunteer.dao.impl.MedicamentDAOImpl;
 import com.epam.volunteer.dao.impl.VolunteerDAOImpl;
+import com.epam.volunteer.manager.EntityManagerWrapper;
 import com.epam.volunteer.service.*;
 import com.epam.volunteer.service.impl.*;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
+import org.glassfish.jersey.process.internal.RequestScoped;
 
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
@@ -27,7 +29,11 @@ public class ApplicationBinder extends AbstractBinder {
         bind(MedicamentDAOImpl.class).to(MedicamentDAO.class).in(Singleton.class);
         bind(MedicamentServiceImpl.class).to(MedicamentService.class).in(Singleton.class);
         //TODO: remove scope?
-        bindFactory(EntityManagerFactory.class).to(EntityManager.class).in(Singleton.class);
+        bindFactory(EntityManagerFactory.class)
+                .proxy(true)
+                .proxyForSameScope(false)
+                .to(EntityManager.class)
+                .in(RequestScoped.class);
         bind(DonationServiceImpl.class).to(DonationService.class).in(Singleton.class);
         bind(DonationDAOImpl.class).to(DonationDAO.class).in(Singleton.class);
         bind(VolunteerServiceImpl.class).to(VolunteerService.class).in(Singleton.class);

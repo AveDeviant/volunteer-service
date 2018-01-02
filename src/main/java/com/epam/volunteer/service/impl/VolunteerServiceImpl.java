@@ -2,7 +2,6 @@ package com.epam.volunteer.service.impl;
 
 import com.epam.volunteer.dao.VolunteerDAO;
 import com.epam.volunteer.dao.exception.DAOException;
-import com.epam.volunteer.dao.impl.VolunteerDAOImpl;
 import com.epam.volunteer.entity.Medicament;
 import com.epam.volunteer.entity.Volunteer;
 import com.epam.volunteer.service.MedicamentService;
@@ -10,13 +9,16 @@ import com.epam.volunteer.service.VolunteerService;
 import com.epam.volunteer.service.exception.ServiceException;
 import com.epam.volunteer.util.Validator;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class VolunteerServiceImpl extends AbstractService implements VolunteerService {
+public class VolunteerServiceImpl implements VolunteerService {
+    private static final Logger LOGGER = LogManager.getLogger();
     private MedicamentService medicamentService;
     private VolunteerDAO volunteerDAO;
 
@@ -37,7 +39,7 @@ public class VolunteerServiceImpl extends AbstractService implements VolunteerSe
                 return volunteerDAO.getById(id);
             }
         } catch (DAOException e) {
-            getLogger().log(Level.ERROR, e.getMessage());
+            LOGGER.log(Level.ERROR, e.getMessage());
             throw new ServiceException(e);
         }
         return null;
@@ -48,7 +50,7 @@ public class VolunteerServiceImpl extends AbstractService implements VolunteerSe
         try {
             return volunteerDAO.getAll();
         } catch (DAOException e) {
-            getLogger().log(Level.ERROR, e.getMessage());
+            LOGGER.log(Level.ERROR, e.getMessage());
             throw new ServiceException(e);
         }
     }
@@ -62,7 +64,7 @@ public class VolunteerServiceImpl extends AbstractService implements VolunteerSe
             }
             return volunteers;
         } catch (DAOException e) {
-            getLogger().log(Level.ERROR, e.getMessage());
+            LOGGER.log(Level.ERROR, e.getMessage());
             throw new ServiceException(e);
         }
     }
@@ -73,7 +75,7 @@ public class VolunteerServiceImpl extends AbstractService implements VolunteerSe
             try {
                 return volunteerDAO.getByEmail(email);
             } catch (DAOException e) {
-                getLogger().log(Level.ERROR, e.getMessage());
+                LOGGER.log(Level.ERROR, e.getMessage());
                 throw new ServiceException(e);
             }
         }
@@ -86,7 +88,7 @@ public class VolunteerServiceImpl extends AbstractService implements VolunteerSe
             try {
                 return volunteerDAO.addNew(volunteer);
             } catch (DAOException e) {
-                getLogger().log(Level.ERROR, e.getMessage());
+                LOGGER.log(Level.ERROR, e.getMessage());
                 throw new ServiceException(e);
             }
         }
@@ -107,7 +109,7 @@ public class VolunteerServiceImpl extends AbstractService implements VolunteerSe
         try {
             return volunteerDAO.countAll();
         } catch (DAOException e) {
-            getLogger().log(Level.ERROR, e.getMessage());
+            LOGGER.log(Level.ERROR, e.getMessage());
             throw new ServiceException(e);
         }
     }

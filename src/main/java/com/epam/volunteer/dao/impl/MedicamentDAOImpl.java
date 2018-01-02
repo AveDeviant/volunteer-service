@@ -4,8 +4,9 @@ package com.epam.volunteer.dao.impl;
 import com.epam.volunteer.dao.MedicamentDAO;
 import com.epam.volunteer.dao.exception.DAOException;
 import com.epam.volunteer.entity.Medicament;
-import com.epam.volunteer.manager.EntityManagerWrapper;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jvnet.hk2.annotations.Service;
 
 import javax.inject.Inject;
@@ -16,11 +17,11 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.util.List;
-import java.util.Optional;
 
 
 @Service
-public class MedicamentDAOImpl extends AbstractDAO implements MedicamentDAO {
+public class MedicamentDAOImpl implements MedicamentDAO {
+    private static final Logger LOGGER = LogManager.getLogger();
     private static final String SELECT_ALL = "SELECT m FROM Medicament m";
     private static final String QUERY_COUNT_ACTUAL = "Medicament.countActual";
     private EntityManager entityManager;
@@ -35,7 +36,7 @@ public class MedicamentDAOImpl extends AbstractDAO implements MedicamentDAO {
         try {
             return entityManager.createQuery(SELECT_ALL).getResultList();
         } catch (Exception e) {
-            getLogger().log(Level.ERROR, e.getMessage());
+            LOGGER.log(Level.ERROR, e.getMessage());
             throw new DAOException(e);
         }
     }
@@ -46,7 +47,7 @@ public class MedicamentDAOImpl extends AbstractDAO implements MedicamentDAO {
             entityManager.getEntityManagerFactory().getCache().evict(Medicament.class);
             return entityManager.find(Medicament.class, id);
         } catch (Exception e) {
-            getLogger().log(Level.ERROR, e.getMessage());
+            LOGGER.log(Level.ERROR, e.getMessage());
             throw new DAOException(e);
         }
     }
@@ -63,7 +64,7 @@ public class MedicamentDAOImpl extends AbstractDAO implements MedicamentDAO {
             typedQuery.setMaxResults(size);
             return typedQuery.getResultList();
         } catch (Exception e) {
-            getLogger().log(Level.ERROR, e.getMessage());
+            LOGGER.log(Level.ERROR, e.getMessage());
             throw new DAOException(e);
         }
     }
@@ -82,7 +83,7 @@ public class MedicamentDAOImpl extends AbstractDAO implements MedicamentDAO {
             if (transaction != null) {
                 transaction.rollback();
             }
-            getLogger().log(Level.ERROR, e.getMessage());
+            LOGGER.log(Level.ERROR, e.getMessage());
             throw new DAOException(e);
         }
     }
@@ -104,7 +105,7 @@ public class MedicamentDAOImpl extends AbstractDAO implements MedicamentDAO {
             if (transaction != null) {
                 transaction.rollback();
             }
-            getLogger().log(Level.ERROR, e.getMessage());
+            LOGGER.log(Level.ERROR, e.getMessage());
             throw new DAOException(e);
         }
     }
@@ -124,7 +125,7 @@ public class MedicamentDAOImpl extends AbstractDAO implements MedicamentDAO {
             if (transaction != null) {
                 transaction.rollback();
             }
-            getLogger().log(Level.ERROR, e.getMessage());
+            LOGGER.log(Level.ERROR, e.getMessage());
             throw new DAOException(e);
         }
     }
@@ -134,6 +135,7 @@ public class MedicamentDAOImpl extends AbstractDAO implements MedicamentDAO {
         try {
             return entityManager.createNamedQuery(QUERY_COUNT_ACTUAL, Long.class).getSingleResult();
         } catch (Exception e) {
+            LOGGER.log(Level.ERROR, e.getMessage());
             throw new DAOException(e.getMessage());
         }
     }

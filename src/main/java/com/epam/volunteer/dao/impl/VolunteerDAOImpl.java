@@ -2,10 +2,10 @@ package com.epam.volunteer.dao.impl;
 
 import com.epam.volunteer.dao.VolunteerDAO;
 import com.epam.volunteer.dao.exception.DAOException;
-import com.epam.volunteer.entity.Medicament;
 import com.epam.volunteer.entity.Volunteer;
-import com.epam.volunteer.manager.EntityManagerWrapper;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jvnet.hk2.annotations.Service;
 
 import javax.inject.Inject;
@@ -16,10 +16,10 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.util.List;
-import java.util.Optional;
 
 @Service
-public class VolunteerDAOImpl extends AbstractDAO implements VolunteerDAO {
+public class VolunteerDAOImpl implements VolunteerDAO {
+    private static final Logger LOGGER = LogManager.getLogger();
     private static final String QUERY_GET_ALL = "Volunteer.getAll";
     private static final String QUERY_COUNT_ALL = "Volunteer.countAll";
     private EntityManager entityManager;
@@ -34,7 +34,7 @@ public class VolunteerDAOImpl extends AbstractDAO implements VolunteerDAO {
         try {
             return entityManager.find(Volunteer.class, id);
         } catch (Exception e) {
-            getLogger().log(Level.ERROR, e.getMessage());
+            LOGGER.log(Level.ERROR, e.getMessage());
             throw new DAOException(e);
         }
     }
@@ -44,7 +44,7 @@ public class VolunteerDAOImpl extends AbstractDAO implements VolunteerDAO {
         try {
             return entityManager.createNamedQuery(QUERY_GET_ALL, Volunteer.class).getResultList();
         } catch (Exception e) {
-            getLogger().log(Level.ERROR, e.getMessage());
+            LOGGER.log(Level.ERROR, e.getMessage());
             throw new DAOException(e);
         }
     }
@@ -59,7 +59,7 @@ public class VolunteerDAOImpl extends AbstractDAO implements VolunteerDAO {
             typedQuery.setMaxResults(size);
             return typedQuery.getResultList();
         } catch (Exception e) {
-            getLogger().log(Level.ERROR, e.getMessage());
+            LOGGER.log(Level.ERROR, e.getMessage());
             throw new DAOException(e);
         }
     }
@@ -78,7 +78,7 @@ public class VolunteerDAOImpl extends AbstractDAO implements VolunteerDAO {
             }
             return null;
         } catch (Exception e) {
-            getLogger().log(Level.ERROR, e.getMessage());
+            LOGGER.log(Level.ERROR, e.getMessage());
             throw new DAOException(e);
         }
     }
@@ -97,7 +97,7 @@ public class VolunteerDAOImpl extends AbstractDAO implements VolunteerDAO {
             if (transaction != null) {
                 transaction.rollback();
             }
-            getLogger().log(Level.ERROR, e.getMessage());
+            LOGGER.log(Level.ERROR, e.getMessage());
             throw new DAOException(e);
         }
     }

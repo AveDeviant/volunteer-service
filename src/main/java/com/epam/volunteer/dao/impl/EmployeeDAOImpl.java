@@ -5,6 +5,8 @@ import com.epam.volunteer.dao.exception.DAOException;
 import com.epam.volunteer.entity.Employee;
 import com.epam.volunteer.manager.EntityManagerWrapper;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -15,7 +17,8 @@ import javax.persistence.criteria.Root;
 import java.util.List;
 import java.util.Optional;
 
-public class EmployeeDAOImpl extends AbstractDAO implements EmployeeDAO {
+public class EmployeeDAOImpl implements EmployeeDAO {
+    private static final Logger LOGGER = LogManager.getLogger();
     private EntityManager entityManager;
 
     @Inject
@@ -38,7 +41,7 @@ public class EmployeeDAOImpl extends AbstractDAO implements EmployeeDAO {
             }
             return employee;
         } catch (Exception e) {
-            getLogger().log(Level.ERROR, e.getMessage());
+            LOGGER.log(Level.ERROR, e.getMessage());
             throw new DAOException(e);
         }
     }

@@ -5,6 +5,8 @@ import com.epam.volunteer.dao.exception.DAOException;
 import com.epam.volunteer.entity.Donation;
 import com.epam.volunteer.manager.EntityManagerWrapper;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jvnet.hk2.annotations.Service;
 
 import javax.inject.Inject;
@@ -13,7 +15,8 @@ import javax.persistence.EntityTransaction;
 import java.util.Optional;
 
 @Service
-public class DonationDAOImpl extends AbstractDAO implements DonationDAO {
+public class DonationDAOImpl implements DonationDAO {
+    private static final Logger LOGGER = LogManager.getLogger();
     private EntityManager entityManager;
 
     @Inject
@@ -41,7 +44,7 @@ public class DonationDAOImpl extends AbstractDAO implements DonationDAO {
             if (transaction != null) {
                 transaction.rollback();
             }
-            getLogger().log(Level.ERROR, e.getMessage());
+            LOGGER.log(Level.ERROR, e.getMessage());
             throw new DAOException(e);
         }
     }

@@ -15,6 +15,9 @@ import com.epam.volunteer.service.exception.ServiceException;
 import com.epam.volunteer.service.impl.VolunteerServiceImpl;
 import io.swagger.annotations.*;
 import jdk.net.SocketFlow;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
@@ -25,7 +28,8 @@ import java.util.Optional;
 @Path("/volunteers")
 @Api(value = "volunteers")
 @Produces("application/json")
-public class VolunteerResource extends AbstractResource {
+public class VolunteerResource {
+    private static final Logger LOGGER = LogManager.getLogger();
     private VolunteerService volunteerService;
 
     @Inject
@@ -106,6 +110,7 @@ public class VolunteerResource extends AbstractResource {
         } catch (ServiceException e) {
             return Response.status(Response.Status.CONFLICT).build();
         } catch (Exception e) {
+            LOGGER.log(Level.ERROR, e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }

@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class LinkServiceImpl extends AbstractService implements com.epam.volunteer.service.LinkService {
+public class LinkServiceImpl implements com.epam.volunteer.service.LinkService {
     private static final String SELF_REF = "self";
     private static final String LAST_REF = "last";
     private static final String FIRST_REF = "first";
