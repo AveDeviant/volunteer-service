@@ -4,6 +4,8 @@ import com.epam.volunteer.dao.MedicamentDAO;
 import com.epam.volunteer.dao.exception.DAOException;
 import com.epam.volunteer.dao.impl.MedicamentDAOImpl;
 import com.epam.volunteer.entity.Medicament;
+import com.epam.volunteer.service.exception.EntityValidationException;
+import com.epam.volunteer.service.exception.ResourceForbiddenException;
 import com.epam.volunteer.service.exception.ServiceException;
 import com.epam.volunteer.service.impl.MedicamentServiceImpl;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
@@ -62,7 +64,7 @@ public class MedicamentServiceTest extends JerseyTest {
         Assert.assertTrue(formatted.isEmpty());
     }
 
-    @Test
+    @Test(expected = ResourceForbiddenException.class)
     public void updateUnableToUpdate() throws ServiceException, DAOException {
         service.setMedicamentDAO(medicamentDAO);
         Medicament medicament = new Medicament();
@@ -71,16 +73,13 @@ public class MedicamentServiceTest extends JerseyTest {
         data.setActual(false);
         Mockito.when(medicamentDAO.getById(1)).thenReturn(data);
         Medicament result = service.update(1, medicament);
-        Mockito.verify(medicamentDAO, Mockito.never()).addNew(medicament);
-        Assert.assertTrue(result == null);
     }
 
-    @Test
+    @Test(expected = ResourceForbiddenException.class)
     public void updateEnteredNullEntity() throws ServiceException, DAOException {
         service.setMedicamentDAO(medicamentDAO);
         Medicament medicament = null;
         service.update(1, medicament);
-        Mockito.verify(medicamentDAO, Mockito.never()).update(1, medicament);
     }
 
     @Test
@@ -116,11 +115,10 @@ public class MedicamentServiceTest extends JerseyTest {
     }
 
 
-    @Test
+    @Test(expected = EntityValidationException.class)
     public void addNewNull() throws ServiceException, DAOException {
         service.setMedicamentDAO(medicamentDAO);
         service.addNew(null);
-        Mockito.verify(medicamentDAO, Mockito.never()).addNew(null);
     }
 
     @Test

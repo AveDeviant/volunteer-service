@@ -15,6 +15,9 @@ import com.epam.volunteer.entity.Medicament;
 import com.epam.volunteer.entity.Volunteer;
 import com.epam.volunteer.response.ServerMessage;
 import com.epam.volunteer.service.*;
+import com.epam.volunteer.service.exception.BusinessLogicException;
+import com.epam.volunteer.service.exception.EntityValidationException;
+import com.epam.volunteer.service.exception.ResourceForbiddenException;
 import com.epam.volunteer.service.exception.ServiceException;
 import io.swagger.annotations.*;
 import org.apache.logging.log4j.Level;
@@ -73,7 +76,8 @@ public class MedicamentResource {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", responseHeaders = {@ResponseHeader(name = "Link", description =
                     "Links to the current, previous, next, first and last pages of medicament list ", response = String.class)}),
-            @ApiResponse(code = 500, message = "Internal error.")
+            @ApiResponse(code = 500, message = "Internal error."),
+            @ApiResponse(code = 404, message = "Medicament not found.")
     })
     public Response getMedicament(@ApiParam(value = "page") @QueryParam("page") @DefaultValue("1") int page,
                                   @ApiParam(value = "offset") @QueryParam("size") @DefaultValue("2") int size) {
@@ -148,18 +152,18 @@ public class MedicamentResource {
                 Medicament input = (Medicament) DTOUnmarshaller.unmarshalDTO(medicament);
                 input.setVolunteer(volunteer);
                 Medicament newMed = medicamentService.addNew(input);
-                if (Optional.ofNullable(newMed).isPresent()) {
-                    AbstractDTO dto = DTOMarshaller.marshalDTO(newMed, DTOType.EXTENDED);
-                    UriBuilder builder = uriInfo.getAbsolutePathBuilder();
-                    return Response.created(builder.path(String.valueOf(dto.getId())).build())
-                            .entity(dto)
-                            .build();
-                }
+                AbstractDTO dto = DTOMarshaller.marshalDTO(newMed, DTOType.EXTENDED);
+                UriBuilder builder = uriInfo.getAbsolutePathBuilder();
+                return Response.created(builder.path(String.valueOf(dto.getId())).build())
+                        .entity(dto)
+                        .build();
             }
-            return Response.status(422).entity(ServerMessage.INVALID_INPUT).build();
+            return Response.status(Response.Status.BAD_REQUEST).build();
         } catch (ServiceException e) {
             LOGGER.log(Level.ERROR, e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        } catch (EntityValidationException e) {
+            return Response.status(422).entity(ServerMessage.INVALID_INPUT).build();
         }
     }
 
@@ -184,29 +188,25 @@ public class MedicamentResource {
                                    @ApiParam(value = "Authorization", required = true)
                                    @HeaderParam(HttpHeaders.AUTHORIZATION) String employeeEmail) {
         try {
-            Medicament medicament = medicamentService.getById(id, true);
-            if (Optional.ofNullable(medicament).isPresent()) {
-                Employee employee = employeeService.getByEmail(employeeEmail);
-                if (!Optional.ofNullable(employee).isPresent()) {    // "authorization"
-                    return Response.status(Response.Status.UNAUTHORIZED).build();
-                }
-                Donation donation1 = (Donation) DTOUnmarshaller.unmarshalDTO(donation);
-                donation1.setMedicament(medicament);
-                donation1.setEmployee(employee);
-                donation1 = donationService.registerDonation(donation1);
-                if (donation1 == null) {
-                    return Response.status(Response.Status.FORBIDDEN).build();
-                }
-                UriBuilder builder = uriInfo.getAbsolutePathBuilder();
-                AbstractDTO dto = DTOMarshaller.marshalDTO(donation1, DTOType.EXTENDED);
-                return Response.created(builder.path(String.valueOf(dto.getId())).build())
-                        .entity(dto)
-                        .build();
+            Employee employee = employeeService.getByEmail(employeeEmail);
+            if (!Optional.ofNullable(employee).isPresent()) {    // "authorization"
+                return Response.status(Response.Status.UNAUTHORIZED).build();
             }
-            return Response.status(Response.Status.NOT_FOUND).build();
+            Donation donation1 = (Donation) DTOUnmarshaller.unmarshalDTO(donation);
+            donation1.setEmployee(employee);
+            donation1 = donationService.registerDonation(id, donation1);
+            UriBuilder builder = uriInfo.getAbsolutePathBuilder();
+            AbstractDTO dto = DTOMarshaller.marshalDTO(donation1, DTOType.EXTENDED);
+            return Response.created(builder.path(String.valueOf(dto.getId())).build())
+                    .entity(dto)
+                    .build();
         } catch (ServiceException e) {
             LOGGER.log(Level.ERROR, e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        } catch (BusinessLogicException | EntityValidationException e) {
+            return Response.status(422).build();
+        } catch (ResourceForbiddenException e) {
+            return Response.status(Response.Status.FORBIDDEN).build();
         }
     }
 
@@ -235,18 +235,17 @@ public class MedicamentResource {
                 }
                 Medicament input = (Medicament) DTOUnmarshaller.unmarshalDTO(medicamentDTO);
                 Medicament result = medicamentService.update(id, input);
-                if (Optional.ofNullable(result).isPresent()) {
-                    AbstractDTO dto = DTOMarshaller.marshalDTO(result, DTOType.EXTENDED);
-                    return Response.ok()
-                            .entity(dto)
-                            .build();
-                }
-                return Response.status(Response.Status.FORBIDDEN).build();
+                AbstractDTO dto = DTOMarshaller.marshalDTO(result, DTOType.EXTENDED);
+                return Response.ok()
+                        .entity(dto)
+                        .build();
             }
             return Response.status(Response.Status.BAD_REQUEST).entity(ServerMessage.INVALID_INPUT).build();
         } catch (ServiceException e) {
             LOGGER.log(Level.ERROR, e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        } catch (ResourceForbiddenException e) {
+            return Response.status(Response.Status.FORBIDDEN).build();
         }
     }
 

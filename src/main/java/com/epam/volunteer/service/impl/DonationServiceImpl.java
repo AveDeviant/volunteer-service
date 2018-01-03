@@ -2,11 +2,12 @@ package com.epam.volunteer.service.impl;
 
 import com.epam.volunteer.dao.DonationDAO;
 import com.epam.volunteer.dao.exception.DAOException;
-import com.epam.volunteer.dao.impl.DonationDAOImpl;
 import com.epam.volunteer.entity.Donation;
 import com.epam.volunteer.entity.Medicament;
 import com.epam.volunteer.service.DonationService;
 import com.epam.volunteer.service.MedicamentService;
+import com.epam.volunteer.service.exception.BusinessLogicException;
+import com.epam.volunteer.service.exception.ResourceForbiddenException;
 import com.epam.volunteer.service.exception.ServiceException;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -36,26 +37,28 @@ public class DonationServiceImpl implements DonationService {
     }
 
     @Override
-    public Donation registerDonation(Donation donation) throws ServiceException {
+    public Donation registerDonation(long medicamentId, Donation donation) throws ServiceException,
+            BusinessLogicException, ResourceForbiddenException {
         try {
-            if (donation.getCount() < 1 || !Optional.ofNullable(donation.getEmployee()).isPresent() ||
-                    !Optional.ofNullable(donation.getMedicament()).isPresent()) {
-                return null;
+            if (donation.getCount() < 1 || !Optional.ofNullable(donation.getEmployee()).isPresent()) {
+                throw new BusinessLogicException();
             }
             try {
                 lock.lock();
-                Medicament medicament = medicamentService.getById(donation.getMedicament().getId(), true);
+                Medicament medicament = medicamentService.getById(medicamentId, true);
                 if (Optional.ofNullable(medicament).isPresent()) {
                     LocalDateTime dateTime = LocalDateTime.now();
                     donation.setTime(dateTime);
+                    donation.setMedicament(medicament);
                     boolean markAsCompleted = false;
                     int count = donation.getMedicament().getCurrentCount() + donation.getCount();
                     if (count >= donation.getMedicament().getRequirement()) {
                         markAsCompleted = true;
                     }
+                    LOGGER.log(Level.INFO, "Donation object should be registered: " + donation);
                     return donationDAO.addDonation(donation, markAsCompleted);
                 }
-                return null;
+                throw new ResourceForbiddenException();
             } finally {
                 lock.unlock();
             }

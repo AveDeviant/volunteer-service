@@ -65,7 +65,7 @@ public class DTOUnmarshaller {
         volunteer.setName(dto.getName());
         List<Medicament> medicamentList = new ArrayList<>();
         if (dto.getClass() == VolunteerDTO.class) {
-            List<BaseMedicamentDTO> medicamentDTOs = ((VolunteerDTO) dto).getMedicamentDTO();
+            List<BaseMedicamentDTO> medicamentDTOs = ((VolunteerDTO) dto).getMedicament();
             if (Optional.ofNullable(medicamentDTOs).isPresent()) {
                 medicamentDTOs.stream().forEach(m -> medicamentList.add((Medicament) unmarshalDTO(m)));
             }

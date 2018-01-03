@@ -4,6 +4,8 @@ import com.epam.volunteer.dao.MedicamentDAO;
 import com.epam.volunteer.dao.exception.DAOException;
 import com.epam.volunteer.entity.Medicament;
 import com.epam.volunteer.service.MedicamentService;
+import com.epam.volunteer.service.exception.EntityValidationException;
+import com.epam.volunteer.service.exception.ResourceForbiddenException;
 import com.epam.volunteer.service.exception.ServiceException;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -94,14 +96,16 @@ public class MedicamentServiceImpl implements MedicamentService {
             try {
                 if (medicament.getRequirement() > medicament.getCurrentCount()) {
                     medicament.setActual(true);
-                    return medicamentDAO.addNew(medicament);
+                    Medicament result = medicamentDAO.addNew(medicament);
+                    LOGGER.log(Level.INFO, "New medicament added: " + result);
+                    return result;
                 }
             } catch (DAOException e) {
                 LOGGER.log(Level.ERROR, e.getMessage());
                 throw new ServiceException(e);
             }
         }
-        return null;
+        throw new EntityValidationException();
     }
 
     @Override
@@ -120,8 +124,9 @@ public class MedicamentServiceImpl implements MedicamentService {
             Medicament entity = getById(id, true);
             //   entity doesn't exist or unable for update\ uninitialized entered entity.
             if (entity == null || !Optional.ofNullable(medicament).isPresent()) {
-                return null;
+                throw new ResourceForbiddenException();
             }
+            LOGGER.log(Level.INFO, "Entity with ID=" + id + " should be updated. Expected: " + medicament);
             return medicamentDAO.update(id, medicament);
         } catch (DAOException e) {
             LOGGER.log(Level.ERROR, e.getMessage());

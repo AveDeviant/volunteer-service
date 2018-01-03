@@ -9,6 +9,7 @@ import com.epam.volunteer.dto.marshaller.DTOUnmarshaller;
 import com.epam.volunteer.entity.*;
 import com.epam.volunteer.resource.MedicamentResource;
 import com.epam.volunteer.service.*;
+import com.epam.volunteer.service.exception.ResourceForbiddenException;
 import com.epam.volunteer.service.impl.*;
 import com.epam.volunteer.service.exception.ServiceException;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
@@ -229,9 +230,9 @@ public class MedicamentResourceTest extends JerseyTest {
         AbstractDTO abstractDTO = DTOMarshaller.marshalDTO(medicament, DTOType.BASIC);
         Entity<AbstractDTO> dtoEntity = Entity.entity(abstractDTO, MediaType.APPLICATION_JSON);
         Mockito.when(volunteerService.authorizationPassed("test", 1)).thenReturn(true);
+        Mockito.when(medicamentService.update(1, medicament)).thenThrow(ResourceForbiddenException.class);
         Response response = target("/medicament/1").request().header(HttpHeaders.AUTHORIZATION, "test")
                 .buildPost(dtoEntity).invoke();
-        Mockito.when(medicamentService.update(1, medicament)).thenReturn(null);
         Assert.assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
     }
 
@@ -269,7 +270,6 @@ public class MedicamentResourceTest extends JerseyTest {
     public void donationAcceptedTest() throws ServiceException {
         Donation donation = new Donation();
         donation.setCount(1);
-        donation.setMedicament(new Medicament());
         Employee employee = new Employee();
         AbstractDTO dto = DTOMarshaller.marshalDTO(donation, DTOType.BASIC);
         Entity<AbstractDTO> dtoEntity = Entity.entity(dto, MediaType.APPLICATION_JSON);
@@ -278,10 +278,10 @@ public class MedicamentResourceTest extends JerseyTest {
         donation.setEmployee(employee);
         Donation expected = new Donation();
         expected.setTime(LocalDateTime.now());
-        Mockito.when(donationService.registerDonation(donation)).thenReturn(expected);
+        Mockito.when(donationService.registerDonation(1,donation)).thenReturn(expected);
         Response response = target("/medicament/1/donations").request().header(HttpHeaders.AUTHORIZATION, "test")
                 .buildPost(dtoEntity).invoke();
-        Mockito.verify(donationService, times(1)).registerDonation(donation);
+        Mockito.verify(donationService, times(1)).registerDonation(1,donation);
         Assert.assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
     }
 

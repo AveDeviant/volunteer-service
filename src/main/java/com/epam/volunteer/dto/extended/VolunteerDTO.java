@@ -12,11 +12,11 @@ public class VolunteerDTO extends BaseVolunteerDTO {
     private List<BaseMedicamentDTO> medicament;
 
     @ApiModelProperty(value = "List of medicament")
-    public List<BaseMedicamentDTO> getMedicamentDTO() {
+    public List<BaseMedicamentDTO> getMedicament() {
         return medicament;
     }
 
-    public void setMedicamentDTO(List<BaseMedicamentDTO> medicamentDTOs) {
+    public void setMedicament(List<BaseMedicamentDTO> medicamentDTOs) {
         this.medicament = medicamentDTOs;
     }
 

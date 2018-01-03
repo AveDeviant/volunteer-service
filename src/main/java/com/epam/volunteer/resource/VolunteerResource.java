@@ -11,6 +11,7 @@ import com.epam.volunteer.dto.marshaller.DTOUnmarshaller;
 import com.epam.volunteer.entity.Volunteer;
 import com.epam.volunteer.response.ServerMessage;
 import com.epam.volunteer.service.VolunteerService;
+import com.epam.volunteer.service.exception.EntityValidationException;
 import com.epam.volunteer.service.exception.ServiceException;
 import com.epam.volunteer.service.impl.VolunteerServiceImpl;
 import io.swagger.annotations.*;
@@ -97,18 +98,17 @@ public class VolunteerResource {
             if (Optional.ofNullable(volunteerDTO).isPresent()) {
                 Volunteer volunteer = (Volunteer) DTOUnmarshaller.unmarshalDTO(volunteerDTO);
                 Volunteer result = volunteerService.addNew(volunteer);
-                if (Optional.ofNullable(result).isPresent()) {
-                    AbstractDTO dto = DTOMarshaller.marshalDTO(result, DTOType.EXTENDED);
-                    UriBuilder builder = uriInfo.getAbsolutePathBuilder();
-                    return Response.created(builder.path(String.valueOf(dto.getId())).build())
-                            .entity(dto)
-                            .build();
-                }
-                return Response.status(422).build();
+                AbstractDTO dto = DTOMarshaller.marshalDTO(result, DTOType.EXTENDED);
+                UriBuilder builder = uriInfo.getAbsolutePathBuilder();
+                return Response.created(builder.path(String.valueOf(dto.getId())).build())
+                        .entity(dto)
+                        .build();
             }
-            return Response.status(Response.Status.BAD_REQUEST).entity(ServerMessage.INVALID_INPUT).build();
+            return Response.status(422).build();
         } catch (ServiceException e) {
             return Response.status(Response.Status.CONFLICT).build();
+        } catch (EntityValidationException e) {
+            return Response.status(422).build();
         } catch (Exception e) {
             LOGGER.log(Level.ERROR, e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();

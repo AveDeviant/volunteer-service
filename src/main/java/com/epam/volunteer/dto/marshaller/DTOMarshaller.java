@@ -77,7 +77,7 @@ public class DTOMarshaller {
                 }
             }
             ((VolunteerDTO) volunteerDTO).
-                    setMedicamentDTO(medicamentDTOs);
+                    setMedicament(medicamentDTOs);
         } else {
             volunteerDTO = new BaseVolunteerDTO();
         }

@@ -6,6 +6,7 @@ import com.epam.volunteer.dao.impl.VolunteerDAOImpl;
 import com.epam.volunteer.entity.Medicament;
 import com.epam.volunteer.entity.Volunteer;
 import com.epam.volunteer.service.MedicamentService;
+import com.epam.volunteer.service.exception.EntityValidationException;
 import com.epam.volunteer.service.exception.ServiceException;
 import com.epam.volunteer.service.impl.MedicamentServiceImpl;
 import com.epam.volunteer.service.impl.VolunteerServiceImpl;
@@ -50,12 +51,11 @@ public class VolunteerServiceTest extends JerseyTest {
         volunteerService.addNew(test);
     }
 
-    @Test
+    @Test(expected = EntityValidationException.class)
     public void addNewNullEntity() throws ServiceException, DAOException {
         Volunteer test = null;
         volunteerService.setVolunteerDAO(volunteerDAO);
         volunteerService.addNew(test);
-        Mockito.verify(volunteerDAO, Mockito.never()).addNew(test);
     }
 
     @Test

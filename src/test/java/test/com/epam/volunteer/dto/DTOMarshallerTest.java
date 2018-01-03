@@ -48,7 +48,7 @@ public class DTOMarshallerTest {
         volunteer.setName("Nikita");
         AbstractDTO entity = DTOMarshaller.marshalDTO(volunteer, DTOType.EXTENDED);
         assert entity.getClass().equals(VolunteerDTO.class);
-        assert !((VolunteerDTO) entity).getMedicamentDTO().isEmpty();
+        assert !((VolunteerDTO) entity).getMedicament().isEmpty();
     }
 
     @Test

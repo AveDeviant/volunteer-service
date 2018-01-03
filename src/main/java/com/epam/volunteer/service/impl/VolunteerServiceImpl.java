@@ -6,6 +6,7 @@ import com.epam.volunteer.entity.Medicament;
 import com.epam.volunteer.entity.Volunteer;
 import com.epam.volunteer.service.MedicamentService;
 import com.epam.volunteer.service.VolunteerService;
+import com.epam.volunteer.service.exception.EntityValidationException;
 import com.epam.volunteer.service.exception.ServiceException;
 import com.epam.volunteer.util.Validator;
 import org.apache.logging.log4j.Level;
@@ -35,14 +36,11 @@ public class VolunteerServiceImpl implements VolunteerService {
     @Override
     public Volunteer getById(long id) throws ServiceException {
         try {
-            if (volunteerDAO != null) {
-                return volunteerDAO.getById(id);
-            }
+            return volunteerDAO.getById(id);
         } catch (DAOException e) {
             LOGGER.log(Level.ERROR, e.getMessage());
             throw new ServiceException(e);
         }
-        return null;
     }
 
     @Override
@@ -71,15 +69,12 @@ public class VolunteerServiceImpl implements VolunteerService {
 
     @Override
     public Volunteer getByEmail(String email) throws ServiceException {
-        if (Validator.checkEmail(email)) {
             try {
                 return volunteerDAO.getByEmail(email);
             } catch (DAOException e) {
                 LOGGER.log(Level.ERROR, e.getMessage());
                 throw new ServiceException(e);
             }
-        }
-        return null;
     }
 
     @Override
@@ -92,7 +87,7 @@ public class VolunteerServiceImpl implements VolunteerService {
                 throw new ServiceException(e);
             }
         }
-        return null;
+        throw new EntityValidationException();
     }
 
     @Override
