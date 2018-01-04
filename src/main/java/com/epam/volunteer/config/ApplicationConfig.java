@@ -1,6 +1,7 @@
 package com.epam.volunteer.config;
 
 
+import com.epam.volunteer.filter.CORSFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import io.swagger.jaxrs.config.BeanConfig;
@@ -14,6 +15,7 @@ public class ApplicationConfig extends ResourceConfig {
     public ApplicationConfig() {
         packages("com.epam.volunteer.resource");
         register(new ApplicationBinder());
+        register(CORSFilter.class);
         configureJSONProvider();
         configureSwagger();
     }
