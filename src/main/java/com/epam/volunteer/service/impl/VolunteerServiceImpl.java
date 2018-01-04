@@ -7,6 +7,7 @@ import com.epam.volunteer.entity.Volunteer;
 import com.epam.volunteer.service.MedicamentService;
 import com.epam.volunteer.service.VolunteerService;
 import com.epam.volunteer.service.exception.EntityValidationException;
+import com.epam.volunteer.service.exception.ResourceNotFoundException;
 import com.epam.volunteer.service.exception.ServiceException;
 import com.epam.volunteer.util.Validator;
 import org.apache.logging.log4j.Level;
@@ -17,6 +18,7 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class VolunteerServiceImpl implements VolunteerService {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -69,12 +71,12 @@ public class VolunteerServiceImpl implements VolunteerService {
 
     @Override
     public Volunteer getByEmail(String email) throws ServiceException {
-            try {
-                return volunteerDAO.getByEmail(email);
-            } catch (DAOException e) {
-                LOGGER.log(Level.ERROR, e.getMessage());
-                throw new ServiceException(e);
-            }
+        try {
+            return volunteerDAO.getByEmail(email);
+        } catch (DAOException e) {
+            LOGGER.log(Level.ERROR, e.getMessage());
+            throw new ServiceException(e);
+        }
     }
 
     @Override
@@ -88,6 +90,15 @@ public class VolunteerServiceImpl implements VolunteerService {
             }
         }
         throw new EntityValidationException();
+    }
+
+    @Override
+    public List<Medicament> getVolunteerMedicament(long volunteerId) throws ServiceException {
+        Volunteer volunteer = getById(volunteerId);
+        if (Optional.ofNullable(volunteer).isPresent()) {
+            return volunteer.getMedicament().stream().filter(Medicament::isActual).collect(Collectors.toList());
+        }
+        throw new ResourceNotFoundException();
     }
 
     @Override

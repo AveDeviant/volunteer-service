@@ -7,6 +7,7 @@ import com.epam.volunteer.entity.Medicament;
 import com.epam.volunteer.entity.Volunteer;
 import com.epam.volunteer.service.MedicamentService;
 import com.epam.volunteer.service.exception.EntityValidationException;
+import com.epam.volunteer.service.exception.ResourceNotFoundException;
 import com.epam.volunteer.service.exception.ServiceException;
 import com.epam.volunteer.service.impl.MedicamentServiceImpl;
 import com.epam.volunteer.service.impl.VolunteerServiceImpl;
@@ -67,6 +68,12 @@ public class VolunteerServiceTest extends JerseyTest {
         volunteerService.setMedicamentService(medicamentService);
         Mockito.when(medicamentService.getById(1)).thenReturn(medicament);
         assert !volunteerService.authorizationPassed("test", 1);
+    }
+
+    @Test(expected = ResourceNotFoundException.class)
+    public void getVolunteerMedicamentVolunteerNotFound() throws ServiceException {
+        Mockito.when(volunteerService.getById(1)).thenReturn(null);
+        volunteerService.getVolunteerMedicament(1);
     }
 
     @Test

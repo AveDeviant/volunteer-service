@@ -30,7 +30,7 @@ public class DTOMarshallerTest {
     }
 
     @Test
-    public void testMarshalMedicamemtEntity2() {
+    public void testMarshalMedicamentEntity2() {
         Medicament medicament = new Medicament();
         medicament.setMedicament("test");
         medicament.setId(1);
@@ -66,6 +66,7 @@ public class DTOMarshallerTest {
     public void testMarshallDonationEntity() {
         DonationDTO donationDTO = new DonationDTO();
         donationDTO.setCount(2);
+        donationDTO.setTime("");
         donationDTO.setMedicamentDTO(new MedicamentDTO());
         Donation donation = new Donation();
         donation.setCount(2);

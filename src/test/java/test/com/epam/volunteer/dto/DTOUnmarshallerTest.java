@@ -4,11 +4,10 @@ import com.epam.volunteer.dto.AbstractDTO;
 import com.epam.volunteer.dto.DTOType;
 import com.epam.volunteer.dto.marshaller.DTOMarshaller;
 import com.epam.volunteer.dto.marshaller.DTOUnmarshaller;
-import com.epam.volunteer.entity.AbstractEntity;
-import com.epam.volunteer.entity.Medicament;
-import com.epam.volunteer.entity.Volunteer;
+import com.epam.volunteer.entity.*;
 import org.junit.Test;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 
@@ -34,5 +33,22 @@ public class DTOUnmarshallerTest {
         AbstractEntity entity = DTOUnmarshaller.unmarshalDTO(dto);
         assert Volunteer.class.equals(entity.getClass());
         assert volunteer.equals(entity);
+    }
+
+    @Test
+    public void unmarshallDonationEntity() {
+        Donation donation = new Donation();
+        donation.setTime(LocalDateTime.now());
+        donation.setCount(5);
+        Employee employee = new Employee();
+        employee.setId(1);
+        donation.setEmployee(employee);
+        Medicament medicament = new Medicament();
+        medicament.setId(3);
+        donation.setMedicament(medicament);
+        AbstractDTO dto = DTOMarshaller.marshalDTO(donation, DTOType.EXTENDED);
+        AbstractEntity entity = DTOUnmarshaller.unmarshalDTO(dto);
+        assert Donation.class.equals(entity.getClass());
+        assert ((Donation)entity).getCount()==donation.getCount();
     }
 }

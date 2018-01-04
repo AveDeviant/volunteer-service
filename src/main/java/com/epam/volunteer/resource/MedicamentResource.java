@@ -98,7 +98,7 @@ public class MedicamentResource {
     }
 
     @GET
-    @Path("/{id: [0-9]+ }")
+    @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Get medicament with specified ID.", notes = "Authorization header should be provided in case" +
             " user attempts to access the medicament that is already unavailable. In this case only a volunteer who" +
@@ -170,7 +170,7 @@ public class MedicamentResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/{id: [0-9]+ }/donations")
+    @Path("/{id}/donations")
     @ApiOperation(value = "Make a donation for specified medicament.", notes = "Company employee sends the amount of donation" +
             " he wants to make. Authorization header must be provided. It is assumed that employee email will be sent via" +
             " authorization header (MOCK AUTHORIZATION!).",
@@ -211,7 +211,7 @@ public class MedicamentResource {
     }
 
     @POST
-    @Path("/{id: [0-9]+ }")
+    @Path("/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Update medicament with specified ID.", notes = "Medicament title, requirement and status can be updated." +
@@ -250,7 +250,7 @@ public class MedicamentResource {
     }
 
     @DELETE
-    @Path("/{id: [0-9]+ }")
+    @Path("/{id}")
     @ApiOperation(value = "Delete medicament using medicament ID.", notes = " Authorization header must be provided" +
             " in order to protect a resource against an illegal access. It is assumed that volunteer email" +
             " will be sent via authorization header (MOCK AUTHORIZATION!).",

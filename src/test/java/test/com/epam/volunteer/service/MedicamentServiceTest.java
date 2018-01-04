@@ -130,6 +130,12 @@ public class MedicamentServiceTest extends JerseyTest {
         Mockito.verify(medicamentDAO, Mockito.times(1)).addNew(medicament);
     }
 
+    @Test(expected = EntityValidationException.class)
+    public void addNewIncorrectRequirementSize() throws ServiceException, DAOException {
+        Medicament medicament = new Medicament();
+        service.addNew(medicament);
+    }
+
     private class TestBinder extends AbstractBinder {
         @Override
         protected void configure() {

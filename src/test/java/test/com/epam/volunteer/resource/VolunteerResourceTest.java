@@ -46,7 +46,7 @@ public class VolunteerResourceTest extends JerseyTest {
         Mockito.when(volunteerService.getById(1)).thenReturn(volunteer);
         Response response = target("/volunteers/1").request().get();
         Assert.assertEquals(response.getStatus(), 200);
-        AbstractDTO expected = DTOMarshaller.marshalDTO(volunteer, DTOType.EXTENDED);
+        AbstractDTO expected = DTOMarshaller.marshalDTO(volunteer, DTOType.BASIC);
         VolunteerDTO result = target("/volunteers/1").request().get(VolunteerDTO.class);
         Assert.assertEquals(expected, result);
         response.close();
