@@ -94,7 +94,7 @@ public class VolunteerDAOImpl implements VolunteerDAO {
             transaction.commit();
             return volunteer;
         } catch (Exception e) {
-            if (transaction != null) {
+            if (transaction != null && transaction.isActive()) {
                 transaction.rollback();
             }
             LOGGER.log(Level.ERROR, e.getMessage());

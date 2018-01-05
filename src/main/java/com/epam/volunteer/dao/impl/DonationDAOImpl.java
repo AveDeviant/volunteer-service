@@ -41,7 +41,7 @@ public class DonationDAOImpl implements DonationDAO {
             transaction.commit();
             return donation;
         } catch (Exception e) {
-            if (transaction != null) {
+            if (transaction != null && transaction.isActive()) {
                 transaction.rollback();
             }
             LOGGER.log(Level.ERROR, e.getMessage());

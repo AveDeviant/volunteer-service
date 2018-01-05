@@ -17,6 +17,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -44,7 +45,6 @@ public class MedicamentDAOImpl implements MedicamentDAO {
     @Override
     public Medicament getById(long id) throws DAOException {
         try {
-            entityManager.getEntityManagerFactory().getCache().evict(Medicament.class);
             return entityManager.find(Medicament.class, id);
         } catch (Exception e) {
             LOGGER.log(Level.ERROR, e.getMessage());
@@ -80,7 +80,7 @@ public class MedicamentDAOImpl implements MedicamentDAO {
             transaction.commit();
             return medicament;
         } catch (Exception e) {
-            if (transaction != null) {
+            if (transaction != null && transaction.isActive()) {
                 transaction.rollback();
             }
             LOGGER.log(Level.ERROR, e.getMessage());
@@ -102,7 +102,7 @@ public class MedicamentDAOImpl implements MedicamentDAO {
             transaction.commit();
             return entity;
         } catch (Exception e) {
-            if (transaction != null) {
+            if (transaction != null && transaction.isActive()) {
                 transaction.rollback();
             }
             LOGGER.log(Level.ERROR, e.getMessage());
@@ -122,7 +122,7 @@ public class MedicamentDAOImpl implements MedicamentDAO {
             }
             transaction.commit();
         } catch (Exception e) {
-            if (transaction != null) {
+            if (transaction != null && transaction.isActive()) {
                 transaction.rollback();
             }
             LOGGER.log(Level.ERROR, e.getMessage());
