@@ -11,6 +11,7 @@ import org.jvnet.hk2.annotations.Service;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -28,8 +29,9 @@ public class MedicamentDAOImpl implements MedicamentDAO {
     private EntityManager entityManager;
 
     @Inject
-    public void setEntityManager(EntityManager entityManager) {
-        this.entityManager = entityManager;
+    public void setEntityManager(EntityManagerFactory entityManager) {
+        this.entityManager = entityManager.createEntityManager();
+
     }
 
     @Override

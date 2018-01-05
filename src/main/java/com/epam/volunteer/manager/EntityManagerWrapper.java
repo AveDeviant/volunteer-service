@@ -6,6 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.jvnet.hk2.annotations.Service;
 
 
+import javax.inject.Inject;
 import javax.persistence.*;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
@@ -24,8 +25,7 @@ import java.util.concurrent.locks.ReentrantLock;
 @Service
 public class EntityManagerWrapper implements EntityManager {
     private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("persistenceConfig");
-    private static EntityManager entityManager;
-
+    private EntityManager entityManager;
 
     public EntityManagerWrapper() {
         String schema = RESOURCE_BUNDLE.getString("persistence.unit");

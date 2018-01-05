@@ -11,7 +11,7 @@ public class DTOLocalDateTimeConverter {
     }
 
     public static String convertToString(LocalDateTime dateTime) {
-        if (Optional.ofNullable(dateTime).isPresent()) {
+        if (dateTime != null) {
             LocalDateTime time = LocalDateTime.of(dateTime.getYear(), dateTime.getMonthValue(),
                     dateTime.getDayOfMonth(), dateTime.getHour(), dateTime.getMinute(), dateTime.getSecond());
             return time.format(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT));

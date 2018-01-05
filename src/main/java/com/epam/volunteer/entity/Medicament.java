@@ -11,7 +11,6 @@ import java.io.Serializable;
                 query = "SELECT m FROM Medicament m"),
         @NamedQuery(name = "Medicament.countActual", query = "SELECT COUNT(m) FROM Medicament m WHERE m.isActual=1")
 })
-@Cacheable(value = false)
 public class Medicament extends AbstractEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)

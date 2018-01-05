@@ -1,6 +1,6 @@
 package com.epam.volunteer.config;
 
-import com.epam.volunteer.config.factory.EntityManagerFactory;
+import com.epam.volunteer.config.factory.LOLFactory;
 import com.epam.volunteer.dao.DonationDAO;
 import com.epam.volunteer.dao.EmployeeDAO;
 import com.epam.volunteer.dao.MedicamentDAO;
@@ -9,7 +9,6 @@ import com.epam.volunteer.dao.impl.DonationDAOImpl;
 import com.epam.volunteer.dao.impl.EmployeeDAOImpl;
 import com.epam.volunteer.dao.impl.MedicamentDAOImpl;
 import com.epam.volunteer.dao.impl.VolunteerDAOImpl;
-import com.epam.volunteer.manager.EntityManagerWrapper;
 import com.epam.volunteer.service.*;
 import com.epam.volunteer.service.impl.*;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
@@ -17,6 +16,9 @@ import org.glassfish.jersey.process.internal.RequestScoped;
 
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import java.util.ResourceBundle;
 
 
 /**
@@ -28,11 +30,7 @@ public class ApplicationBinder extends AbstractBinder {
     protected void configure() {
         bind(MedicamentDAOImpl.class).to(MedicamentDAO.class).in(Singleton.class);
         bind(MedicamentServiceImpl.class).to(MedicamentService.class).in(Singleton.class);
-        bindFactory(EntityManagerFactory.class)
-                .proxy(true)
-                .proxyForSameScope(false)
-                .to(EntityManager.class)
-                .in(RequestScoped.class);
+        bindFactory(LOLFactory.class).to(EntityManagerFactory.class).in(Singleton.class);
         bind(DonationServiceImpl.class).to(DonationService.class).in(Singleton.class);
         bind(DonationDAOImpl.class).to(DonationDAO.class).in(Singleton.class);
         bind(VolunteerServiceImpl.class).to(VolunteerService.class).in(Singleton.class);
