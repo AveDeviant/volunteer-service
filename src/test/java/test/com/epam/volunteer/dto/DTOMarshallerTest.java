@@ -13,6 +13,7 @@ import com.epam.volunteer.entity.Medicament;
 import com.epam.volunteer.entity.Volunteer;
 import org.junit.Test;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,10 +67,12 @@ public class DTOMarshallerTest {
     public void testMarshallDonationEntity() {
         DonationDTO donationDTO = new DonationDTO();
         donationDTO.setCount(2);
-        donationDTO.setTime("");
+        LocalDateTime time = LocalDateTime.now();
+        donationDTO.setTime(time);
         donationDTO.setMedicamentDTO(new MedicamentDTO());
         Donation donation = new Donation();
         donation.setCount(2);
+        donation.setTime(time);
         donation.setMedicament(new Medicament());
         AbstractDTO entity = DTOMarshaller.marshalDTO(donation, DTOType.EXTENDED);
         assert entity.getClass().equals(DonationDTO.class);

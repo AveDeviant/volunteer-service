@@ -272,5 +272,4 @@ public class MedicamentResource {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
-
 }

@@ -10,9 +10,7 @@ import com.epam.volunteer.dto.extended.EmployeeDTO;
 import com.epam.volunteer.dto.extended.MedicamentDTO;
 import com.epam.volunteer.dto.extended.VolunteerDTO;
 import com.epam.volunteer.entity.*;
-import com.epam.volunteer.util.DTOLocalDateTimeConverter;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -107,7 +105,7 @@ public class DTOMarshaller {
         BaseDonationDTO donationDTO = null;
         if (type == DTOType.EXTENDED) {
             donationDTO = new DonationDTO();
-            ((DonationDTO) donationDTO).setTime(DTOLocalDateTimeConverter.convertToString(donation.getTime()));
+            ((DonationDTO) donationDTO).setTime(donation.getTime());
             ((DonationDTO) donationDTO)
                     .setMedicamentDTO((BaseMedicamentDTO) marshalDTO(donation.getMedicament(), DTOType.BASIC));
             ((DonationDTO) donationDTO)

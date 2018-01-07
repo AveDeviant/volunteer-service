@@ -10,16 +10,16 @@ import java.time.LocalDateTime;
 
 @ApiModel(value = "donationEx", parent = BaseDonationDTO.class, description = "Donation to volunteers from a company employee")
 public class DonationDTO extends BaseDonationDTO {
-    private String time;
+    private LocalDateTime time;
     private BaseEmployeeDTO employee;
     private BaseMedicamentDTO medicament;
 
     @ApiModelProperty(value = "Donation confirmation time. Pattern: dd-MM-yyyy'T'HH:mm ")
-    public String getTime() {
+    public LocalDateTime getTime() {
         return time;
     }
 
-    public void setTime(String time) {
+    public void setTime(LocalDateTime time) {
         this.time = time;
     }
 

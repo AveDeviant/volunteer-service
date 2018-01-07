@@ -3,28 +3,25 @@ package com.epam.volunteer.dao.impl;
 import com.epam.volunteer.dao.EmployeeDAO;
 import com.epam.volunteer.dao.exception.DAOException;
 import com.epam.volunteer.entity.Employee;
-import com.epam.volunteer.manager.EntityManagerWrapper;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.util.List;
-import java.util.Optional;
 
 public class EmployeeDAOImpl implements EmployeeDAO {
     private static final Logger LOGGER = LogManager.getLogger();
     private EntityManager entityManager;
 
     @Inject
-    public void setEntityManager(EntityManagerFactory entityManager) {
-        this.entityManager = entityManager.createEntityManager();
+    public void setEntityManager(EntityManager entityManager) {
+        this.entityManager = entityManager;
     }
 
     @Override
