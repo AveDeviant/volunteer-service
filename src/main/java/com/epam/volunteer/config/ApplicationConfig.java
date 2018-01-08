@@ -30,9 +30,9 @@ public class ApplicationConfig extends ResourceConfig {
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
         SimpleModule module = new SimpleModule();
         module.addSerializer(new LocalDateTimeSerializer(LocalDateTime.class));
-        module.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer());
+        module.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(LocalDateTime.class));
         mapper.registerModule(module);
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);          //Instead of custom DTO?
+//        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);          //Instead of custom DTO?
         JacksonJaxbJsonProvider provider = new JacksonJaxbJsonProvider();
         provider.setMapper(mapper);
         register(provider);
