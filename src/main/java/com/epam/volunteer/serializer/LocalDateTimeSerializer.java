@@ -1,8 +1,6 @@
 package com.epam.volunteer.serializer;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
@@ -22,7 +20,7 @@ public class LocalDateTimeSerializer extends StdSerializer<LocalDateTime> {
 
     @Override
     public void serialize(LocalDateTime localDateTime, JsonGenerator jsonGenerator,
-                          SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
+                          SerializerProvider serializerProvider) throws IOException {
         LocalDateTime time = LocalDateTime.of(localDateTime.getYear(), localDateTime.getMonthValue(),
                 localDateTime.getDayOfMonth(), localDateTime.getHour(), localDateTime.getMinute(),
                 localDateTime.getSecond());

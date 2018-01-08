@@ -1,9 +1,7 @@
 package com.epam.volunteer.serializer;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
 import java.io.IOException;
@@ -22,7 +20,7 @@ public class LocalDateTimeDeserializer extends StdDeserializer<LocalDateTime> {
 
     @Override
     public LocalDateTime deserialize(JsonParser jsonParser, DeserializationContext deserializationContext)
-            throws IOException, JsonProcessingException {
+            throws IOException {
         return LocalDateTime.parse(jsonParser.getText(), DateTimeFormatter.ofPattern(DATE_TIME_FORMAT));
     }
 }
