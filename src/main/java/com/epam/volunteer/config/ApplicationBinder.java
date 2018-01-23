@@ -2,6 +2,7 @@ package com.epam.volunteer.config;
 
 import com.epam.volunteer.config.factory.ManagerFactory;
 import com.epam.volunteer.config.factory.EntityManagerFactoryHK2Implementation;
+import com.epam.volunteer.config.factory.SchedulerFactory;
 import com.epam.volunteer.dao.DonationDAO;
 import com.epam.volunteer.dao.EmployeeDAO;
 import com.epam.volunteer.dao.MedicamentDAO;
@@ -14,6 +15,7 @@ import com.epam.volunteer.service.*;
 import com.epam.volunteer.service.impl.*;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.process.internal.RequestScoped;
+import org.quartz.Scheduler;
 
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
@@ -34,6 +36,7 @@ public class ApplicationBinder extends AbstractBinder {
                 .proxy(true)
                 .proxyForSameScope(false)
                 .in(RequestScoped.class);
+        bindFactory(SchedulerFactory.class).to(Scheduler.class).in(Singleton.class);
         bind(DonationServiceImpl.class).to(DonationService.class).in(Singleton.class);
         bind(DonationDAOImpl.class).to(DonationDAO.class).in(Singleton.class);
         bind(VolunteerServiceImpl.class).to(VolunteerService.class).in(Singleton.class);

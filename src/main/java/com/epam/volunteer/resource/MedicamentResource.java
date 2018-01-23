@@ -15,7 +15,6 @@ import com.epam.volunteer.entity.Medicament;
 import com.epam.volunteer.entity.Volunteer;
 import com.epam.volunteer.response.ServerMessage;
 import com.epam.volunteer.service.*;
-import com.epam.volunteer.service.exception.BusinessLogicException;
 import com.epam.volunteer.service.exception.EntityValidationException;
 import com.epam.volunteer.service.exception.ResourceForbiddenException;
 import com.epam.volunteer.service.exception.ServiceException;
@@ -162,8 +161,6 @@ public class MedicamentResource {
         } catch (ServiceException e) {
             LOGGER.log(Level.ERROR, e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-        } catch (EntityValidationException e) {
-            return Response.status(422).entity(ServerMessage.INVALID_INPUT).build();
         }
     }
 
@@ -203,10 +200,6 @@ public class MedicamentResource {
         } catch (ServiceException e) {
             LOGGER.log(Level.ERROR, e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-        } catch (BusinessLogicException | EntityValidationException e) {
-            return Response.status(422).build();
-        } catch (ResourceForbiddenException e) {
-            return Response.status(Response.Status.FORBIDDEN).build();
         }
     }
 
@@ -244,8 +237,6 @@ public class MedicamentResource {
         } catch (ServiceException e) {
             LOGGER.log(Level.ERROR, e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-        } catch (ResourceForbiddenException e) {
-            return Response.status(Response.Status.FORBIDDEN).build();
         }
     }
 

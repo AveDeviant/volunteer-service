@@ -128,9 +128,7 @@ public class VolunteerResource {
             return Response.status(422).build();
         } catch (ServiceException e) {
             return Response.status(Response.Status.CONFLICT).build();
-        } catch (EntityValidationException e) {
-            return Response.status(422).build();
-        } catch (Exception e) {
+        }  catch (Exception e) {
             LOGGER.log(Level.ERROR, e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }

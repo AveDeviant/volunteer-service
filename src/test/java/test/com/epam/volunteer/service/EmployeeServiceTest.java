@@ -9,6 +9,8 @@ import com.epam.volunteer.service.impl.EmployeeServiceImpl;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class EmployeeServiceTest {
     private static EmployeeServiceImpl employeeService = new EmployeeServiceImpl();
     private EmployeeDAO employeeDAO = Mockito.mock(EmployeeDAOImpl.class);
@@ -27,7 +29,7 @@ public class EmployeeServiceTest {
     public void getByEmailTestDoesntExist() throws DAOException, ServiceException {
         employeeService.setEmployeeDAO(employeeDAO);
         Mockito.when(employeeDAO.getByEmail("test@mail.com")).thenReturn(null);
-        assert null == (employeeService.getByEmail("test@mail.com"));
+      assertThat(employeeService.getByEmail("test@mail.com")).isNull();
     }
 
 

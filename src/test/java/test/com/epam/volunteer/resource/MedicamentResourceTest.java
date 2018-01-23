@@ -9,7 +9,6 @@ import com.epam.volunteer.dto.marshaller.DTOUnmarshaller;
 import com.epam.volunteer.entity.*;
 import com.epam.volunteer.resource.MedicamentResource;
 import com.epam.volunteer.service.*;
-import com.epam.volunteer.service.exception.ResourceForbiddenException;
 import com.epam.volunteer.service.impl.*;
 import com.epam.volunteer.service.exception.ServiceException;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
@@ -27,7 +26,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -64,6 +63,7 @@ public class MedicamentResourceTest extends JerseyTest {
         Assert.assertEquals(expected, result);
         response.close();
     }
+
     @Test
     public void getEntityIsntAvailableButPersonWasAuthorized() throws ServiceException {
         Medicament medicament = new Medicament();
@@ -73,7 +73,7 @@ public class MedicamentResourceTest extends JerseyTest {
         Volunteer volunteer = new Volunteer();
         medicament.setVolunteer(volunteer);
         Mockito.when(medicamentService.getById(1)).thenReturn(medicament);
-        Mockito.when(volunteerService.authorizationPassed("email@email.com",1)).thenReturn(true);
+        Mockito.when(volunteerService.authorizationPassed("email@email.com", 1)).thenReturn(true);
         Response response = target("/medicament/1").request().header(HttpHeaders.AUTHORIZATION, "email@email.com").get();
         Assert.assertEquals(response.getStatus(), 200);
         AbstractDTO expected = DTOMarshaller.marshalDTO(medicament, DTOType.EXTENDED);
@@ -91,9 +91,8 @@ public class MedicamentResourceTest extends JerseyTest {
         medicament.setActual(false);
         Mockito.when(medicamentService.getById(1)).thenReturn(medicament);
         Response response = target("/medicament/1").request().get();
-        assert Response.Status.FORBIDDEN.getStatusCode()==response.getStatus();
+        assert Response.Status.FORBIDDEN.getStatusCode() == response.getStatus();
     }
-
 
 
     @Test
@@ -204,7 +203,7 @@ public class MedicamentResourceTest extends JerseyTest {
         Mockito.when(medicamentService.getById(1, true)).thenReturn(new Medicament());
         Response response = target("/medicament/1").request()
                 .buildPost(dtoEntity).invoke();
-        Assert.assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
+        assertThat(response.getStatus()).isEqualTo(Response.Status.UNAUTHORIZED.getStatusCode());
         verify(medicamentService, never()).update(1, (Medicament) DTOUnmarshaller.unmarshalDTO(abstractDTO));
     }
 
@@ -222,20 +221,6 @@ public class MedicamentResourceTest extends JerseyTest {
         verify(medicamentService, times(1)).update(1, (Medicament) DTOUnmarshaller.unmarshalDTO(abstractDTO));
     }
 
-    @Test
-    public void updateResourceIsntAvailable() throws ServiceException {
-        Medicament medicament = new Medicament();
-        medicament.setRequirement(20);
-        medicament.setId(1);
-        AbstractDTO abstractDTO = DTOMarshaller.marshalDTO(medicament, DTOType.BASIC);
-        Entity<AbstractDTO> dtoEntity = Entity.entity(abstractDTO, MediaType.APPLICATION_JSON);
-        Mockito.when(volunteerService.authorizationPassed("test", 1)).thenReturn(true);
-        Mockito.when(medicamentService.update(1, medicament)).thenThrow(ResourceForbiddenException.class);
-        Response response = target("/medicament/1").request().header(HttpHeaders.AUTHORIZATION, "test")
-                .buildPost(dtoEntity).invoke();
-        Assert.assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
-    }
-
 
     @Test
     public void updateSuccess() throws ServiceException {
@@ -246,10 +231,10 @@ public class MedicamentResourceTest extends JerseyTest {
         Entity<AbstractDTO> dtoEntity = Entity.entity(abstractDTO, MediaType.APPLICATION_JSON);
         Mockito.when(volunteerService.authorizationPassed("test", 1)).thenReturn(true);
         Mockito.when(medicamentService.update(1, medicament)).thenReturn(medicament);
+        Mockito.when(medicamentService.getById(1, true)).thenReturn(medicament);
         Response response = target("/medicament/1").request().header(HttpHeaders.AUTHORIZATION, "test")
                 .buildPost(dtoEntity).invoke();
         Mockito.verify(medicamentService, times(1)).update(1, medicament);
-        Mockito.when(medicamentService.getById(1, true)).thenReturn(medicament);
         Assert.assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
     }
 
@@ -278,11 +263,11 @@ public class MedicamentResourceTest extends JerseyTest {
         donation.setEmployee(employee);
         Donation expected = new Donation();
         expected.setTime(LocalDateTime.now());
-        Mockito.when(donationService.registerDonation(1,donation)).thenReturn(expected);
+        Mockito.when(donationService.registerDonation(1, donation)).thenReturn(expected);
         Response response = target("/medicament/1/donations").request().header(HttpHeaders.AUTHORIZATION, "test")
                 .buildPost(dtoEntity).invoke();
-        Mockito.verify(donationService, times(1)).registerDonation(1,donation);
-        Assert.assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+        Mockito.verify(donationService, times(1)).registerDonation(1, donation);
+        assertThat(response.getStatus()).isEqualTo(Response.Status.CREATED.getStatusCode());
     }
 
 
