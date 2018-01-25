@@ -2,10 +2,10 @@ package com.epam.volunteer.config;
 
 
 import com.epam.volunteer.filter.CORSFilter;
-import com.epam.volunteer.scheduler.job.CountJob;
+import com.epam.volunteer.listener.ApplicationListener;
+import com.epam.volunteer.scheduler.job.LoggerJob;
 import com.epam.volunteer.serializer.LocalDateTimeDeserializer;
 import com.epam.volunteer.serializer.LocalDateTimeSerializer;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -14,31 +14,20 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.glassfish.jersey.jackson.internal.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import org.glassfish.jersey.server.ResourceConfig;
-import org.quartz.JobDetail;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-import org.quartz.Trigger;
-import org.quartz.impl.StdSchedulerFactory;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
+
 import javax.ws.rs.ApplicationPath;
 import java.time.LocalDateTime;
-import java.util.ResourceBundle;
 
-import static org.quartz.CronScheduleBuilder.cronSchedule;
-import static org.quartz.JobBuilder.newJob;
-import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
-import static org.quartz.TriggerBuilder.newTrigger;
 
 @ApplicationPath("rest")
 public class ApplicationConfig extends ResourceConfig {
 
     public ApplicationConfig() {
-        LogManager.getLogger().log(Level.INFO, "APP CONFIG");
         packages("com.epam.volunteer.resource");
         register(new ApplicationBinder());
         register(CORSFilter.class);
+        register(ApplicationListener.class);
         configureJSONProvider();
         configureSwagger();
     }

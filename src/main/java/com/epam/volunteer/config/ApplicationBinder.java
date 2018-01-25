@@ -11,11 +11,15 @@ import com.epam.volunteer.dao.impl.DonationDAOImpl;
 import com.epam.volunteer.dao.impl.EmployeeDAOImpl;
 import com.epam.volunteer.dao.impl.MedicamentDAOImpl;
 import com.epam.volunteer.dao.impl.VolunteerDAOImpl;
+import com.epam.volunteer.scheduler.job.LoggerJob;
 import com.epam.volunteer.service.*;
 import com.epam.volunteer.service.impl.*;
+import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.process.internal.RequestScoped;
+import org.quartz.Job;
 import org.quartz.Scheduler;
+import org.quartz.spi.JobFactory;
 
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
@@ -36,7 +40,7 @@ public class ApplicationBinder extends AbstractBinder {
                 .proxy(true)
                 .proxyForSameScope(false)
                 .in(RequestScoped.class);
-        bindFactory(SchedulerFactory.class).to(Scheduler.class).in(Singleton.class);
+        bindFactory(SchedulerFactory.class).to(Scheduler.class).proxy(true).proxyForSameScope(false).in(Singleton.class);
         bind(DonationServiceImpl.class).to(DonationService.class).in(Singleton.class);
         bind(DonationDAOImpl.class).to(DonationDAO.class).in(Singleton.class);
         bind(VolunteerServiceImpl.class).to(VolunteerService.class).in(Singleton.class);

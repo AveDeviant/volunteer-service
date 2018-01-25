@@ -15,7 +15,7 @@ import javax.persistence.EntityManagerFactory;
 public class ManagerFactory implements Factory<EntityManager> {
     private static final Logger LOGGER = LogManager.getLogger();
     @Inject
-    EntityManagerFactory entityManagerFactory;
+    private EntityManagerFactory entityManagerFactory;
 
     @Override
     public EntityManager provide() {
@@ -28,6 +28,6 @@ public class ManagerFactory implements Factory<EntityManager> {
     @Override
     public void dispose(EntityManager entityManager) {
         entityManager.close();
-        LOGGER.log(Level.INFO, "EntityManager closed.");
+        LOGGER.log(Level.INFO, "EntityManager" + entityManager + " closed.");
     }
 }
